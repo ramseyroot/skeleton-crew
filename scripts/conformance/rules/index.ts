@@ -19,5 +19,10 @@ import { R14 } from "./R14-strip-invalidates.ts";
 import { R15 } from "./R15-strip-routing-unknown-step.ts";
 import { R16 } from "./R16-catalog-current.ts";
 import { R17 } from "./R17-no-widening.ts";
+import { R18 } from "./R18-port-two-adapters.ts";
+import { R19 } from "./R19-port-contract-test.ts";
+import { R20 } from "./R20-adapter-runs-contract.ts";
+import { R21 } from "./R21-adapter-error-map.ts";
+import { R22 } from "./R22-port-domain-types.ts";
 
-export const rules: Rule[] = [R01, R02, R03, R04, R05, R06, R07, R08, R09, R10, R11, R12, R13, R14, R15, R16, R17];
+export const rules: Rule[] = [R01, R02, R03, R04, R05, R06, R07, R08, R09, R10, R11, R12, R13, R14, R15, R16, R17, R18, R19, R20, R21, R22];

@@ -75,9 +75,10 @@ Every task: append a `started` row to `progress.md` before writing files. On fin
   - `rules.test.ts` (added during the work): fixtures may hold a `git-base/` folder, committed first, so rules that compare with git `HEAD` can be tested.
   - _Requirements: 5.1 to 5.6_
 
-- [ ] 9. Port and adapter rules (R18 to R22)
+- [x] 9. Port and adapter rules (R18 to R22)
   - Mode: sequential
-  - Writes: scripts/conformance/rules/R18-port-two-adapters.ts, scripts/conformance/rules/R19-port-contract-test.ts, scripts/conformance/rules/R20-adapter-runs-contract.ts, scripts/conformance/rules/R21-adapter-error-map.ts, scripts/conformance/rules/R22-port-domain-types.ts, scripts/conformance/rules/index.ts, docs/conformance-rules.md, scripts/conformance/test/fixtures/R18/**, scripts/conformance/test/fixtures/R19/**, scripts/conformance/test/fixtures/R20/**, scripts/conformance/test/fixtures/R21/**, scripts/conformance/test/fixtures/R22/**
+  - Writes: scripts/conformance/rules/R18-port-two-adapters.ts, scripts/conformance/rules/R19-port-contract-test.ts, scripts/conformance/rules/R20-adapter-runs-contract.ts, scripts/conformance/rules/R21-adapter-error-map.ts, scripts/conformance/rules/R22-port-domain-types.ts, scripts/conformance/rules/index.ts, docs/conformance-rules.md, scripts/conformance/test/fixtures/R18/**, scripts/conformance/test/fixtures/R19/**, scripts/conformance/test/fixtures/R20/**, scripts/conformance/test/fixtures/R21/**, scripts/conformance/test/fixtures/R22/**, package.json
+  - `package.json` (added during the work): the test command must not pick up `.test.ts` files inside fixtures, which adapter fixtures need.
   - _Requirements: 6.1 to 6.5_
 
 - [ ] 10. Environment rules (R23 to R27)

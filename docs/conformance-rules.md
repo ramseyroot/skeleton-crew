@@ -195,3 +195,48 @@ Each rule section has this shape, and the meta tests check that every label is p
 - **Passing example:** a new step `db.user.save` with the write permission, leaving `db.user.find` as it was.
 - **Fix:** create a new narrow step. If the change is really needed, list it as `modify` in the change plan and record an exception that the user approves.
 - **Limits:** input and output are compared as source text, so renaming a schema variable also counts as a change. Until a catalog is committed, there is nothing to compare against.
+
+## R18 port-two-adapters
+
+- **Severity:** error
+- **Catches:** a port file `src/ports/<port>.ts` with fewer than two adapter folders in `src/adapters/<port>/`.
+- **Why:** a port implemented by one provider only is usually shaped to that provider. The in-memory adapter also serves tests, Storybook, and offline local mode.
+- **Failing example:** `src/ports/users.ts` with only `src/adapters/users/memory/`.
+- **Passing example:** `src/adapters/users/memory/` and `src/adapters/users/pocketbase/`.
+- **Fix:** add the missing adapter. An in-memory adapter is the usual second one.
+
+## R19 port-contract-test
+
+- **Severity:** error
+- **Catches:** a port with no shared contract suite at `src/adapters/<port>/contract.test.ts`.
+- **Why:** one suite run against every adapter is what proves adapters behave the same, so switching providers does not change steps.
+- **Failing example:** `src/ports/users.ts` with adapters but no `src/adapters/users/contract.test.ts`.
+- **Passing example:** `contract.test.ts` exporting a function that takes an adapter factory and runs the port's cases.
+- **Fix:** write the contract suite for the port's documented behavior and error mapping.
+
+## R20 adapter-runs-contract
+
+- **Severity:** error
+- **Catches:** an adapter folder with no test file that imports `../contract.test.ts`.
+- **Why:** an adapter that does not run the shared suite can drift from the port's contract unnoticed.
+- **Failing example:** `src/adapters/users/d1/` with no test, or with tests that never call the contract suite.
+- **Passing example:** `src/adapters/users/d1/d1.test.ts` that imports the suite and runs it with a D1 adapter factory.
+- **Fix:** add a test in the adapter folder that runs the contract suite.
+
+## R21 adapter-error-map
+
+- **Severity:** error
+- **Catches:** an adapter folder with no `errors.ts`.
+- **Why:** every provider fails differently. The error map turns provider failures into the skeleton's `ErrorKind`s so steps and routing never see provider-specific errors.
+- **Failing example:** `src/adapters/users/memory/` with only `index.ts`.
+- **Passing example:** the same folder with `errors.ts` exporting the mapping table.
+- **Fix:** add `errors.ts` with the mapping, and cover it in the contract suite.
+
+## R22 port-domain-types
+
+- **Severity:** error
+- **Catches:** a file in the ports folder that imports a package on the `providerPackages` list.
+- **Why:** a port signature with a provider type (rows, records, SDK responses) leaks that provider into every step that uses the port.
+- **Failing example:** `import type { RecordModel } from "pocketbase";` in `src/ports/users.ts`.
+- **Passing example:** the port returns `User` from the app's own types.
+- **Fix:** define domain types and convert inside the adapter.

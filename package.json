@@ -10,7 +10,7 @@
   "scripts": {
     "conformance": "node scripts/conformance/cli.ts",
     "check": "node scripts/conformance/check.ts",
-    "test:conformance": "node --test \"scripts/conformance/test/**/*.test.ts\"",
+    "test:conformance": "node --test \"scripts/conformance/test/*.test.ts\"",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {

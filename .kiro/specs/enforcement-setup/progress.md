@@ -34,3 +34,6 @@ Append-only. Format and resume procedure: `docs/change-process.md`, section 7.
 | 2026-11-23 17:10 | 8 | started | | | Write catalog generator, git helpers, R16, R17, --write-catalog |
 | 2026-11-23 17:10 | 8 | started | | | Plan deviation: added test/rules.test.ts to task 8 Writes, for git-based fixtures |
 | 2026-11-23 17:13 | 8 | done | this | catalog.ts, git.ts, rules/R16, R17, rules/index.ts, cli.ts (--write-catalog), docs/conformance-rules.md, docs/generated/catalog.*, fixtures/R16, R17 (git-base), test/catalog.test.ts, test/rules.test.ts (61 tests pass). R16 is not applicable until a steps folder exists | Start task 9: port and adapter rules |
+| 2026-11-23 17:13 | 9 | started | | | Write R18 to R22 with fixtures and docs |
+| 2026-11-23 17:14 | 9 | started | | | Plan deviation: added package.json to task 9 Writes. Test glob matched fixture .test.ts files; narrowed to test/*.test.ts |
+| 2026-11-23 17:14 | 9 | done | this | rules/R18 to R22, rules/index.ts, docs/conformance-rules.md, fixtures/R18 to R22, package.json (test glob) (70 tests pass) | Start task 10: environment rules |

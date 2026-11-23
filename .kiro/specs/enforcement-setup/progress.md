@@ -19,3 +19,6 @@ Append-only. Format and resume procedure: `docs/change-process.md`, section 7.
 | 2026-11-23 16:52 | 1 | done | this | package.json, pnpm-lock.yaml, tsconfig.json, design.md (D1 revision, D2 result, Writes glob note) | Start task 2: configuration loading |
 | 2026-11-23 16:52 | 2 | started | | | Write config file and loader with validation |
 | 2026-11-23 16:53 | 2 | done | this | conformance.config.json, conformance.exceptions.json, scripts/conformance/config.ts, scripts/conformance/test/config.test.ts (7 tests pass, typecheck ok) | Start task 3: runner, discovery, report, exceptions |
+| 2026-11-23 16:54 | 3 | started | | | Write types, project loading, discovery, report, exceptions, CLI, empty registry |
+| 2026-11-23 16:58 | 3 | done | this | scripts/conformance/{types,project,discover,report,exceptions,cli}.ts, rules/index.ts, test/helpers.ts, test/report.test.ts (18 tests pass, typecheck ok) | Start task 4: rules doc and meta tests, then checkpoint |
+| 2026-11-23 16:58 | 4 | started | | | Write docs/conformance-rules.md, meta tests, fixture runner |

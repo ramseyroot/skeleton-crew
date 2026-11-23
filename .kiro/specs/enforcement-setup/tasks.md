@@ -28,7 +28,7 @@ Every task: append a `started` row to `progress.md` before writing files. On fin
   - Tests: valid config, each missing required field, unknown field.
   - _Requirements: 1.6, 1.7, 2.4, 9.2_
 
-- [ ] 3. Runner, discovery, report, and exceptions
+- [x] 3. Runner, discovery, report, and exceptions
   - Mode: sequential
   - Writes: scripts/conformance/types.ts, scripts/conformance/project.ts, scripts/conformance/discover.ts, scripts/conformance/report.ts, scripts/conformance/exceptions.ts, scripts/conformance/cli.ts, scripts/conformance/rules/index.ts, scripts/conformance/test/report.test.ts, scripts/conformance/test/helpers.ts
   - Rule and violation types, the empty registry, and `not-applicable` handling by `needs`.

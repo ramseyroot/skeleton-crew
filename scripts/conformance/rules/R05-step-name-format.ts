@@ -1,4 +1,4 @@
-import { isInside } from "./_ast.ts";
+import { inStepClassFolder, stepsLocationText } from "../layout.ts";
 import { violation, type Rule, type Violation } from "../types.ts";
 
 const FORMAT = /^([a-z][a-zA-Z0-9]*)\.([a-z][a-zA-Z0-9]*)\.([a-z][a-zA-Z0-9]*)$/;
@@ -27,8 +27,8 @@ export const R05: Rule = {
         if (declared !== null && nameClass !== declared) problems.push(`name starts with "${nameClass}" but class is "${declared}"`);
       }
       const cls = declared ?? m?.[1];
-      if (cls && !isInside(s.file, `${ctx.config.folders.steps}/${cls}`)) {
-        problems.push(`file is not in ${ctx.config.folders.steps}/${cls}/`);
+      if (cls && !inStepClassFolder(s.file, cls, ctx.config.folders)) {
+        problems.push(`file is not in ${stepsLocationText(cls, ctx.config.folders)}`);
       }
       if (problems.length > 0) out.push(violation(R05, s.file, s.line, `step "${s.name}": ${problems.join("; ")}`, s.name));
     }

@@ -11,16 +11,16 @@ const DS = "declare function defineStep(x: unknown): unknown;\n";
 const DT = "declare function defineStrip(x: unknown): unknown;\n";
 
 const files = {
-  "src/steps/db/user.save.ts":
+  "src/features/demo/steps/db/user.save.ts":
     `export const saveUser = defineStep({ name: "db.user.save", class: "db", input: User, output: User, permissions: { reads: [], writes: ["users"], storage: [] }, errors: ["conflict", "network"] });\ndeclare const User: unknown;\n` + DS,
-  "src/steps/db/user.find.ts":
+  "src/features/demo/steps/db/user.find.ts":
     `export const findUser = defineStep({ name: "db.user.find", class: "db", input: z.object({\n  id: z.string(),\n}), output: User, permissions: { reads: ["users"], writes: [], storage: [] }, errors: ["network"] });\ndeclare const User: unknown;\ndeclare const z: any;\n` + DS,
-  "src/strips/profile.save.strip.ts":
+  "src/features/demo/strips/profile.save.strip.ts":
     `import { findUser } from "../steps/db/user.find.ts";\nimport { saveUser } from "../steps/db/user.save.ts";\nexport const s = defineStrip({ name: "profile.save", steps: [findUser, saveUser], budget: { reads: ["users"], writes: ["users"], storage: [] } });\n` + DT,
 };
 
-function ctxOf(dir: string): Pick<Context, "steps" | "strips"> {
-  let captured: Pick<Context, "steps" | "strips"> | null = null;
+function ctxOf(dir: string): Pick<Context, "steps" | "strips" | "config"> {
+  let captured: Pick<Context, "steps" | "strips" | "config"> | null = null;
   runConformance({ root: dir, writeReport: false, rules: [fakeRule("R99", { check: (c) => ((captured = c), []) })] });
   assert.ok(captured);
   return captured;
@@ -60,7 +60,7 @@ test("long catalog lines are cut to the limit", () => {
   const long = "x".repeat(300);
   const md = catalogMd({
     version: 1,
-    steps: [{ name: "db.a.b", class: "db", file: "f", input: long, output: null, permissions: null, errors: null, usedBy: [] }],
+    steps: [{ name: "db.a.b", class: "db", feature: "demo", file: "f", input: long, output: null, permissions: null, errors: null, usedBy: [] }],
     strips: [],
   });
   for (const line of md.split("\n")) assert.ok(line.length <= MAX_LINE);

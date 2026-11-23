@@ -11,7 +11,7 @@ status: active
 
 | File | Task | Reason |
 |---|---|---|
-| src/steps/db/other.ts | 1 | x |
+| src/features/demo/steps/db/other.ts | 1 | x |
 
 ## Affected strip tests
 

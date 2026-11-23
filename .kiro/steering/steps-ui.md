@@ -1,6 +1,6 @@
 ---
 inclusion: fileMatch
-fileMatchPattern: "src/steps/ui/**"
+fileMatchPattern: ["src/features/**/steps/ui/**", "src/shared/steps/ui/**"]
 ---
 
 # Steps: ui class (event handlers and form logic)
@@ -30,7 +30,7 @@ export const findUserByEmail = defineStep({
 ## Before finishing a ui step
 
 - [ ] Checked the catalog: no existing step matches exactly, or this is a planned `modify`.
-- [ ] Name is `ui.<domain>.<verb>`, file is in `src/steps/ui/`.
+- [ ] Name is `ui.<domain>.<verb>`, file is in `src/features/<feature>/steps/ui/` (or `src/shared/steps/ui/` if more than one feature uses it).
 - [ ] Permissions list exactly what it touches. Nothing widened on an existing step.
 - [ ] Failures return `Result` errors with a kind; nothing returns error text as a value.
 - [ ] Tests: Unit tests, plus a Storybook story per end state of the strip it uses.

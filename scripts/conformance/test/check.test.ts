@@ -44,9 +44,9 @@ test("typecheck needs a tsconfig.json; every check runs even after a failure", (
 });
 
 test("affected strip tests from an active committed plan run, and fail when testFiles is not configured", () => {
-  const plan = `---\nstatus: active\ncreated: 2999-12-31\nupdated: 2999-12-31\n---\n\n## Affected strip tests\n\n- src/strips/a.strip.test.ts\n`;
+  const plan = `---\nstatus: active\ncreated: 2999-12-31\nupdated: 2999-12-31\n---\n\n## Affected strip tests\n\n- src/features/demo/strips/a.strip.test.ts\n`;
   const p = makeProject(
-    { ".kiro/specs/demo/change-plan.md": plan, "src/strips/a.strip.test.ts": "export {};\n" },
+    { ".kiro/specs/demo/change-plan.md": plan, "src/features/demo/strips/a.strip.test.ts": "export {};\n" },
     withChecks({ typecheck: null, test: null, testFiles: null }),
   );
   const g = (...a: string[]) => spawnSync("git", ["-c", "user.name=t", "-c", "user.email=t@t", ...a], { cwd: p.dir, encoding: "utf8" });
@@ -63,7 +63,7 @@ test("affected strip tests from an active committed plan run, and fail when test
     r = runChecks(p.dir);
     assert.equal(r.exitCode, 0, r.output + JSON.stringify(r.steps, null, 1));
     assert.equal(r.steps[3]?.status, "passed");
-    assert.match(r.steps[3]?.output ?? "", /src\/strips\/a\.strip\.test\.ts/);
+    assert.match(r.steps[3]?.output ?? "", /src\/features\/demo\/strips\/a\.strip\.test\.ts/);
   } finally {
     p.cleanup();
   }

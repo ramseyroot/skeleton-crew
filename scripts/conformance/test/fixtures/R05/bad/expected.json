@@ -1,18 +1,18 @@
 [
   {
-    "file": "src/steps/db/user.find.ts",
+    "file": "src/features/demo/steps/db/user.find.ts",
     "line": 2
   },
   {
-    "file": "src/steps/db/user.find.ts",
+    "file": "src/features/demo/steps/db/user.find.ts",
     "line": 3
   },
   {
-    "file": "src/steps/db/user.find.ts",
+    "file": "src/features/demo/steps/db/user.find.ts",
     "line": 4
   },
   {
-    "file": "src/steps/pure/wrong.ts",
+    "file": "src/features/demo/steps/pure/wrong.ts",
     "line": 1
   }
 ]

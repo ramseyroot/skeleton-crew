@@ -1,6 +1,6 @@
 ---
 inclusion: fileMatch
-fileMatchPattern: "src/steps/storage/**"
+fileMatchPattern: ["src/features/**/steps/storage/**", "src/shared/steps/storage/**"]
 ---
 
 # Steps: storage class (object storage and browser storage)
@@ -30,7 +30,7 @@ export const findUserByEmail = defineStep({
 ## Before finishing a storage step
 
 - [ ] Checked the catalog: no existing step matches exactly, or this is a planned `modify`.
-- [ ] Name is `storage.<domain>.<verb>`, file is in `src/steps/storage/`.
+- [ ] Name is `storage.<domain>.<verb>`, file is in `src/features/<feature>/steps/storage/` (or `src/shared/steps/storage/` if more than one feature uses it).
 - [ ] Permissions list exactly what it touches. Nothing widened on an existing step.
 - [ ] Failures return `Result` errors with a kind; nothing returns error text as a value.
 - [ ] Tests: Run against the in-memory storage adapter.

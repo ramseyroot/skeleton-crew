@@ -1,6 +1,6 @@
 ---
 inclusion: fileMatch
-fileMatchPattern: "src/steps/db/**"
+fileMatchPattern: ["src/features/**/steps/db/**", "src/shared/steps/db/**"]
 ---
 
 # Steps: db class (reads and writes through repository ports)
@@ -30,7 +30,7 @@ export const findUserByEmail = defineStep({
 ## Before finishing a db step
 
 - [ ] Checked the catalog: no existing step matches exactly, or this is a planned `modify`.
-- [ ] Name is `db.<domain>.<verb>`, file is in `src/steps/db/`.
+- [ ] Name is `db.<domain>.<verb>`, file is in `src/features/<feature>/steps/db/` (or `src/shared/steps/db/` if more than one feature uses it).
 - [ ] Permissions list exactly what it touches. Nothing widened on an existing step.
 - [ ] Failures return `Result` errors with a kind; nothing returns error text as a value.
 - [ ] Tests: Run against the in-memory adapter.

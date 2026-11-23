@@ -1,14 +1,14 @@
 [
   {
-    "file": "src/steps/db/a.ts",
+    "file": "src/features/demo/steps/db/a.ts",
     "line": 1
   },
   {
-    "file": "src/strips/b.ts",
+    "file": "src/features/demo/strips/b.ts",
     "line": 1
   },
   {
-    "file": "src/strips/b.ts",
+    "file": "src/features/demo/strips/b.ts",
     "line": 2
   }
 ]

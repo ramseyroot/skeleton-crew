@@ -1,6 +1,6 @@
 ---
 inclusion: fileMatch
-fileMatchPattern: "src/steps/db/**"
+fileMatchPattern: "src/features/demo/steps/db/**"
 ---
 line 0
 line 1

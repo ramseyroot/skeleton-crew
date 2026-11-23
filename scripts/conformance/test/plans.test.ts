@@ -27,13 +27,13 @@ updated: 2026-11-23
 
 | File | Task | Reason |
 |---|---|---|
-| src/steps/db/user.findById.ts | 2 | modify entry above |
-| src/strips/profile.view.strip.ts | 3 | uses the new field |
+| src/features/demo/steps/db/user.findById.ts | 2 | modify entry above |
+| src/features/demo/strips/profile.view.strip.ts | 3 | uses the new field |
 
 ## Affected strip tests
 
-- src/strips/profile.view.strip.test.ts
-- src/strips/orders.list.strip.test.ts
+- src/features/demo/strips/profile.view.strip.test.ts
+- src/features/demo/strips/orders.list.strip.test.ts
 `;
 
 test("parses front matter, strips, steps, files, and affected tests with line numbers", () => {
@@ -48,7 +48,7 @@ test("parses front matter, strips, steps, files, and affected tests with line nu
   ]);
   assert.deepEqual(p.steps[2]?.affected, ["profile.view", "orders.list"]);
   assert.equal(p.steps[0]?.line, 16);
-  assert.deepEqual(p.files.map((f) => f.file), ["src/steps/db/user.findById.ts", "src/strips/profile.view.strip.ts"]);
+  assert.deepEqual(p.files.map((f) => f.file), ["src/features/demo/steps/db/user.findById.ts", "src/features/demo/strips/profile.view.strip.ts"]);
   assert.equal(p.affectedTests.length, 2);
 });
 
@@ -59,11 +59,11 @@ test("'None.' sections and plans without tables parse as empty", () => {
 
 test("planAllows matches exact paths and globs; stripTestFile follows the convention", () => {
   const p = parsePlan("x", PLAN);
-  assert.ok(planAllows([p], "src/strips/profile.view.strip.ts"));
-  assert.ok(!planAllows([p], "src/strips/orders.list.strip.ts"));
-  const g = { ...p, files: [{ file: "src/steps/db/**", task: "1", reason: "", line: 1 }] };
-  assert.ok(planAllows([g], "src/steps/db/a/b.ts"));
-  assert.equal(stripTestFile("src/strips/a.strip.ts"), "src/strips/a.strip.test.ts");
+  assert.ok(planAllows([p], "src/features/demo/strips/profile.view.strip.ts"));
+  assert.ok(!planAllows([p], "src/features/demo/strips/orders.list.strip.ts"));
+  const g = { ...p, files: [{ file: "src/features/demo/steps/db/**", task: "1", reason: "", line: 1 }] };
+  assert.ok(planAllows([g], "src/features/demo/steps/db/a/b.ts"));
+  assert.equal(stripTestFile("src/features/demo/strips/a.strip.ts"), "src/features/demo/strips/a.strip.test.ts");
 });
 
 test("only the committed plan grants permission; an uncommitted edit grants nothing", () => {

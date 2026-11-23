@@ -1,6 +1,6 @@
 ---
 inclusion: fileMatch
-fileMatchPattern: "src/steps/pure/**"
+fileMatchPattern: ["src/features/**/steps/pure/**", "src/shared/steps/pure/**"]
 ---
 
 # Steps: pure class (regex, parsing, formatting, mapping, pricing math)
@@ -30,7 +30,7 @@ export const findUserByEmail = defineStep({
 ## Before finishing a pure step
 
 - [ ] Checked the catalog: no existing step matches exactly, or this is a planned `modify`.
-- [ ] Name is `pure.<domain>.<verb>`, file is in `src/steps/pure/`.
+- [ ] Name is `pure.<domain>.<verb>`, file is in `src/features/<feature>/steps/pure/` (or `src/shared/steps/pure/` if more than one feature uses it).
 - [ ] Permissions list exactly what it touches. Nothing widened on an existing step.
 - [ ] Failures return `Result` errors with a kind; nothing returns error text as a value.
 - [ ] Tests: Table-driven unit tests: input, expected output, one row per case.

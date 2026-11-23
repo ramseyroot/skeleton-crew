@@ -1,6 +1,6 @@
 ---
 inclusion: fileMatch
-fileMatchPattern: "src/steps/api/**"
+fileMatchPattern: ["src/features/**/steps/api/**", "src/shared/steps/api/**"]
 ---
 
 # Steps: api class (outbound HTTP calls)
@@ -30,7 +30,7 @@ export const findUserByEmail = defineStep({
 ## Before finishing a api step
 
 - [ ] Checked the catalog: no existing step matches exactly, or this is a planned `modify`.
-- [ ] Name is `api.<domain>.<verb>`, file is in `src/steps/api/`.
+- [ ] Name is `api.<domain>.<verb>`, file is in `src/features/<feature>/steps/api/` (or `src/shared/steps/api/` if more than one feature uses it).
 - [ ] Permissions list exactly what it touches. Nothing widened on an existing step.
 - [ ] Failures return `Result` errors with a kind; nothing returns error text as a value.
 - [ ] Tests: Recorded responses for each status, run offline.

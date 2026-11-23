@@ -18,7 +18,7 @@ These rules are enforced by `pnpm check` (conformance, typecheck, tests). A Stop
 
 - Every change starts with a spec: requirements, design, `change-plan.md`, `tasks.md`. Each is reviewed before the next.
 - The change plan marks each step `reuse`, `new`, or `modify`, and lists every existing file you will edit. It counts only once the user commits it with `status: active`. (R33, R37)
-- Editing an existing file in `src/steps`, `src/strips`, `src/ports`, `src/adapters`, or `src/lib` that the committed plan does not list is blocked.
+- Editing an existing file in `src/features`, `src/shared`, `src/ports`, `src/adapters`, or `src/lib` that the committed plan does not list is blocked.
 - Every task has `Writes:`. Tasks that edit existing files are `Mode: sequential` and run one at a time in the main tree. (R34 to R36)
 - Parallel tasks only create new files, each in its own worktree: `pnpm worktree create <id>`, then `verify`, `merge` (in task order), `remove`.
 - A new step needed by several strips is built once, in its own sequential task first. (R38)

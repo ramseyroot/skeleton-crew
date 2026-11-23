@@ -4,7 +4,7 @@
 
 import { assertDistinctCollections } from "../lib/feature.ts";
 import type { FeatureModule } from "../lib/feature.ts";
-import { profileFeature } from "../domain/profile.ts";
+import { profileFeature } from "../features/profile/index.ts";
 
 export const features: readonly FeatureModule[] = [profileFeature];
 

@@ -2,11 +2,11 @@
 
 - [ ] 1. One
   - Mode: sequential
-  - Writes: src/steps/db/a.ts
+  - Writes: src/features/demo/steps/db/a.ts
 
 - [ ] 2. Two
-  - Writes: src/steps/db/new.ts
+  - Writes: src/features/demo/steps/db/new.ts
 
 - [ ] 3. Three
-  - Writes: src/steps/pure/**
+  - Writes: src/features/demo/steps/pure/**
 

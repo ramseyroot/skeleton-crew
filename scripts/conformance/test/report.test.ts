@@ -129,7 +129,7 @@ test("--files limits file-scoped rules only", () => {
 
 test("discovery reads static manifest fields and resolves strip steps through imports", () => {
   const p = makeProject({
-    "src/steps/db/user.findById.ts": [
+    "src/features/demo/steps/db/user.findById.ts": [
       `import { defineStep } from "../../lib/step.ts";`,
       `export const findUserById = defineStep({`,
       `  name: "db.user.findById",`,
@@ -140,7 +140,7 @@ test("discovery reads static manifest fields and resolves strip steps through im
       `});`,
       `declare const UserIdSchema: unknown;`,
     ].join("\n"),
-    "src/strips/profile.view.strip.ts": [
+    "src/features/demo/strips/profile.view.strip.ts": [
       `import { defineStrip } from "../lib/strip.ts";`,
       `import { findUserById } from "../steps/db/user.findById.ts";`,
       `export const viewProfile = defineStrip({ name: "profile.view", steps: [findUserById, missingStep] });`,

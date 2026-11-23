@@ -1,4 +1,5 @@
-import { eachNode, isInside, lineOf, parse, ts } from "./_ast.ts";
+import { inStepsLayer, inStripsLayer } from "../layout.ts";
+import { eachNode, lineOf, parse, ts } from "./_ast.ts";
 import { violation, type Rule, type Violation } from "../types.ts";
 
 // Statement shapes, not single words, so ordinary text such as "select a plan" is not flagged.
@@ -23,10 +24,9 @@ export const R04: Rule = {
   needs: [],
   scope: "file",
   check(ctx) {
-    const { steps, strips } = ctx.config.folders;
     const out: Violation[] = [];
     for (const file of ctx.files) {
-      if (!isInside(file, steps) && !isInside(file, strips)) continue;
+      if (!inStepsLayer(file, ctx.config.folders) && !inStripsLayer(file, ctx.config.folders)) continue;
       const sf = parse(ctx, file);
       if (!sf) continue;
       const lines = new Set<number>();

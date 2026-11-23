@@ -1,3 +1,4 @@
+import { inStepsLayer, inStripsLayer } from "../layout.ts";
 import { eachNode, isInside, lineOf, parse, ts } from "./_ast.ts";
 import { violation, type Rule, type Violation } from "../types.ts";
 
@@ -47,12 +48,12 @@ export const R02: Rule = {
   needs: [],
   scope: "file",
   check(ctx) {
-    const { steps, strips, adapters } = ctx.config.folders;
+    const { adapters } = ctx.config.folders;
     const out: Violation[] = [];
     for (const file of ctx.files) {
       const sf = parse(ctx, file);
       if (!sf) continue;
-      const inLayer = [steps, strips, adapters].some((f) => isInside(file, f));
+      const inLayer = inStepsLayer(file, ctx.config.folders) || inStripsLayer(file, ctx.config.folders) || isInside(file, adapters);
       eachNode(sf, (n) => {
         if (ts.isThrowStatement(n) && n.expression) {
           const e = n.expression;

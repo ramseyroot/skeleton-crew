@@ -49,6 +49,6 @@ test("overlap and coverage of Writes entries", () => {
   assert.ok(overlaps("a/b/c.ts", "a/**"));
   assert.ok(overlaps("a/**", "a/b/**"));
   assert.ok(!overlaps("a/**", "ab/**"));
-  assert.ok(covers("src/steps/db/**", "src/steps/db/x/y.ts"));
-  assert.ok(!covers("src/steps/db/a.ts", "src/steps/db/b.ts"));
+  assert.ok(covers("src/features/demo/steps/db/**", "src/features/demo/steps/db/x/y.ts"));
+  assert.ok(!covers("src/features/demo/steps/db/a.ts", "src/features/demo/steps/db/b.ts"));
 });

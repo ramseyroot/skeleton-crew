@@ -1,8 +1,8 @@
 {
   "sourceRoots": ["src"],
   "folders": {
-    "steps": "src/steps",
-    "strips": "src/strips",
+    "features": "src/features",
+    "shared": "src/shared",
     "ports": "src/ports",
     "adapters": "src/adapters",
     "loggerAdapter": "src/adapters/logger",
@@ -32,7 +32,7 @@
   "stopHook": { "maxConsecutiveBlocks": 3, "skipIfUnchanged": true },
   "steering": { "alwaysMaxLines": 60, "otherMaxLines": 80 },
   "worktrees": { "folder": ".worktrees", "maxParallel": 2 },
-  "guardedFolders": ["src/steps", "src/strips", "src/ports", "src/adapters", "src/lib"],
+  "guardedFolders": ["src/features", "src/shared", "src/ports", "src/adapters", "src/lib"],
   "specsFolder": ".kiro/specs",
   "protected": [
     "conformance.config.json",

@@ -1,6 +1,7 @@
 // Conformance script entry point.
 // Usage: node scripts/conformance/cli.ts [--files a.ts,b.ts] [--strict] [--json] [--write-catalog] [--root <dir>]
 
+import { hasStepsFolder, hasStripsFolder } from "./layout.ts";
 import { join, resolve } from "node:path";
 import { existsSync } from "node:fs";
 import { ConfigError, loadConfig, type Config } from "./config.ts";
@@ -29,8 +30,8 @@ export type RunResult = { report: Report; exitCode: 0 | 1 | 2; output: string; c
 function detectNeeds(root: string, config: Config): Set<Need> {
   const has = new Set<Need>();
   const d = (rel: string): boolean => isDir(join(root, rel));
-  if (d(config.folders.steps)) has.add("steps");
-  if (d(config.folders.strips)) has.add("strips");
+  if (hasStepsFolder(root, config.folders)) has.add("steps");
+  if (hasStripsFolder(root, config.folders)) has.add("strips");
   if (d(config.folders.ports)) has.add("ports");
   if (existsSync(join(root, config.folders.config, "profiles.ts"))) has.add("profiles");
   if (existsSync(join(root, "docs/generated/catalog.json"))) has.add("catalog");

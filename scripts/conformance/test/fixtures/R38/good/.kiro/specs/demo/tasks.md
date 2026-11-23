@@ -2,11 +2,11 @@
 
 - [ ] 1. Create setName
   - Mode: sequential
-  - Writes: src/steps/db/user.setName.ts
+  - Writes: src/shared/steps/db/user.setName.ts
 
 - [ ] 2. Strip save
-  - Writes: src/strips/profile.save.strip.ts, src/steps/db/user.solo.ts
+  - Writes: src/features/demo/strips/profile.save.strip.ts, src/features/demo/steps/db/user.solo.ts
 
 - [ ] 3. Strip view
-  - Writes: src/strips/profile.view.strip.ts
+  - Writes: src/features/demo/strips/profile.view.strip.ts
 

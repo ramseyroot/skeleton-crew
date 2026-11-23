@@ -14,7 +14,6 @@ import { createMemoryLogger } from "../adapters/logger/memory/index.ts";
 import { createMemoryMetrics } from "../adapters/metrics/memory/index.ts";
 import { createMemoryReporter } from "../adapters/reporter/memory/index.ts";
 import { createMemoryStorage } from "../adapters/storage/memory/index.ts";
-import { profileFeature } from "../domain/profile.ts";
 import type { FeatureModule } from "../lib/feature.ts";
 import type { Ports } from "../lib/step.ts";
 import type { Database } from "../ports/database.ts";
@@ -26,13 +25,13 @@ export const DATABASE_KINDS: readonly DatabaseKind[] = ["memory", "sqlite"];
 export const CACHE_KINDS: readonly CacheKind[] = ["memory", "null"];
 
 /**
- * `features` are migrated and seeded, like the app's runtime does. The default is the profile feature, which the
- * example steps and strips need. In the feature layout each feature passes its own list.
+ * `features` are migrated and seeded, like the app's runtime does. A feature passes its own module from its
+ * `testing.ts`, so this file knows no feature.
  */
 export async function makeTestPorts(
   options: { database?: DatabaseKind; cache?: CacheKind; env?: string; features?: readonly FeatureModule[] } = {},
 ) {
-  const features = options.features ?? [profileFeature];
+  const features = options.features ?? [];
   const env = options.env ?? "local";
   const clock = createFixedClock("2026-11-23T12:00:00.000Z");
   const logger = createMemoryLogger({ env, clock });

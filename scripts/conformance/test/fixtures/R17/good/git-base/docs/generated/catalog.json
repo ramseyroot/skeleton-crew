@@ -4,7 +4,7 @@
     {
       "name": "db.user.find",
       "class": "db",
-      "file": "src/steps/db/user.find.ts",
+      "file": "src/features/demo/steps/db/user.find.ts",
       "input": "UserId",
       "output": "User",
       "permissions": {

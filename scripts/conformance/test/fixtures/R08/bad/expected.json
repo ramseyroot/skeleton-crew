@@ -1,6 +1,6 @@
 [
   {
-    "file": "src/steps/db/user.ts",
+    "file": "src/features/demo/steps/db/user.ts",
     "line": 2
   }
 ]

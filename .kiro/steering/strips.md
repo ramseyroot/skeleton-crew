@@ -1,6 +1,6 @@
 ---
 inclusion: fileMatch
-fileMatchPattern: "src/strips/**"
+fileMatchPattern: "src/features/**/strips/**"
 ---
 
 # Strips

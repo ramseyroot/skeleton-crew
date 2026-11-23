@@ -1,18 +1,18 @@
 [
   {
-    "file": "src/steps/db/a.ts",
+    "file": "src/features/demo/steps/db/a.ts",
     "line": 1
   },
   {
-    "file": "src/steps/db/b.ts",
+    "file": "src/features/demo/steps/db/b.ts",
     "line": 1
   },
   {
-    "file": "src/strips/x.strip.ts",
+    "file": "src/features/demo/strips/x.strip.ts",
     "line": 1
   },
   {
-    "file": "src/strips/y.strip.ts",
+    "file": "src/features/demo/strips/y.strip.ts",
     "line": 1
   }
 ]

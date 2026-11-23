@@ -16,4 +16,4 @@ status: draft
 
 ## Affected strip tests
 
-- src/strips/profile.view.strip.test.ts
+- src/features/demo/strips/profile.view.strip.test.ts

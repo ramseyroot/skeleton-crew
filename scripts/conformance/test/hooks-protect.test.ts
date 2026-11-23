@@ -26,7 +26,7 @@ const plan = (status: string, file: string) =>
   `---\nstatus: ${status}\ncreated: 2999-12-31\nupdated: 2999-12-31\n---\n\n## Existing files to edit\n\n| File | Task | Reason |\n|---|---|---|\n| ${file} | 1 | x |\n`;
 
 function repo(files: Record<string, string> = {}): { p: Project; git: (...a: string[]) => void } {
-  const p = makeProject({ "src/steps/db/a.ts": "export const a = 1;\n", ".gitignore": ".worktrees/\n.conformance/\n", ...files });
+  const p = makeProject({ "src/features/demo/steps/db/a.ts": "export const a = 1;\n", ".gitignore": ".worktrees/\n.conformance/\n", ...files });
   const git = (...a: string[]): void => {
     const r = spawnSync("git", ["-c", "user.name=t", "-c", "user.email=t@t", ...a], { cwd: p.dir, encoding: "utf8" });
     if (r.status !== 0) throw new Error(r.stderr);
@@ -60,28 +60,28 @@ test("protected files are blocked until the user unlocks, and the unlock expires
 test("existing guarded files need an active committed plan; new files and other folders are allowed", () => {
   const { p, git } = repo();
   try {
-    assert.equal(write(p.dir, "src/steps/db/new.ts").code, 0);
+    assert.equal(write(p.dir, "src/features/demo/steps/db/new.ts").code, 0);
     assert.equal(write(p.dir, "docs/notes.md").code, 0);
     assert.equal(write(p.dir, "/tmp/outside.txt").code, 0);
-    const blocked = write(p.dir, "src/steps/db/a.ts");
+    const blocked = write(p.dir, "src/features/demo/steps/db/a.ts");
     assert.equal(blocked.code, 2);
     assert.match(blocked.err, /no active committed change plan lists it/);
 
-    p.write(".kiro/specs/demo/change-plan.md", plan("active", "src/steps/db/a.ts"));
-    assert.equal(write(p.dir, "src/steps/db/a.ts").code, 2, "uncommitted plan grants nothing");
+    p.write(".kiro/specs/demo/change-plan.md", plan("active", "src/features/demo/steps/db/a.ts"));
+    assert.equal(write(p.dir, "src/features/demo/steps/db/a.ts").code, 2, "uncommitted plan grants nothing");
     git("add", "-A");
     git("commit", "-q", "-m", "approve plan");
-    assert.equal(write(p.dir, "src/steps/db/a.ts").code, 0);
+    assert.equal(write(p.dir, "src/features/demo/steps/db/a.ts").code, 0);
     mkdirSync(join(p.dir, ".conformance"), { recursive: true });
     writeFileSync(join(p.dir, ".conformance/unlock"), "");
-    assert.equal(write(p.dir, "src/steps/db/other-existing.ts").code, 0, "not at HEAD, so new");
+    assert.equal(write(p.dir, "src/features/demo/steps/db/other-existing.ts").code, 0, "not at HEAD, so new");
   } finally {
     p.cleanup();
   }
 });
 
 test("inside a worktree only the task's files may be written, and the main tree's guarded folders are frozen", () => {
-  const tasks = `${FM}# Tasks\n\n- [ ] 1. One\n  - Writes: src/steps/pure/price.ts\n`;
+  const tasks = `${FM}# Tasks\n\n- [ ] 1. One\n  - Writes: src/features/demo/steps/pure/price.ts\n`;
   const { p } = repo({
     ".kiro/specs/demo/tasks.md": tasks,
     ".kiro/specs/demo/change-plan.md": plan("active", "src/none.ts"),
@@ -89,12 +89,12 @@ test("inside a worktree only the task's files may be written, and the main tree'
   });
   try {
     assert.ok(create("1", { root: p.dir, install: false }).ok);
-    assert.equal(write(p.dir, ".worktrees/task-1/src/steps/pure/price.ts").code, 0);
-    const other = write(p.dir, ".worktrees/task-1/src/steps/pure/other.ts");
+    assert.equal(write(p.dir, ".worktrees/task-1/src/features/demo/steps/pure/price.ts").code, 0);
+    const other = write(p.dir, ".worktrees/task-1/src/features/demo/steps/pure/other.ts");
     assert.equal(other.code, 2);
     assert.match(other.err, /not in task 1's Writes list/);
     assert.equal(write(p.dir, ".worktrees/task-1/conformance.config.json").code, 2, "protected inside worktrees too");
-    const main = write(p.dir, "src/steps/db/brand-new.ts");
+    const main = write(p.dir, "src/features/demo/steps/db/brand-new.ts");
     assert.equal(main.code, 2);
     assert.match(main.err, /task worktrees are open/);
     assert.equal(write(p.dir, "docs/notes.md").code, 0);
@@ -108,9 +108,9 @@ test("shell commands: writes to protected or guarded paths are blocked, reads ar
   try {
     assert.equal(shell(p.dir, "echo '[]' > conformance.exceptions.json").code, 2);
     assert.equal(shell(p.dir, "cat conformance.config.json > /tmp/copy.json").code, 0);
-    assert.equal(shell(p.dir, "sed -i 's/a/b/' src/steps/db/a.ts").code, 2);
+    assert.equal(shell(p.dir, "sed -i 's/a/b/' src/features/demo/steps/db/a.ts").code, 2);
     assert.equal(shell(p.dir, "touch .conformance/unlock").code, 2);
-    assert.equal(shell(p.dir, "ls src && grep -r a src/steps").code, 0);
+    assert.equal(shell(p.dir, "ls src && grep -r a src/features/demo/steps").code, 0);
     assert.equal(shell(p.dir, "cp /tmp/x .kiro/hooks/enforcement.json").code, 2);
   } finally {
     p.cleanup();
@@ -139,7 +139,7 @@ test("the hook is fast enough to run before every write", () => {
   const { p } = repo();
   try {
     write(p.dir, "docs/a.md");
-    const r = write(p.dir, "src/steps/db/a.ts");
+    const r = write(p.dir, "src/features/demo/steps/db/a.ts");
     assert.ok(r.ms < 1500, `${r.ms}ms`);
   } finally {
     p.cleanup();

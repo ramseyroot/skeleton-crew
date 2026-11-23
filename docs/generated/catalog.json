@@ -4,7 +4,8 @@
     {
       "name": "cache.profile.read",
       "class": "cache",
-      "file": "src/steps/cache/profile.read.ts",
+      "feature": "profile",
+      "file": "src/features/profile/steps/cache/profile.read.ts",
       "input": "z.object({ userId: z.string() })",
       "output": "z.object({ userId: z.string(), cached: ProfileSchema.nullable() })",
       "permissions": {
@@ -25,7 +26,8 @@
     {
       "name": "cache.profile.write",
       "class": "cache",
-      "file": "src/steps/cache/profile.write.ts",
+      "feature": "profile",
+      "file": "src/features/profile/steps/cache/profile.write.ts",
       "input": "ProfileSchema",
       "output": "ProfileSchema",
       "permissions": {
@@ -46,7 +48,8 @@
     {
       "name": "db.user.findProfile",
       "class": "db",
-      "file": "src/steps/db/user.findProfile.ts",
+      "feature": "profile",
+      "file": "src/features/profile/steps/db/user.findProfile.ts",
       "input": "z.object({ userId: z.string(), cached: ProfileSchema.nullish() })",
       "output": "ProfileSchema",
       "permissions": {
@@ -68,7 +71,8 @@
     {
       "name": "db.user.setDisplayName",
       "class": "db",
-      "file": "src/steps/db/user.setDisplayName.ts",
+      "feature": "profile",
+      "file": "src/features/profile/steps/db/user.setDisplayName.ts",
       "input": "z.object({ userId: z.string(), displayName: z.string() })",
       "output": "ProfileSchema",
       "permissions": {
@@ -91,7 +95,8 @@
     {
       "name": "pure.profile.parseForm",
       "class": "pure",
-      "file": "src/steps/pure/profile.parseForm.ts",
+      "feature": "profile",
+      "file": "src/features/profile/steps/pure/profile.parseForm.ts",
       "input": "z.object({ userId: z.string().min(1), displayName: z.string() })",
       "output": "z.object({ userId: z.string().min(1), displayName: z.string().min(1).max(60) })",
       "permissions": {
@@ -110,7 +115,8 @@
   "strips": [
     {
       "name": "profile.save",
-      "file": "src/strips/profile.save.strip.ts",
+      "feature": "profile",
+      "file": "src/features/profile/strips/profile.save.strip.ts",
       "steps": [
         "pure.profile.parseForm",
         "db.user.setDisplayName"
@@ -127,7 +133,8 @@
     },
     {
       "name": "profile.view",
-      "file": "src/strips/profile.view.strip.ts",
+      "feature": "profile",
+      "file": "src/features/profile/strips/profile.view.strip.ts",
       "steps": [
         "cache.profile.read",
         "db.user.findProfile",

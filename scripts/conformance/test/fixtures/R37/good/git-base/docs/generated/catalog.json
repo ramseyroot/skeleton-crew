@@ -4,7 +4,7 @@
     {
       "name": "db.user.find",
       "class": "db",
-      "file": "src/steps/db/user.find.ts",
+      "file": "src/features/demo/steps/db/user.find.ts",
       "input": "UserId",
       "output": "User",
       "permissions": {
@@ -26,7 +26,7 @@
   "strips": [
     {
       "name": "orders.list",
-      "file": "src/strips/orders.list.strip.ts",
+      "file": "src/features/demo/strips/orders.list.strip.ts",
       "steps": [
         "db.user.find"
       ],
@@ -34,7 +34,7 @@
     },
     {
       "name": "profile.view",
-      "file": "src/strips/profile.view.strip.ts",
+      "file": "src/features/demo/strips/profile.view.strip.ts",
       "steps": [
         "db.user.find"
       ],

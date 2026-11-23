@@ -1,6 +1,6 @@
 ---
 inclusion: fileMatch
-fileMatchPattern: "src/steps/cache/**"
+fileMatchPattern: ["src/features/**/steps/cache/**", "src/shared/steps/cache/**"]
 ---
 
 # Steps: cache class (cache and in-memory reads and writes)
@@ -30,7 +30,7 @@ export const findUserByEmail = defineStep({
 ## Before finishing a cache step
 
 - [ ] Checked the catalog: no existing step matches exactly, or this is a planned `modify`.
-- [ ] Name is `cache.<domain>.<verb>`, file is in `src/steps/cache/`.
+- [ ] Name is `cache.<domain>.<verb>`, file is in `src/features/<feature>/steps/cache/` (or `src/shared/steps/cache/` if more than one feature uses it).
 - [ ] Permissions list exactly what it touches. Nothing widened on an existing step.
 - [ ] Failures return `Result` errors with a kind; nothing returns error text as a value.
 - [ ] Tests: Run with the memory cache and with `NullCache`.

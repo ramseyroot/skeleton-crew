@@ -1,4 +1,5 @@
-import { isInside, isTestFile, lineOf, parse, ts } from "./_ast.ts";
+import { inStepsLayer } from "../layout.ts";
+import { isTestFile, lineOf, parse, ts } from "./_ast.ts";
 import { violation, type Rule, type Violation } from "../types.ts";
 
 function isDefineStepCall(e: ts.Expression | undefined): boolean {
@@ -21,7 +22,7 @@ export const R09: Rule = {
   check(ctx) {
     const out: Violation[] = [];
     for (const file of ctx.files) {
-      if (!isInside(file, ctx.config.folders.steps) || isTestFile(file)) continue;
+      if (!inStepsLayer(file, ctx.config.folders) || isTestFile(file)) continue;
       const sf = parse(ctx, file);
       if (!sf) continue;
       const locals = new Map<string, boolean>();

@@ -1,6 +1,6 @@
 ---
 inclusion: fileMatch
-fileMatchPattern: "src/steps/scrape/**"
+fileMatchPattern: ["src/features/**/steps/scrape/**", "src/shared/steps/scrape/**"]
 ---
 
 # Steps: scrape class (fetching external pages, for ingestion inside the app)
@@ -30,7 +30,7 @@ export const findUserByEmail = defineStep({
 ## Before finishing a scrape step
 
 - [ ] Checked the catalog: no existing step matches exactly, or this is a planned `modify`.
-- [ ] Name is `scrape.<domain>.<verb>`, file is in `src/steps/scrape/`.
+- [ ] Name is `scrape.<domain>.<verb>`, file is in `src/features/<feature>/steps/scrape/` (or `src/shared/steps/scrape/` if more than one feature uses it).
 - [ ] Permissions list exactly what it touches. Nothing widened on an existing step.
 - [ ] Failures return `Result` errors with a kind; nothing returns error text as a value.
 - [ ] Tests: Parsers tested on snapshots; a changed layout must fail a test.

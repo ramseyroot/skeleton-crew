@@ -9,8 +9,8 @@ export const CONFIG_FILE = "conformance.config.json";
 export type Config = {
   sourceRoots: string[];
   folders: {
-    steps: string;
-    strips: string;
+    features: string;
+    shared: string;
     ports: string;
     adapters: string;
     loggerAdapter: string;
@@ -52,8 +52,8 @@ type Shape =
 const SHAPE: { [key: string]: Shape } = {
   sourceRoots: "string[]",
   folders: {
-    steps: "string",
-    strips: "string",
+    features: "string",
+    shared: "string",
     ports: "string",
     adapters: "string",
     loggerAdapter: "string",

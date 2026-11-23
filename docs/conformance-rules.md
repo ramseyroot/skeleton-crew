@@ -16,7 +16,7 @@ How to run:
 
 Exit codes: `0` passed (warnings allowed), `1` errors found (or warnings with `--strict`), `2` the script itself failed (bad config, parse error, a rule crashed). A script failure is never reported as a pass.
 
-A rule whose project parts do not exist yet (for example no `src/steps` folder, or no git repository) is listed as **not applicable**. Not applicable means not checked, not passed.
+A rule whose project parts do not exist yet (for example no feature with a `steps` folder, or no git repository) is listed as **not applicable**. Not applicable means not checked, not passed.
 
 Exceptions: there are no inline disable comments. A violation can only be excepted by an entry in `conformance.exceptions.json` with the rule, the target (a step or strip name, a file path, or a glob), a reason, and a date. That file is protected: the agent cannot edit it without the user's unlock.
 
@@ -62,7 +62,7 @@ Each rule section has this shape, and the meta tests check that every label is p
 - **Severity:** error
 - **Catches:** an import (static, dynamic, or `require`) of a package on the `providerPackages` list from a file outside `adapters/<port>/<provider>/`. Files in the ports folder are reported by R22 instead.
 - **Why:** a step that imports a driver or SDK is shaped to that provider, and switching providers means rewriting it.
-- **Failing example:** `import PocketBase from "pocketbase";` in `src/steps/db/user.find.ts`.
+- **Failing example:** `import PocketBase from "pocketbase";` in `src/features/accounts/steps/db/user.find.ts`.
 - **Passing example:** the same import in `src/adapters/database/pocketbase/client.ts`.
 - **Fix:** move the provider code into an adapter and call it through its port.
 - **Limits:** only packages on the configured list are checked. Add new provider packages to `providerPackages`.
@@ -80,10 +80,10 @@ Each rule section has this shape, and the meta tests check that every label is p
 ## R05 step-name-format
 
 - **Severity:** error
-- **Catches:** a step whose literal name does not match `<class>.<domain>.<verb>`, whose class is not in the configured `classes`, whose name starts with a different class than its `class` field, or whose file is not in `src/steps/<class>/`.
+- **Catches:** a step whose literal name does not match `<class>.<domain>.<verb>`, whose class is not in the configured `classes`, whose name starts with a different class than its `class` field, or whose file is not in `src/features/<feature>/steps/<class>/` or `src/shared/steps/<class>/`.
 - **Why:** structured names keep similar steps apart and make the catalog searchable. The folder matches the class so class-specific steering loads for the right files.
 - **Failing example:** `defineStep({ name: "user.find", class: "db" })`, or `name: "cache.user.find"` with `class: "db"`.
-- **Passing example:** `defineStep({ name: "db.user.findByEmail", class: "db" })` in `src/steps/db/`.
+- **Passing example:** `defineStep({ name: "db.user.findByEmail", class: "db" })` in `src/features/accounts/steps/db/`.
 - **Fix:** rename the step or move its file. If renaming an existing step, update the strips that use it (they are listed in the catalog).
 
 ## R06 strip-name-format
@@ -100,7 +100,7 @@ Each rule section has this shape, and the meta tests check that every label is p
 - **Severity:** error
 - **Catches:** two steps, or two strips, with the same name. Every location is reported.
 - **Why:** names identify steps in logs, routing tables, and the catalog. A duplicate makes them ambiguous.
-- **Failing example:** `db.user.find` defined in both `src/steps/db/a.ts` and `src/steps/db/b.ts`.
+- **Failing example:** `db.user.find` defined in both `src/features/accounts/steps/db/a.ts` and `src/features/billing/steps/db/b.ts`.
 - **Passing example:** one definition per name.
 - **Fix:** reuse the existing step if it matches exactly, or give the new one a distinct name.
 
@@ -119,7 +119,7 @@ Each rule section has this shape, and the meta tests check that every label is p
 - **Severity:** error
 - **Catches:** in steps files (not tests), an exported value that is not created with `defineStep()`: plain constants, functions, classes, default exports, and `export { x }` of such values. Type exports and re-exports from other files are allowed.
 - **Why:** a step that skips `defineStep()` has no manifest, so its permissions and contract cannot be checked or listed in the catalog.
-- **Failing example:** `export function helper() { ... }` in `src/steps/db/user.ts`.
+- **Failing example:** `export function helper() { ... }` in `src/features/accounts/steps/db/user.ts`.
 - **Passing example:** `export const findUser = defineStep({ ... })`, with helpers kept unexported or moved to `src/lib/`.
 - **Fix:** wrap the step in `defineStep()`, or move non-step helpers out of the steps folder.
 
@@ -349,7 +349,7 @@ Each rule section has this shape, and the meta tests check that every label is p
 - **Severity:** error
 - **Catches:** a file under the guarded folders (`guardedFolders`) that exists at git `HEAD` and differs in the working tree, when no active change plan committed at `HEAD` lists it under "Existing files to edit". New files are allowed.
 - **Why:** this catches unplanned edits to existing shared code after the fact, including edits made through shell commands that the protection hook cannot see.
-- **Failing example:** `src/steps/db/user.find.ts` edited while the active plan lists only `src/steps/db/other.ts`.
+- **Failing example:** `src/features/accounts/steps/db/user.find.ts` edited while the active plan lists only `src/features/accounts/steps/db/other.ts`.
 - **Passing example:** the file listed in the active plan, committed by the user before the work.
 - **Fix:** undo the change, or propose a plan update for the user to review and commit.
 
@@ -359,7 +359,7 @@ Each rule section has this shape, and the meta tests check that every label is p
 - **Catches:** an unfinished task (`- [ ]`) in a spec's `tasks.md` with no `Writes:` line.
 - **Why:** the file list is what lets parallel tasks be checked for overlap, and what the worktree check compares each branch against.
 - **Failing example:** a task with only a description.
-- **Passing example:** `  - Writes: src/steps/db/user.setName.ts, src/steps/db/user.setName.test.ts`.
+- **Passing example:** `  - Writes: src/features/accounts/steps/db/user.setName.ts, src/features/accounts/steps/db/user.setName.test.ts`.
 - **Fix:** list every file the task creates or edits. A folder ending in `/**` covers all files under it.
 
 ## R35 tasks-write-disjoint
@@ -367,7 +367,7 @@ Each rule section has this shape, and the meta tests check that every label is p
 - **Severity:** error
 - **Catches:** two unfinished tasks in the same `tasks.md`, neither marked `Mode: sequential`, whose `Writes:` lists overlap (same file, or a folder glob covering the other's file).
 - **Why:** tasks without `sequential` may run at the same time in separate worktrees. Overlapping files would conflict or overwrite.
-- **Failing example:** two parallel tasks that both write `src/steps/db/a.ts`.
+- **Failing example:** two parallel tasks that both write `src/features/accounts/steps/db/a.ts`.
 - **Passing example:** parallel tasks with separate files, and shared files handled by one sequential task.
 - **Fix:** mark one of the tasks sequential, or move the shared file into its own sequential task.
 
@@ -376,17 +376,17 @@ Each rule section has this shape, and the meta tests check that every label is p
 - **Severity:** error
 - **Catches:** an unfinished task not marked `Mode: sequential` whose `Writes:` list includes a file that existed when the task list was last committed (or a folder glob covering one). Files the task has created since then, in its worktree or after merging, do not count.
 - **Why:** parallel work only creates new files. Edits to existing code run one at a time, so two agents never change the same code.
-- **Failing example:** a parallel task writing `src/steps/db/a.ts`, which already exists.
+- **Failing example:** a parallel task writing `src/features/accounts/steps/db/a.ts`, which already exists.
 - **Passing example:** the same task marked `Mode: sequential`.
 - **Fix:** add `Mode: sequential` to the task.
 
 ## R38 plan-shared-new-once
 
 - **Severity:** error
-- **Catches:** a `new` step that the change plan says more than one strip in the spec uses, when it is not created by exactly one sequential task placed before the tasks of those strips. The step file is found by convention: `src/steps/<class>/<rest of name>.ts`. Strip tasks are found by `src/strips/<strip>.strip.ts` in their `Writes:`.
+- **Catches:** a `new` step that the change plan says more than one strip in the spec uses, when it is not created by exactly one sequential task placed before the tasks of those strips. A step used by several strips is shared, so its file is found by convention: `src/shared/steps/<class>/<rest of name>.ts`. Strip tasks are found by a `Writes:` entry for `src/features/<feature>/strips/<strip>.strip.ts`.
 - **Why:** without this, two parallel agents each build their own copy of the shared step.
 - **Failing example:** `db.user.setName` used by `profile.save` and `profile.view`, created by a parallel task, or by no task.
-- **Passing example:** task 1 (sequential) writes `src/steps/db/user.setName.ts`, tasks 2 and 3 build the strips.
+- **Passing example:** task 1 (sequential) writes `src/shared/steps/db/user.setName.ts`, tasks 2 and 3 build the strips.
 - **Fix:** give the shared step its own sequential task before the strip tasks.
 
 ## R39 plan-no-near-duplicates

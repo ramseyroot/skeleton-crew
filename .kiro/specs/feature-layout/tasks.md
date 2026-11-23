@@ -15,7 +15,7 @@ Checkpoints stop for review after tasks 2 and 4.
   - `FeatureModule` type, `app/features.ts`, `runtime.ts` migrates and seeds by looping over the listed features. `test-utils/ports.ts` takes collections and a seed function. Toast and view-state move to `src/shared/ui/`. The profile feature exposes a `FeatureModule` from its domain file for now. Step and strip files only get their import paths updated if a moved file requires it.
   - _Requirements: 1.1, 6.1 (partly)_
 
-- [ ] 2. The layout switch (unlock)
+- [x] 2. The layout switch (unlock)
   - Mode: sequential
   - Writes: conformance.config.json, scripts/conformance/layout.ts, scripts/conformance/config.ts, scripts/conformance/catalog.ts, scripts/conformance/cli.ts, scripts/conformance/rules/R02-no-error-as-value.ts, scripts/conformance/rules/R04-no-raw-queries.ts, scripts/conformance/rules/R05-step-name-format.ts, scripts/conformance/rules/R09-step-must-be-defined.ts, scripts/conformance/rules/R38-plan-shared-new-once.ts, scripts/conformance/test/**, .kiro/steering/**, docs/conformance-rules.md, src/features/**, src/shared/**, src/steps/**, src/strips/**, src/domain/**, src/components/**, src/app/**, src/test-utils/**, docs/generated/catalog.md, docs/generated/catalog.json
   - Config and `layout.ts`. Rules R02, R04, R05, R09, R38 use it. Catalog gets the feature field. Fixtures moved by script to `src/features/demo/`, and every rule test passes. Steering re-pointed, `features.md` added. The example moved with `git mv`: steps, strips, domain, UI, actions, page (with `await connection()`), route stub, `testing.ts`. Catalog regenerated, `next build` and Storybook checked.

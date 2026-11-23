@@ -3,7 +3,7 @@
 import { existsSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { git } from "./git.ts";
-import { isDir } from "./project.ts";
+import { isDir } from "./files.ts";
 
 export type ProgressRow = {
   when: string;

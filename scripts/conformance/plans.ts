@@ -2,7 +2,7 @@
 // Permissions come only from the version committed at HEAD (requirement 16.7).
 
 import { changedFiles, filesAtHead, git, showAtHead } from "./git.ts";
-import { isInside, matchGlob, readRel, walk } from "./project.ts";
+import { isInside, matchGlob, readRel, walk } from "./files.ts";
 
 export type PlanStep = {
   step: string;

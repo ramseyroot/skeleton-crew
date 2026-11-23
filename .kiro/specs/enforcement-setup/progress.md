@@ -51,3 +51,6 @@ Append-only. Format and resume procedure: `docs/change-process.md`, section 7.
 | 2026-11-23 17:29 | 14 | started | | | Write progress.ts, R40, R41 with fixtures and docs |
 | 2026-11-23 17:32 | 14 | done | this | scripts/conformance/progress.ts, rules/R40, R41, rules/index.ts, docs/conformance-rules.md, fixtures/R40, R41, test/progress.test.ts, scripts/conformance/report.ts (console keeps one violation per rule) (119 tests pass) | Checkpoint: user reviews the full rule set |
 | 2026-11-23 17:32 | 14 | checkpoint | this | | Waiting for user review of the 39 rules and the sample run in .conformance/sample/. Then task 15: check command |
+| 2026-11-23 17:35 | 15 | started | | | Write check command (conformance, typecheck, tests, affected strip tests) and tests |
+| 2026-11-23 17:38 | 15 | started | | | Plan deviation: speed work added to task 15 Writes (files.ts split, git cache, tsc without pnpm). Measured: conformance about 0.9s, tsc 0.3s, pnpm start-up adds about 1s |
+| 2026-11-23 17:39 | 15 | done | this | scripts/conformance/check.ts, test/check.test.ts, package.json, scripts/conformance/files.ts (split from project.ts), git.ts (per-run cache), conformance.config.json (tsc without pnpm) (123 tests pass). Full check on this repo: about 1.2s | Start task 16: worktree command |

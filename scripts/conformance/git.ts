@@ -4,11 +4,29 @@ import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
-import { walk } from "./project.ts";
+import { walk } from "./files.ts";
+
+// During one conformance run nothing changes git state, so read results can be cached.
+// Caching is off unless a run turns it on, so other callers (hooks, tests) always see fresh state.
+let cache: Map<string, { ok: boolean; out: string }> | null = null;
+
+export function withGitCache<T>(fn: () => T): T {
+  cache = new Map();
+  try {
+    return fn();
+  } finally {
+    cache = null;
+  }
+}
 
 export function git(root: string, args: string[]): { ok: boolean; out: string } {
+  const key = `${root}\0${args.join("\0")}`;
+  const hit = cache?.get(key);
+  if (hit) return hit;
   const r = spawnSync("git", args, { cwd: root, encoding: "utf8", maxBuffer: 64 * 1024 * 1024 });
-  return { ok: r.status === 0, out: r.stdout ?? "" };
+  const res = { ok: r.status === 0, out: r.stdout ?? "" };
+  cache?.set(key, res);
+  return res;
 }
 
 export function hasHead(root: string): boolean {

@@ -1,6 +1,6 @@
 // Parses tasks.md files: task IDs, done state, `Mode: sequential`, and `Writes:` lists.
 
-import { matchGlob, readRel, walk } from "./project.ts";
+import { matchGlob, readRel, walk } from "./files.ts";
 
 export type Task = {
   id: string;

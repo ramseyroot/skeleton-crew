@@ -117,9 +117,10 @@ Every task: append a `started` row to `progress.md` before writing files. On fin
   - **Checkpoint: user reviews the full rule set and a run over the fixtures.**
   - _Requirements: 26.6, 27.1 to 27.4_
 
-- [ ] 15. Check command
+- [x] 15. Check command
   - Mode: sequential
-  - Writes: scripts/conformance/check.ts, scripts/conformance/test/check.test.ts, package.json
+  - Writes: scripts/conformance/check.ts, scripts/conformance/test/check.test.ts, package.json, scripts/conformance/files.ts, scripts/conformance/project.ts, scripts/conformance/git.ts, scripts/conformance/plans.ts, scripts/conformance/tasks.ts, scripts/conformance/progress.ts, scripts/conformance/cli.ts, conformance.config.json
+  - Speed work (added during the work, after the user asked about slow dev cycles): file helpers moved to `files.ts` so the hooks do not load the compiler; git results cached during one run; typecheck runs `tsc` directly instead of through pnpm.
   - Runs conformance, typecheck, configured tests, and affected strip tests from active plans. Prints `not configured` where a check is missing, and treats missing affected-test configuration as a failure.
   - _Requirements: 11.1 to 11.4, 17.4, 17.5_
 

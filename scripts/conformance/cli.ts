@@ -7,6 +7,7 @@ import { ConfigError, loadConfig, type Config } from "./config.ts";
 import { createProgram, isDir, isGitRepo, listSourceFiles, readRel } from "./project.ts";
 import { buildCatalog, writeCatalog } from "./catalog.ts";
 import { discoverAdapters, discoverDefinitions, discoverPorts } from "./discover.ts";
+import { withGitCache } from "./git.ts";
 import { summarizeActivePlans } from "./plans.ts";
 import { applyExceptions, loadExceptions } from "./exceptions.ts";
 import { exitCode, formatConsole, sortViolations, writeReportFiles, type Report } from "./report.ts";
@@ -45,6 +46,10 @@ function emptyReport(scriptErrors: string[]): Report {
 }
 
 export function runConformance(opts: RunOptions): RunResult {
+  return withGitCache(() => runOnce(opts));
+}
+
+function runOnce(opts: RunOptions): RunResult {
   const root = resolve(opts.root);
   const strict = opts.strict ?? false;
   let config: Config;

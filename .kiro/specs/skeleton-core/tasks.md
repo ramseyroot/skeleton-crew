@@ -49,7 +49,7 @@ All test files use `node:test`, are named `<name>.test.ts`, and run offline.
   - Contract cases: missing read returns `null`, update of a missing record gives `not_found`, duplicate gives `conflict`, pagination, atomic batch rolls back on failure, `migrate()` twice, normalization.
   - _Requirements: 7.1 to 7.5, 7.8, 7.9, 7.11_
 
-- [ ] 5. Cache and ObjectStorage ports with adapters
+- [x] 5. Cache and ObjectStorage ports with adapters
   - Writes: src/ports/cache.ts, src/ports/storage.ts, src/adapters/cache/**, src/adapters/storage/**
   - Cache adapters `memory` and `null`, ObjectStorage adapters `memory` and `fs`, each with `index.ts`, `errors.ts`, `<adapter>.test.ts`, and one `contract.test.ts` per port.
   - Cache contract cases: miss on absent, corrupt, outdated, and expired entries, with the entry deleted and a debug log; `null` always misses; the capability mechanism tested with a fake adapter that declares `prefixDelete` false.

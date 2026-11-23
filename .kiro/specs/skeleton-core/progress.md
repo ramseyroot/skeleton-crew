@@ -20,3 +20,4 @@ Append-only. Format and resume procedure: `docs/change-process.md`, section 7.
 | 2026-11-23 19:19 | 4 | started | | | Database port: worktree .worktrees/task-4, branch task/4, sub-agent |
 | 2026-11-23 19:19 | 5 | started | | | Cache and storage ports: worktree .worktrees/task-5, branch task/5, sub-agent |
 | 2026-11-23 19:27 | 4 | done | 98e08f6 | src/ports/database.ts, src/adapters/database/** (101 tests; verified in worktree) | Merge task 4, then task 5. Row written before the merge because R40 flags a task that is started when a later one starts, which parallel tasks always do |
+| 2026-11-23 19:27 | 5 | done | c2c6264 | src/ports/cache.ts, src/ports/storage.ts, src/adapters/cache/**, src/adapters/storage/** (92 tests, 10 skipped by design; verified in worktree) | Merge task 5, remove both worktrees, then task 6 |

@@ -217,18 +217,18 @@ Sequential tasks edit existing files (`package.json`, `tsconfig.json`, catalog).
 
 The task order, `Writes:` lists and modes are written in `tasks.md` after the change plan is committed.
 
-## 11. New defaults awaiting your decision
+## 11. New defaults (D1 to D11 confirmed)
 
 | # | Proposal | Alternative | State |
 |---|---|---|---|
-| D1 | Database port is a generic record store (`read`, `write`, `batch`) with collections declared at `migrate()`. App repository ports are built later in the apps | Hand-written `UserReader` and `UserWriter` ports in the skeleton | proposed |
-| D2 | Steps declare `uses: [...]` as an extra manifest field. Not compared by R17 | Derive ports from `class` | proposed |
-| D3 | Cache permissions are `cache:<namespace>` strings in the existing `reads` and `writes` lists | A new `cache` list in permissions, which needs checker changes | proposed |
-| D4 | `defineStrip` throws at load time for budget, routing and invalidates errors, in addition to conformance | Conformance only | proposed |
-| D5 | `log-and-continue` only on steps whose output type equals their input type | Allow any | proposed |
-| D6 | Missing invalidation placeholders log a `validation` error and do not fail a finished write | Fail the strip | proposed |
-| D7 | `dev` and `prod` in the skeleton reuse `sqlite`, `memory` and `fs` with required env paths and `allowedHosts: []`. Apps replace them | Omit `dev` and `prod` until an app needs them | proposed |
-| D8 | `crypto.randomUUID` for IDs | UUIDv7 | proposed |
-| D9 | `NullCache` declares `prefixDelete` true. The capability mechanism is tested with a fake adapter | Skip cases for `null` | proposed |
-| D10 | `db.user.findProfile` takes the `cached` value, so the example needs no new strip feature | Add a conditional step feature | proposed |
-| D11 | Storybook with default addons only | Add the accessibility addon | proposed |
+| D1 | Database port is a generic record store (`read`, `write`, `batch`) with collections declared at `migrate()`. App repository ports are built later in the apps | Hand-written `UserReader` and `UserWriter` ports in the skeleton | confirmed (user, 2026-11-23) |
+| D2 | Steps declare `uses: [...]` as an extra manifest field. Not compared by R17 | Derive ports from `class` | confirmed (user, 2026-11-23) |
+| D3 | Cache permissions are `cache:<namespace>` strings in the existing `reads` and `writes` lists | A new `cache` list in permissions, which needs checker changes | confirmed (user, 2026-11-23) |
+| D4 | `defineStrip` throws at load time for budget, routing and invalidates errors, in addition to conformance | Conformance only | confirmed (user, 2026-11-23) |
+| D5 | `log-and-continue` only on steps whose output type equals their input type | Allow any | confirmed (user, 2026-11-23) |
+| D6 | Missing invalidation placeholders log a `validation` error and do not fail a finished write | Fail the strip | confirmed (user, 2026-11-23) |
+| D7 | `dev` and `prod` in the skeleton reuse `sqlite`, `memory` and `fs` with required env paths and `allowedHosts: []`. Apps replace them | Omit `dev` and `prod` until an app needs them | confirmed (user, 2026-11-23) |
+| D8 | `crypto.randomUUID` for IDs | UUIDv7 | confirmed (user, 2026-11-23) |
+| D9 | `NullCache` declares `prefixDelete` true. The capability mechanism is tested with a fake adapter | Skip cases for `null` | confirmed (user, 2026-11-23) |
+| D10 | `db.user.findProfile` takes the `cached` value, so the example needs no new strip feature | Add a conditional step feature | confirmed (user, 2026-11-23) |
+| D11 | Storybook with default addons only | Add the accessibility addon | confirmed (user, 2026-11-23) |

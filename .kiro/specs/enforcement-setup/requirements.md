@@ -281,6 +281,53 @@ Type compatibility between consecutive steps is checked by the compiler, not by 
 2. THE `always` steering file SHALL state the core of the process in a few lines and point to that document.
 3. THE spec template guidance (in `docs/change-process.md`) SHALL show the `change-plan.md` format and the `Writes:` and `sequential` notation in `tasks.md`.
 
+### Requirement 22: The parent agent compares all strips in a spec before work starts
+
+**User Story:** As a developer, I want the strips planned in one spec compared with each other, not only with the existing catalog, so that two parallel agents never build the same new step twice.
+
+#### Acceptance Criteria
+
+1. THE change plan SHALL list every strip in the spec and, for each planned step, which of those strips use it.
+2. WHEN a `new` step is used by more than one strip in the spec, THEN it SHALL be created by exactly one `sequential` task placed before the tasks of the strips that use it, and those strips SHALL treat it as already existing. WHEN this is not the case, THEN the conformance script SHALL report an error for rule `plan-shared-new-once`.
+3. WHEN a planned `new` step is a near-duplicate of another planned or existing step (same normalization as rule `near-duplicate-names`), THEN the conformance script SHALL report an error for rule `plan-no-near-duplicates`, unless the plan entry has a `Distinct from` note naming the other step and the reason.
+4. THE parent agent SHALL also point out, in the plan, any steps it judges similar in purpose under unrelated names, for the user to decide. This part is a judgement and is not checked mechanically.
+
+### Requirement 23: Parallel tasks run in separate git worktrees
+
+**User Story:** As a developer, I want each parallel sub-agent to work in its own git worktree and branch, so that each agent's changes are separate, attributable, and merged only after checks.
+
+#### Acceptance Criteria
+
+1. THE project SHALL use pnpm as its package manager, so that worktree installs reuse one shared package store.
+2. THE project SHALL provide a worktree command with `create`, `verify`, `merge`, and `remove` actions for one task.
+3. `create` SHALL make a worktree under `.worktrees/task-<id>/` on a new branch `task/<id>` from the current commit, and install dependencies with pnpm (offline when the store already has the packages).
+4. `create` SHALL refuse when the number of open worktrees has reached a configured limit (assumption: 2, for a low-spec PC).
+5. `verify` SHALL fail WHEN the branch changes any file not in the task's `Writes:` list, or WHEN the check command fails inside the worktree.
+6. `merge` SHALL run only after `verify` passes, merge the branch into the main branch, then run the check command on the result. WHEN the merge has conflicts or the check fails, THEN it SHALL stop, leave the main branch as it was before the merge, and report to the user.
+7. Merges SHALL happen in task order.
+8. `remove` SHALL delete the worktree folder and its branch, and SHALL refuse WHEN the branch has unmerged commits, unless forced by the user.
+9. `.worktrees/` SHALL be ignored by git.
+
+### Requirement 24: The protection hook understands worktrees
+
+**User Story:** As a developer, I want the protection hook to apply the same rules inside worktrees, and to hold each sub-agent to its task's file list, so that the guards are not bypassed by working in another folder.
+
+#### Acceptance Criteria
+
+1. WHEN a write targets a path under `.worktrees/task-<id>/`, THEN the hook SHALL apply every protection rule to the path relative to that worktree.
+2. WHEN a write inside `.worktrees/task-<id>/` targets a file not in task `<id>`'s `Writes:` list (read from the committed `tasks.md`), THEN the hook SHALL block it.
+3. WHILE any task worktree exists, THE hook SHALL block agent writes to the guarded folders of the main working tree, because the main tree is not edited during the parallel phase.
+
+### Requirement 25: Sub-agent behavior is tested before it is relied on
+
+**User Story:** As a developer, I want the undocumented behaviors confirmed by a test, so that the process does not depend on assumptions.
+
+#### Acceptance Criteria
+
+1. BEFORE the parallel phase is used for real work, a test session SHALL confirm and record: whether a sub-agent can be confined to a worktree folder, whether sub-agents trigger the Stop hook, which fields the Stop and task hooks receive, and the name of the Stop hook's reason field.
+2. THE results SHALL be written to `docs/change-process.md`.
+3. WHEN a sub-agent cannot be confined to its worktree, THEN the process SHALL still hold, because writes outside the worktree are blocked by Requirement 24.3 and caught by rule `change-in-plan`.
+
 ---
 
 ## Out of scope
@@ -294,7 +341,7 @@ Type compatibility between consecutive steps is checked by the compiler, not by 
 ## Dependencies and ordering
 
 - Rules that inspect `defineStep()`, `defineStrip()`, the catalog, and ports depend on the core library's shape. They are written and tested first against fixtures that follow the shapes in `docs/function-strips-plan.md`, and are adjusted when the core library is built.
-- Requirements 16 to 21 apply to this spec's own tasks as far as possible: there is no existing code yet, so every task creates new files, and the change plan for this spec lists only new files.
+- Requirements 16 to 25 apply to this spec's own tasks as far as possible: there is no existing code yet, so every task creates new files, and the change plan for this spec lists only new files.
 - The Stop hook and the protection hook are enabled last, after the script's test suite passes, because the protection hook would otherwise block the agent from finishing this setup.
 
 ## Decisions for the design stage

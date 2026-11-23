@@ -23,7 +23,7 @@ Core ideas:
 | Design documents (below) | Written, draft |
 | `scripts/check-coverage.mjs` | Built and tested. Checks a filled-in app coverage file. |
 | `.kiro/specs/enforcement-setup/requirements.md` | Approved |
-| `.kiro/specs/enforcement-setup/requirements.md` additions (Req 16 to 21) | Written, awaiting review |
+| `.kiro/specs/enforcement-setup/requirements.md` additions (Req 16 to 25) | Written, awaiting review |
 | `.kiro/specs/enforcement-setup/design.md` | Written (37 rules, change plans included), awaiting review. Tasks not started. |
 | Git repository | Created, branch `main` |
 | `.kiro` steering, hooks, custom agent | Not created (specified in the enforcement-setup spec) |
@@ -60,6 +60,9 @@ Skeleton decisions:
 10. Steps report facts (`kind`). Strips decide routing and presentation.
 11. Protected enforcement files are unlocked by the user running `touch .conformance/unlock` in their own terminal. The unlock lasts 30 minutes.
 12. Every change starts with a change plan, approved by committing it. Changes to existing shared code run one at a time before other work. Sub-agents only create new files.
+13. The parent agent compares all strips in a spec before work starts. A new step needed by several strips is built once, first.
+14. Each parallel task runs in its own git worktree and branch (`.worktrees/task-<id>/`), is verified against its file list, merged in task order, then removed. Default limit: 2 at once.
+15. pnpm is the package manager.
 
 Platform decisions:
 
@@ -103,6 +106,8 @@ Taken from past trouble described during the session.
 | Similarly named functions confused | Unique structured names, generated catalog, near-duplicate warning | plan 9 |
 | Agent reuses a step with the wrong inputs, outputs, or too much permission | Step manifests, strip permission budgets, injected ports, no widening of existing steps | plan 7, 8, 10 |
 | Parallel agents edit steps shared across strips | Change plan with impact list, approval by commit, shared-step changes run alone and first, parallel tasks only create new files, hook blocks unplanned edits | change-process |
+| Parallel agents build the same new step twice | Parent compares all strips in the spec, shared new steps built once and first | change-process 3 |
+| Unclear which agent changed what | One worktree and branch per parallel task, diff checked against its file list before merge | change-process 5 |
 | Agent applies a requirement to a few functions, then skips the rest | Conformance script lists every violation, a Stop hook blocks finishing until it passes | plan 15 |
 | Dev and prod data mixing | Separate instances and credentials, startup host guard, destructive commands refuse on prod | environments 4 |
 | Dev database differs from production database | Contract suite on both engines in CI, optional staging | environments 5 |

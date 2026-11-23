@@ -85,9 +85,10 @@ One JSON file at the repository root, `conformance.config.json`. JSON keeps it r
   "prodSecretNames": [],
   "destructiveScripts": { "globs": ["scripts/db/seed*", "scripts/db/reset*", "scripts/db/migrate-down*"], "guardCall": "assertNotProd" },
   "output": { "maxChars": 3000, "maxPerRule": 5, "reportDir": ".conformance" },
-  "checks": { "typecheck": "npx tsc --noEmit", "test": null, "testFiles": null },
+  "checks": { "typecheck": "pnpm exec tsc --noEmit", "test": null, "testFiles": null },
   "stopHook": { "maxConsecutiveBlocks": 3, "skipIfUnchanged": true },
   "steering": { "alwaysMaxLines": 60, "otherMaxLines": 80 },
+  "worktrees": { "folder": ".worktrees", "maxParallel": 2 },
   "guardedFolders": ["src/steps", "src/strips", "src/ports", "src/adapters", "src/lib"],
   "specsFolder": ".kiro/specs",
   "protected": [
@@ -102,7 +103,7 @@ One JSON file at the repository root, `conformance.config.json`. JSON keeps it r
 }
 ```
 
-`checks.testFiles` is a command template with `{files}` (for example `npx vitest run {files}`), used to run affected strip tests. `checks.test` and `checks.testFiles` are `null` until a test runner is set up, which makes the check command print `not configured` (Requirement 11.2).
+`checks.testFiles` is a command template with `{files}` (for example `pnpm exec vitest run {files}`), used to run affected strip tests. `checks.test` and `checks.testFiles` are `null` until a test runner is set up, which makes the check command print `not configured` (Requirement 11.2).
 
 ### D5. Where reports and state live
 
@@ -242,13 +243,18 @@ So the design does not rely on agent identity or on Kiro's wave order. It relies
 status: active        # draft | active | done
 ---
 
+## Strips in this spec
+
+- profile.save
+- profile.view
+
 ## Steps
 
-| Step | Action | Affected strips | Reason |
-|---|---|---|---|
-| db.user.findByEmail | reuse | | |
-| db.user.setDisplayName | new | | |
-| db.user.findById | modify | profile.view, orders.list | Return deletedAt for soft-deleted users |
+| Step | Action | Used by (this spec) | Affected strips | Reason | Distinct from |
+|---|---|---|---|---|---|
+| db.user.findByEmail | reuse | profile.save | | | |
+| db.user.setDisplayName | new | profile.save | | | |
+| db.user.findById | modify | profile.view | profile.view, orders.list | Return deletedAt for soft-deleted users | |
 
 ## Existing files to edit
 
@@ -288,10 +294,38 @@ Process rule (in `docs/change-process.md` and steering): `sequential` tasks are 
 | R35 | tasks-write-disjoint | error | Two non-sequential tasks in the same `tasks.md` list the same file |
 | R36 | parallel-new-files-only | error | A non-sequential task lists a file that exists at `HEAD` |
 | R37 | change-in-plan | error | A file under a guarded folder that exists at `HEAD` and differs in the working tree, not listed in any active committed plan |
+| R38 | plan-shared-new-once | error | A `new` step used by more than one strip in the spec that is not created by exactly one `sequential` task placed before those strips' tasks (matched through `Writes:` paths) |
+| R39 | plan-no-near-duplicates | error | A `new` step that normalizes to the same key as another planned or catalog step, with no `Distinct from` note |
 
 R32, R33, R36, and R37 need git (`not-applicable` without it). Task rules only check incomplete tasks (`- [ ]`), so finished tasks do not keep failing.
 
 For a `modify` entry that changes a step's contract, R17 `no-widening` still fails until an exception is recorded (Requirement 20.2). Changing a shared step's contract therefore always reaches the user twice: once in the plan review, once in the exceptions file, which only the user can unlock.
+
+### Worktrees for parallel tasks
+
+Command: `node scripts/conformance/worktree.ts <create|verify|merge|remove|list> <task-id>`. It reads `Writes:` lists from the committed `tasks.md` of the active spec.
+
+| Action | Does |
+|---|---|
+| `create` | Refuses at `worktrees.maxParallel` open worktrees. Runs `git worktree add .worktrees/task-<id> -b task/<id>` from `HEAD`, then `pnpm install --offline` in it, falling back to `pnpm install` when the store lacks a package |
+| `verify` | `git diff --name-only <base>...task/<id>` must be a subset of the task's `Writes:`. Runs the check command inside the worktree |
+| `merge` | Requires a passing `verify` on the current branch tip (recorded in `.conformance/`). Merges with `git merge --no-ff task/<id>`. On conflict, runs `git merge --abort`. Runs the check command after the merge, and on failure resets the main branch to the pre-merge commit, which it recorded first. Reports either outcome |
+| `remove` | `git worktree remove`, then `git branch -d task/<id>`. Refuses on unmerged commits unless `--force` is given by the user |
+| `list` | Open worktrees, their tasks, and verify status |
+
+Merges run in task order: `merge` refuses when a lower-numbered parallel task in the same spec is still open, unless it has been removed unmerged.
+
+The reset after a failed post-merge check undoes only the merge commit this command just made, and only when the main branch tip still equals it. Otherwise it stops and reports, so it never discards work it did not create.
+
+**pnpm.** `package.json` sets `packageManager` to pnpm. Each worktree has its own `node_modules`, linked from pnpm's shared store, so a second install mostly creates links. `maxParallel` defaults to 2 for a low-spec PC.
+
+**Hook behavior with worktrees** (`protect.ts`):
+
+1. A target path under `.worktrees/task-<id>/` is split into the worktree root and the relative path. All protection checks run on the relative path.
+2. Inside a worktree, the relative path must be in task `<id>`'s `Writes:` list. Otherwise the write is blocked.
+3. While `git worktree list` shows any `task/*` worktree, writes to guarded folders in the main tree are blocked.
+
+This gives per-agent enforcement at write time without knowing which agent is writing, because the folder identifies the task.
 
 ### Exceptions
 
@@ -387,7 +421,7 @@ Known limits, stated in the rules doc and README:
 
 - The shell check is pattern-based. A determined or creative command can get past it. It is a guard against accidental edits, not a security boundary.
 - The protection does not stop the user's own edits (by design).
-- An agent could commit a plan change itself through the shell. The Stop hook does not prevent that. Plan commits are listed in the report with their author and time, and `docs/change-process.md` asks that only the user commits plan status changes. Isolating sub-agents in separate git worktrees would make this stronger, at the cost of a merge step per task. It is not part of this design.
+- An agent could commit a plan change itself through the shell. The Stop hook does not prevent that. Plan commits are listed in the report with their author and time, and `docs/change-process.md` asks that only the user commits plan status changes. Worktrees narrow the risk: a sub-agent's commits stay on its own branch until `merge`, which the main agent runs after `verify`.
 
 Exit code 2 is used rather than the JSON `permissionDecision` form, because it works on every CLI V3 version and in the IDE.
 
@@ -414,7 +448,7 @@ No custom agent is created. The default agent loads workspace steering. If a cus
 - **Fixture tests** (`rules.test.ts`): for each rule, `fixtures/<rule-id>/bad/` is a small project that triggers the rule, with `expected.json` listing the expected violations (rule, file, line). `good/` must produce no violation for that rule. Each fixture includes its own minimal `conformance.config.json`.
 - **Meta tests** (`meta.test.ts`): every rule in the registry has both fixture folders and a docs section, and every docs section corresponds to a rule (Requirements 10.4, 15.3).
 - **Report tests**: stable ordering, the character cap, exit codes, `not-applicable` listing, and exception matching.
-- **Change tests**: fixture repositories (created with `git init` inside a temporary folder during the test) with committed plans and catalogs, covering R32 to R37 and the guarded-file branch of `protect.ts`.
+- **Change tests**: fixture repositories (created with `git init` inside a temporary folder during the test) with committed plans and catalogs, covering R32 to R39, the guarded-file and worktree branches of `protect.ts`, and `worktree.ts` (create, verify with an out-of-list file, merge with a conflict, failed post-merge check, remove with unmerged commits).
 - **Hook tests**: `stop.ts` and `protect.ts` are run as child processes with sample event JSON on STDIN, checking exit codes, STDOUT JSON, the loop counter sequence (block, block, final block, allow), the unchanged-tree skip, and the unlock expiry.
 - All tests run with `node --test`, offline.
 - **Manual check** after enabling the hooks: one session in Kiro CLI that triggers a violation, confirms the agent is sent back, and confirms a protected write is blocked. This confirms the Stop reason field name.
@@ -431,7 +465,8 @@ The script follows the skeleton's own rule: its failures are never reported as s
 ## Prerequisites
 
 - The workspace becomes a git repository (needed for R17 and the tree fingerprint). This is a task for you to approve, since it creates a repository.
-- `package.json` with `typescript` as a dev dependency.
+- `package.json` with `typescript` as a dev dependency, managed with pnpm (11.20.0 is installed). The `packageManager` field pins it.
+- `.gitignore` gains `.worktrees/`.
 - `.gitignore` with `.conformance/` and `.env*` (except an example file).
 
 ## Requirement traceability
@@ -459,6 +494,10 @@ The script follows the skeleton's own rule: its failures are never reported as s
 | 19 | protect.ts step 4 |
 | 20 | R37, R17 plus exceptions, report section per plan |
 | 21 | docs/change-process.md, core-rules.md steering |
+| 22 | Strips section and columns in change-plan.md, R38, R39 |
+| 23 | worktree.ts |
+| 24 | protect.ts worktree behavior |
+| 25 | Manual test session task, results in change-process.md |
 
 ## Changes from the requirements
 

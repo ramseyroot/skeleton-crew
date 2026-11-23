@@ -1,4 +1,4 @@
-# Change Process (Draft v0.1)
+# Change Process (Draft v0.2)
 
 How every change to this skeleton, and to apps built from it, is planned and carried out, including work split across sub-agents. The enforcement that backs it is specified in `.kiro/specs/enforcement-setup/`.
 
@@ -12,7 +12,7 @@ Kiro does not prevent this on its own (per its docs at the time of writing):
 - Kiro decides which spec tasks run in parallel. There is no documented way to force tasks to run one after another.
 - Hooks are not documented to know which sub-agent is acting.
 
-So safety comes from the plan, from git, and from hooks that do not need to know which agent is writing.
+So safety comes from the plan, from git, from one git worktree per parallel task, and from hooks that identify the task by its folder rather than by the agent.
 
 ## 2. The stages
 
@@ -35,13 +35,18 @@ Format:
 status: draft        # draft, then active once approved, then done
 ---
 
+## Strips in this spec
+
+- profile.save
+- profile.view
+
 ## Steps
 
-| Step | Action | Affected strips | Reason |
-|---|---|---|---|
-| db.user.findByEmail | reuse | | |
-| db.user.setDisplayName | new | | |
-| db.user.findById | modify | profile.view, orders.list | Return deletedAt for soft-deleted users |
+| Step | Action | Used by (this spec) | Affected strips | Reason | Distinct from |
+|---|---|---|---|---|---|
+| db.user.findByEmail | reuse | profile.save | | | |
+| db.user.setDisplayName | new | profile.save | | | |
+| db.user.findById | modify | profile.view | profile.view, orders.list | Return deletedAt for soft-deleted users | |
 
 ## Existing files to edit
 
@@ -63,9 +68,10 @@ How to fill it in:
    - **new** when nothing matches exactly. This is the default.
    - **modify** only when a new step would duplicate logic that must stay single (for example a shared rule). Give the reason.
 3. For each **modify**, copy the "used by" strips from the catalog into "Affected strips", and list their test files.
-4. List every existing file in the guarded folders (`src/steps`, `src/strips`, `src/ports`, `src/adapters`, `src/lib`) that any task will edit.
+4. **Compare the strips in the spec with each other.** List every strip, and for each step which of these strips use it. A `new` step used by more than one strip is created once, in its own sequential task before those strips' tasks, and the strips then use it as existing. A `new` step whose name is a near-duplicate of another planned or existing step needs a `Distinct from` note saying why both should exist. Steps that seem to do the same job under unrelated names are pointed out in the plan for the user to decide.
+5. List every existing file in the guarded folders (`src/steps`, `src/strips`, `src/ports`, `src/adapters`, `src/lib`) that any task will edit.
 
-The checks verify the plan against the catalog: a `reuse` that does not match, or a `modify` that leaves out an affected strip, is an error.
+The checks verify the plan against the catalog and against itself: a `reuse` that does not match, a `modify` that leaves out an affected strip, a shared new step built more than once or not first, and an unexplained near-duplicate are all errors.
 
 **Approval is a commit.** The user reviews the plan, sets `status: active`, and commits it. Only the committed version counts: an uncommitted edit to the plan grants nothing. Only the user changes a plan's status. When the work is finished, the plan is set to `done` and committed.
 
@@ -93,6 +99,7 @@ Rules:
 - Every task has a `Writes:` line.
 - A task that edits any existing file is `sequential`.
 - Each `modify` step gets its own task, placed before the tasks that depend on it.
+- Each `new` step shared by several strips in the spec gets its own sequential task, placed before those strips' tasks.
 - Non-sequential tasks only create new files, and no two of them write the same file.
 
 `Writes:` and `Mode:` are this project's notation. Kiro shows them as task details and does not act on them. The checks and the process below give them their meaning.
@@ -101,7 +108,13 @@ Rules:
 
 1. **Check the tasks.** Run the conformance check. The task rules must pass before any work starts.
 2. **Sequential phase.** The main agent runs the `sequential` tasks one at a time, in order, without sub-agents and without "run all tasks". After each `modify` task, the affected strips' tests must pass before the next task starts.
-3. **Parallel phase.** Only after the sequential phase passes, non-sequential tasks may be given to sub-agents, each with its task's file list. Each sub-agent may create only the files in its list.
+3. **Parallel phase.** Only after the sequential phase passes and is committed. For each non-sequential task, up to the worktree limit (2 by default):
+   1. `node scripts/conformance/worktree.ts create <id>` makes `.worktrees/task-<id>/` on branch `task/<id>` and installs dependencies with pnpm.
+   2. A sub-agent works only inside that folder, with its task's file list. The hook blocks writes outside the list, and blocks writes to the main tree's guarded folders while any task worktree is open.
+   3. The sub-agent commits on its branch.
+   4. `worktree.ts verify <id>`: the branch changed only the listed files, and the check command passes inside the worktree.
+   5. `worktree.ts merge <id>`, in task order. A conflict or a failed check after merging stops the process, leaves the main branch as it was, and comes to the user.
+   6. `worktree.ts remove <id>` deletes the folder and the branch.
 4. **Final check.** The main agent runs the full check command. The Stop hook does this too and sends the agent back if anything fails.
 5. **Review.** The user reviews the result. The plan is set to `done` and committed.
 
@@ -111,7 +124,9 @@ Rules:
 |---|---|---|
 | Plan rules (R32, R33) | Every check | `reuse` that does not match the catalog, `modify` missing an affected strip |
 | Task rules (R34 to R36) | Every check | Missing `Writes:`, two parallel tasks writing the same file, a parallel task editing an existing file |
-| Protection hook | Before each agent write | Agent edits to existing guarded files not listed in an active committed plan, and edits to enforcement files |
+| Plan comparison rules (R38, R39) | Every check | A shared new step built more than once or not first, an unexplained near-duplicate |
+| Protection hook | Before each agent write | Agent edits to existing guarded files not listed in an active committed plan, edits to enforcement files, writes in a worktree outside its task's list, and main-tree writes during the parallel phase |
+| Worktree verify and merge | Before each merge | A branch that changed files outside its task's list, a failing check in the worktree or after the merge, merge conflicts |
 | Change rule (R37) | Every check | Existing guarded files changed but not in the plan, including changes made through shell commands |
 | No-widening (R17) and exceptions | Every check | Any change to a step's input, output, or permissions, which also needs an exception that only the user can unlock |
 | Affected strip tests | Every check | A `modify` that breaks a strip using the step |
@@ -120,6 +135,7 @@ Rules:
 ## 7. Limits
 
 - The hooks guard against accidents. An agent determined to get around them could, for example by committing a plan change through the shell. The checks after the fact (R37, R17) and the commit history are the stronger safety net, and plan commits are listed in the report.
-- Two agents creating new files can still disagree in behavior (for example two near-identical new steps). The near-duplicate warning (R08) and review catch some of this.
+- Duplicate steps with unrelated names (for example `pricing.quote` and `fare.estimate` doing the same job) are not caught mechanically. The plan comparison points out suspected cases, and the user decides.
 - How sub-agents interact with the Stop hook, and what task hooks receive, is not documented. Both are tested once the hooks exist, and this document is updated with the results.
-- Full isolation is possible by giving each sub-agent its own git worktree, so overlapping edits become visible merge conflicts. It costs a merge step per task, and is not the default.
+- Whether a sub-agent can be confined to its worktree folder is not documented. It is tested before the parallel phase is used for real work. If it cannot, writes outside the worktree are still blocked by the hook and caught by R37.
+- Each worktree has its own `node_modules`. pnpm links them from one store, but on a low-spec PC the worktree limit stays small.

@@ -114,9 +114,9 @@ Platform decisions:
 
 Raised on 2026-11-23, not decided:
 
-- **Feature-oriented layout.** The example feature is spread over `src/steps/<class>/`, `src/strips/`, `src/domain/`, `src/components/` and `src/app/`. For "add or remove a feature by adding or deleting one folder", a feature folder (`src/features/<name>/` holding its steps, strip, domain, UI and tests) would fit better. The checker today expects steps at `src/steps/<class>/` (rule R05, protected files), so this needs checker changes and an unlock. Alternatives: keep the layout and add a `pnpm feature remove <strip>` command that lists everything a strip owns, and a rule that flags steps no strip uses.
+- **Feature-oriented layout. Decided 2026-11-23: option A, feature folders.** Spec in `.kiro/specs/feature-layout/`. Original note:  The example feature is spread over `src/steps/<class>/`, `src/strips/`, `src/domain/`, `src/components/` and `src/app/`. For "add or remove a feature by adding or deleting one folder", a feature folder (`src/features/<name>/` holding its steps, strip, domain, UI and tests) would fit better. The checker today expects steps at `src/steps/<class>/` (rule R05, protected files), so this needs checker changes and an unlock. Alternatives: keep the layout and add a `pnpm feature remove <strip>` command that lists everything a strip owns, and a rule that flags steps no strip uses.
 - **Observability still missing** from the checklist (items 20 to 26): passing the strip reference on outgoing HTTP calls, a health endpoint, an audit log, alerting, a status page, and hosted adapters for error tracking and metrics.
-- **Paid-API parts the apps need** (auth, API keys, plans, rate limits, payments): which are shared by both apps and belong in the skeleton.
+- **Paid-API parts the apps need** (auth, API keys, plans, rate limits, payments). Decided 2026-11-23: both apps share all of them, so all belong in the skeleton, as a separate spec (`platform-parts`) after the feature layout.
 
 Decide when building the part concerned:
 

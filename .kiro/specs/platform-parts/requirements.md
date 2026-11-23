@@ -180,16 +180,16 @@ Values marked **(proposed)** are shown for review. They become decisions only wh
 
 | # | Proposal | Alternative | State |
 |---|---|---|---|
-| A1 | No third-party auth library for now: a `local` Auth adapter (scrypt and database sessions) plus a `memory` one, with PocketBase and Supabase auth adapters `planned` per app. This changes the earlier decision "auth uses a library behind a port" | Pick a library (Better Auth, Auth.js) | proposed |
-| A2 | Four features: `accounts`, `api-keys`, `billing`, `usage`, composed by the app, never importing each other | Fewer, larger features | proposed |
-| A3 | Sessions last 7 days, are random, and are stored hashed. Passwords need 10 characters | Other lifetimes or rules | proposed |
-| A4 | Key format `sk_<id>_<secret>`, hashed with SHA-256 at rest, shown once, no scopes in the first version | Scopes now | proposed |
-| A5 | Plans `free` (60 per minute, 1,000 per month) and `pro` (600 per minute, 100,000 per month) seeded as data | Other numbers | proposed |
-| A6 | Fixed windows (per minute, per month), and fail open when the counter store fails | Token bucket, fail closed | proposed |
-| A7 | RateLimiter adapters: `memory` and `database`. Durable Objects `planned` | Memory only | proposed |
-| A8 | Paystack adapter built against recorded responses and tested offline. Live-tested only with a test key from you. The `fake` adapter is the default everywhere except `prod` | Fake only, Paystack `planned` | proposed |
-| A9 | The error kind to HTTP status table in requirement 10.2 | Another mapping | proposed |
-| A10 | Pages are plain and small: log in, keys portal, billing and usage | More polish | proposed |
-| A11 | Deferred, not part of this spec: email, abuse controls, OpenAPI, hosting, API idempotency keys | Include some | proposed |
-| A12 | No new dependencies | A hashing or auth library | proposed |
-| A13 | Cut order if time runs short, first cut first: the pages beyond the keys portal, then the `database` rate limiter (memory only), then the real Paystack adapter (fake only, Paystack `planned`) | Another order | proposed |
+| A1 | No third-party auth library for now: a `local` Auth adapter (scrypt and database sessions) plus a `memory` one, with PocketBase and Supabase auth adapters `planned` per app. This changes the earlier decision "auth uses a library behind a port" | Pick a library (Better Auth, Auth.js) | confirmed (user, 2026-11-23) |
+| A2 | Four features: `accounts`, `api-keys`, `billing`, `usage`, composed by the app, never importing each other | Fewer, larger features | confirmed (user, 2026-11-23) |
+| A3 | Sessions last 7 days, are random, and are stored hashed. Passwords need 10 characters | Other lifetimes or rules | confirmed (user, 2026-11-23) |
+| A4 | Key format `sk_<id>_<secret>`, hashed with SHA-256 at rest, shown once, no scopes in the first version | Scopes now | confirmed (user, 2026-11-23) |
+| A5 | Plans `free` (60 per minute, 1,000 per month) and `pro` (600 per minute, 100,000 per month) seeded as data | Other numbers | confirmed (user, 2026-11-23) |
+| A6 | Fixed windows (per minute, per month), and fail open when the counter store fails | Token bucket, fail closed | confirmed (user, 2026-11-23) |
+| A7 | RateLimiter adapters: `memory` and `database`. Durable Objects `planned` | Memory only | confirmed (user, 2026-11-23) |
+| A8 | Paystack adapter built against recorded responses and tested offline. Live-tested only with a test key from you. The `fake` adapter is the default everywhere except `prod` | Fake only, Paystack `planned` | confirmed (user, 2026-11-23) |
+| A9 | The error kind to HTTP status table in requirement 10.2 | Another mapping | confirmed (user, 2026-11-23) |
+| A10 | Pages are plain and small: log in, keys portal, billing and usage | More polish | confirmed (user, 2026-11-23) |
+| A11 | Deferred, not part of this spec: email, abuse controls, OpenAPI, hosting, API idempotency keys | Include some | confirmed (user, 2026-11-23) |
+| A12 | No new dependencies | A hashing or auth library | confirmed (user, 2026-11-23) |
+| A13 | Cut order if time runs short, first cut first: the pages beyond the keys portal, then the `database` rate limiter (memory only), then the real Paystack adapter (fake only, Paystack `planned`) | Another order | confirmed (user, 2026-11-23) |

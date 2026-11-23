@@ -39,6 +39,7 @@ Core ideas:
 | `function-strips-plan.md` | Main design: error model, step wrapper, function classes, manifests and permissions, strips, catalog, ports rules, cache rules, logging, Storybook, enforcement, decisions |
 | `provider-ports.md` | Port list, per-port decisions, contract tests, how to switch a provider |
 | `environments.md` | Profiles (`local`, `dev`, `staging`, `prod`), offline local mode, data separation, provider differences between dev and prod |
+| `app-planning.md` | How an app is planned before feature specs: four repeating stages (brief, architecture, domain, features), questions per stage, every default shown before it is applied |
 | `change-process.md` | How every change is planned and executed: change plans, task file lists, sequential and parallel work, sub-agents, what the checks enforce |
 | `app-parts-checklist.md` | 63 parts of an app, grouped, with a build order |
 | `app-coverage.template.md` | Copy per app. Mark each of the 63 items `planned`, `unplanned`, `not-needed`, or `deferred` |
@@ -63,6 +64,8 @@ Skeleton decisions:
 13. The parent agent compares all strips in a spec before work starts. A new step needed by several strips is built once, first.
 14. Each parallel task runs in its own git worktree and branch (`.worktrees/task-<id>/`), is verified against its file list, merged in task order, then removed. Default limit: 2 at once.
 15. pnpm is the package manager.
+16. Apps are planned in four stages (brief, architecture, domain model, feature map) before feature specs. No fixed question bank: questions are written per stage for each app.
+17. Every default is shown to the user as `proposed` before it is applied. Only `confirmed` or `changed` decisions are used by later stages.
 
 Platform decisions:
 

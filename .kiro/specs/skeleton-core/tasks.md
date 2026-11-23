@@ -116,7 +116,7 @@ All test files use `node:test`, are named `<name>.test.ts`, and run offline.
   - Both strip test files must pass (they are the affected tests).
   - _Requirements: 3.9, 12.3, 12.4, 13.3, 13.5, 14.1 to 14.5_
 
-- [ ] 14. Final docs, tooling, gates and the illustrated page
+- [x] 14. Final docs, tooling, gates and the illustrated page
   - Mode: sequential
   - Writes: docs/today/**, conformance.config.json, scripts/conformance/hooks/stop.ts, docs/provider-ports.md, docs/function-strips-plan.md, docs/environments.md, docs/README.md, docs/kiroween-script.md, docs/kiroween-submission.md, docs/generated/catalog.md, docs/generated/catalog.json
   - Needs the user's `touch .conformance/unlock` first. Set `checks.test` (P9) and fix the duplicate "Full report" line in `stop.ts`.

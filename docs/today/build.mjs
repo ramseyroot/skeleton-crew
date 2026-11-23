@@ -86,6 +86,8 @@ const portCards = [
   ["Clock", "system", "fixed", null],
   ["IdGenerator", "uuid", "sequence", null],
   ["Database", "sqlite", "memory", "PocketBase, Supabase"],
+  ["Reporter", "log", "none", "hosted error tracking"],
+  ["Metrics", "log", "none", "hosted metrics"],
   ["Cache", "memory", "null", "Workers KV"],
   ["ObjectStorage", "fs", "memory", "R2"],
 ]
@@ -120,7 +122,8 @@ const findings = [
   ["Two confirmed decisions were too narrow", "Writing the strip library showed that skipping a failed step (D5) and where fallback steps live (D12) needed refining. The agent proposed D5b and D12 and waited for a yes instead of changing them."],
   ["The test script silently stopped running some tests", "After a folder move the script pointed at the old folder, so 36 tests did not run for one commit. Found by a count mismatch, fixed, and written down."],
   ["Parallel tasks tripped the progress rule", "Tasks started in parallel look like \u201cstarted, never done\u201d to rule R40, and merge refuses while an earlier worktree is open. Both rough edges are recorded."],
-  ["One boolean could undo data separation", "The idea of a dev flag that switches to production services was turned into a read-only value derived from APP_ENV. The profile stays the only thing that chooses adapters."],
+  ["Changing the judge needs the judge\u2019s tests rerun", "Turning on the test command inside pnpm check made one checker test fail: its fixture projects had inherited the real test command. Found by running the checker\u2019s own suite after the config change, fixed in the test helper."],
+  ["One boolean could undo data separation", "The agent found no earlier mention of a dev flag, said so, and proposed a read-only value derived from APP_ENV, because a flag that switches to production services breaks data separation. The profile stays the only thing that chooses adapters."],
 ]
   .map(([h, p]) => `<li><b>${esc(h)}</b><span>${esc(p)}</span></li>`)
   .join("");
@@ -161,6 +164,7 @@ code{background:#eef2ff;border-radius:4px;padding:1px 5px;font-size:.92em}footer
 <div class="stat"><b>${taskCommits.length}</b><span>task commits (${enforcementTasks.length} guardrails, ${coreTasks.length} skeleton)</span></div>
 <div class="stat"><b>${tests.pass}</b><span>tests passing (${tests.skipped} skipped on purpose, ${tests.fail} failing)</span></div>
 <div class="stat"><b>${(n.srcLines + n.scriptLines).toLocaleString("en")}</b><span>lines of code (${n.srcLines.toLocaleString("en")} skeleton, ${n.scriptLines.toLocaleString("en")} guardrails)</span></div>
+<div class="stat"><b>8</b><span>ports with adapters and shared test suites</span></div>
 <div class="stat"><b>${cat.steps.length} + ${cat.strips.length}</b><span>example steps and strips in the catalog</span></div>
 </div></div></header>
 
@@ -195,7 +199,7 @@ code{background:#eef2ff;border-radius:4px;padding:1px 5px;font-size:.92em}footer
 <rect x="224" y="226" width="170" height="30" rx="6" fill="#fff" stroke="#d97706"/><text x="309" y="246" text-anchor="middle" font-size="12">db.user.setDisplayName</text>
 <text x="520" y="236" text-anchor="middle" font-size="12" fill="#92400e">budget: reads and writes users</text><text x="520" y="252" text-anchor="middle" font-size="12" fill="#92400e">routing: toast, retry, abort</text>
 <line x1="330" y1="267" x2="330" y2="290" stroke="#475569" stroke-width="2" marker-end="url(#a2)"/>
-<rect x="20" y="292" width="620" height="62" rx="10" fill="#dcfce7" stroke="#16a34a"/><text x="330" y="319" text-anchor="middle" font-weight="700">Ports</text><text x="330" y="340" text-anchor="middle" font-size="13" fill="#475569">Database, Cache, Storage, Logger, Clock, IDs. A step sees only what it may use.</text>
+<rect x="20" y="292" width="620" height="62" rx="10" fill="#dcfce7" stroke="#16a34a"/><text x="330" y="319" text-anchor="middle" font-weight="700">Ports</text><text x="330" y="340" text-anchor="middle" font-size="13" fill="#475569">Eight ports: database, cache, storage, logger, clock, ids, reporter, metrics</text>
 <line x1="330" y1="354" x2="330" y2="372" stroke="#475569" stroke-width="2" marker-end="url(#a2)"/>
 <text x="330" y="392" text-anchor="middle" font-size="13" fill="#166534">Adapters: sqlite or memory, memory or null, fs or memory ...</text>
 <rect x="690" y="102" width="290" height="252" rx="12" fill="#f1f5f9" stroke="#94a3b8"/><text x="835" y="130" text-anchor="middle" font-weight="700">Profile (APP_ENV)</text>
@@ -206,8 +210,8 @@ code{background:#eef2ff;border-radius:4px;padding:1px 5px;font-size:.92em}footer
 <path d="M690 228 C 665 228, 665 323, 642 323" fill="none" stroke="#94a3b8" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#a2)"/>
 </svg></div></section>
 
-<section><h2>Six ports, two adapters each</h2>
-<p class="lead">Every port has two working adapters and one shared test suite that runs against both, so swapping a provider changes an adapter and a setting, not the features. Dashed chips are real adapters that are planned, not built.</p>
+<section><h2>Eight ports, two or three adapters each</h2>
+<p class="lead">Every port has at least two working adapters and one shared test suite that runs against both, so swapping a provider changes an adapter and a setting, not the features. Dashed chips are real adapters that are planned, not built.</p>
 <div class="grid">${portCards}</div></section>
 
 <section><h2>One feature, every ending</h2>
@@ -229,6 +233,21 @@ code{background:#eef2ff;border-radius:4px;padding:1px 5px;font-size:.92em}footer
 <rect x="662" y="237" width="318" height="62" rx="10" fill="#fff7ed" stroke="#d97706"/><text x="821" y="262" text-anchor="middle" font-weight="700" font-size="13">Generic message and reference code</text><text x="821" y="282" text-anchor="middle" font-size="12" fill="#92400e">unknown user, database down: no internal text shown</text>
 <text x="537" y="85" text-anchor="middle" font-size="12" fill="#475569">network failure: retried twice</text>
 <path d="M590 118 C 600 95, 480 95, 490 118" fill="none" stroke="#475569" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#a3)"/>
+</svg></div></section>
+
+<section><h2>Development sends nothing, production sends everything</h2>
+<p class="lead">Error tracking and metrics are ports too. The profile decides which adapter sits behind them, and the profile schema refuses a bad choice at startup. The <code>dev</code> flag is only a reading of that choice, so no flag can point a development machine at production services.</p>
+<div class="diagram"><svg viewBox="0 0 1000 300" role="img" aria-label="Profiles gate telemetry; the dev flag is derived">
+<defs><marker id="a4" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 z" fill="#475569"/></marker></defs>
+<rect x="20" y="30" width="190" height="64" rx="10" fill="#ecfdf5" stroke="#16a34a"/><text x="115" y="58" text-anchor="middle" font-weight="700">APP_ENV=local</text><text x="115" y="78" text-anchor="middle" font-size="12" fill="#475569">reporter none, metrics none</text>
+<rect x="20" y="118" width="190" height="64" rx="10" fill="#e0f2fe" stroke="#0ea5e9"/><text x="115" y="146" text-anchor="middle" font-weight="700">APP_ENV=dev</text><text x="115" y="166" text-anchor="middle" font-size="12" fill="#475569">reporter none, metrics none</text>
+<rect x="20" y="206" width="190" height="64" rx="10" fill="#fee2e2" stroke="#dc2626"/><text x="115" y="234" text-anchor="middle" font-weight="700">APP_ENV=prod</text><text x="115" y="254" text-anchor="middle" font-size="12" fill="#475569">reporter log, metrics log</text>
+<line x1="210" y1="62" x2="300" y2="150" stroke="#475569" stroke-width="2" marker-end="url(#a4)"/><line x1="210" y1="150" x2="300" y2="150" stroke="#475569" stroke-width="2" marker-end="url(#a4)"/><line x1="210" y1="238" x2="300" y2="150" stroke="#475569" stroke-width="2" marker-end="url(#a4)"/>
+<rect x="302" y="105" width="260" height="90" rx="12" fill="#f1f5f9" stroke="#94a3b8"/><text x="432" y="133" text-anchor="middle" font-weight="700">Profile schema</text><text x="432" y="154" text-anchor="middle" font-size="12" fill="#475569">outside prod: none or memory only</text><text x="432" y="172" text-anchor="middle" font-size="12" fill="#475569">prod: never none</text><text x="432" y="188" text-anchor="middle" font-size="12" fill="#475569">a bad profile does not start</text>
+<line x1="562" y1="150" x2="640" y2="150" stroke="#475569" stroke-width="2" marker-end="url(#a4)"/>
+<rect x="642" y="40" width="340" height="100" rx="12" fill="#fef3c7" stroke="#d97706"/><text x="812" y="68" text-anchor="middle" font-weight="700">Strip runner</text><text x="812" y="90" text-anchor="middle" font-size="12" fill="#475569">reports a run once, if its final error is internal</text><text x="812" y="108" text-anchor="middle" font-size="12" fill="#475569">and unexpected, upstream or network</text><text x="812" y="126" text-anchor="middle" font-size="12" fill="#475569">emits strip.runs, strip.duration_ms, step.duration_ms</text>
+<rect x="642" y="170" width="340" height="100" rx="12" fill="#ede9fe" stroke="#7c3aed"/><text x="812" y="198" text-anchor="middle" font-weight="700">dev = profile is not prod</text><text x="812" y="220" text-anchor="middle" font-size="12" fill="#475569">read-only, derived, selects nothing</text><text x="812" y="238" text-anchor="middle" font-size="12" fill="#475569">DEV, APP_DEV, NODE_ENV cannot change it (tested)</text><text x="812" y="256" text-anchor="middle" font-size="12" fill="#475569">shown in the demo page footer</text>
+<line x1="562" y1="165" x2="640" y2="215" stroke="#94a3b8" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#a4)"/>
 </svg></div></section>
 
 <section><h2>What it looks like</h2>
@@ -271,8 +290,8 @@ ${bar("Guardrail tests", n.scriptTestLines, maxLines, "#7dd3fc")}
 <tr><td>Guardrails: 41 rules, check command, worktree command, hooks, steering</td><td><span class="tag done">built, hooks on</span></td></tr>
 <tr><td>Skeleton core: Result, steps, strips, six ports with two adapters each, profiles</td><td><span class="tag done">built</span></td></tr>
 <tr><td>Example feature, Storybook stories, Next.js page running offline</td><td><span class="tag done">built</span></td></tr>
-<tr><td>Error reporter, metrics, and a read-only <code>dev</code> flag derived from APP_ENV</td><td><span class="tag plan">specified, not built</span> waiting for the plan commit</td></tr>
-<tr><td>Test command inside <code>pnpm check</code>, Stop-hook message fix</td><td><span class="tag todo">needs an unlock</span></td></tr>
+<tr><td>Error reporter, metrics, gating, and a read-only <code>dev</code> flag derived from APP_ENV</td><td><span class="tag done">built</span> (hosted adapters planned)</td></tr>
+<tr><td>Test command inside <code>pnpm check</code>, Stop-hook message fix</td><td><span class="tag done">done</span></td></tr>
 <tr><td>Real adapters: PocketBase, Supabase, Workers KV, R2, hosted error and metrics services</td><td><span class="tag plan">planned</span></td></tr>
 <tr><td>Zidolia and MiniCargo apps</td><td><span class="tag plan">not started</span></td></tr>
 <tr><td>Clicking Save in a real browser</td><td><span class="tag todo">not verified</span> (the action is tested in Node)</td></tr>

@@ -335,13 +335,18 @@ Decided:
 4. **Auth uses a library behind the `Auth` port.** Which library is chosen when the port is built.
 5. **Skeleton scope.** First: items 1 to 9 and 48 to 50 of the checklist. Next: billing, entitlements, metering, and rate limits (items 10 to 13). Data ingestion and marketplace features stay in the apps until two apps need the same thing, and then they move into the skeleton.
 6. **The database port has no raw query method.** Only named repository methods (`findByEmail`).
+7. **Steps declare the ports they use** with an extra `uses` list in the manifest. The checker allows it and does not compare it. A step's `ctx` holds only those ports, narrowed by its permissions.
+8. **Cache permissions** are `cache:<namespace>` strings in the existing `reads` and `writes` lists. A step with `cache:profile` may touch keys that start with `profile:`.
+9. **Telemetry ports** are named `reporter` and `metrics`. Only the step wrapper and the strip runner use them. A strip run is reported when its final error is internal and of kind unexpected, upstream or network.
+10. **The `dev` flag** is a boolean derived from `APP_ENV` (true for local and dev, false for prod). It is read-only and selects no adapter, so a flag can never point a development machine at production services.
+11. **`log-and-continue`** is allowed on a step whose input is a valid input for the next step. Fallback steps for `recover:<step>` are listed in a separate `fallbacks` list of the strip.
 
 Still open (decide when building the part concerned):
 
 - How strict lint enforcement is at first.
 - Where production logs go (the platform's log collection, or a hosted service).
 - How a deliberate permission widening is approved (a recorded acknowledgment file, or a review step).
-- Timestamp representation at the database port.
+- ~~Timestamp representation at the database port.~~ Decided in skeleton-core: UTC ISO 8601 strings from the Clock port.
 
 ## 18. Known costs
 

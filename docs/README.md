@@ -28,12 +28,15 @@ Core ideas:
 | Design documents (below) | Written, draft |
 | Enforcement setup (`.kiro/specs/enforcement-setup/`) | Done: 27 requirements, 41 rules, 23 tasks, 138 tests passing offline |
 | Conformance checker (`scripts/conformance/`) | Built. `pnpm conformance` |
-| Check command | Built. `pnpm check` (conformance, typecheck, tests, affected strip tests), about 1.2s here |
+| Check command | Built. `pnpm check` (conformance, typecheck, all tests, affected strip tests), about 25 s here because it runs the tests |
 | Worktree command | Built. `pnpm worktree create/verify/merge/remove/list <task>` |
 | Hooks (`.kiro/hooks/enforcement.json`) | On: Stop (runs the check), prompt submit (resets attempts), and protection for writes and shell commands. Tested live, including a sub-agent |
 | Steering (`.kiro/steering/`) | Written: `core-rules.md` always loaded, the rest by folder |
 | Coverage checker (`scripts/check-coverage.mjs`) | Built |
-| Skeleton core (`Result`, `defineStep`, `defineStrip`, ports, adapters, Storybook) | Not started. Next spec |
+| Skeleton core (`.kiro/specs/skeleton-core/`) | Built: `Result`, `defineStep`, `defineStrip`, eight ports (Logger, Clock, IdGenerator, Database, Cache, ObjectStorage, Reporter, Metrics) with two or three adapters each and contract suites, profiles with startup guards, the `dev` flag, one example feature (`profile.save`, `profile.view`) tested on both databases with the cache on and off, Storybook stories, and a Next.js page that runs offline |
+| Illustrated summary of the build | `docs/today/index.html` (open it in a browser). Regenerate with `node docs/today/build.mjs` |
+| Real adapters (PocketBase, Supabase, Workers KV, R2, hosted error tracking and metrics) | Planned, per app. None is built |
+| Not verified | Clicking Save in a real browser (the Server Action is tested in Node). Cloudflare deployment (OpenNext) is not part of the first spec |
 | Apps | Not started. Separate repositories, after the core |
 
 ## How to use the enforcement
@@ -56,6 +59,7 @@ To continue where work stopped, read the last rows of the active spec's `progres
 | `provider-ports.md` | Port list, per-port decisions, contract tests, how to switch a provider |
 | `environments.md` | Profiles (`local`, `dev`, `staging`, `prod`), offline local mode, data separation, provider differences between dev and prod |
 | `app-planning.md` | How an app is planned before feature specs: four repeating stages (brief, architecture, domain, features), questions per stage, every default shown before it is applied |
+| `today/index.html` | One illustrated page about what was built on 2026-11-23: diagrams, screenshots, numbers, what went wrong. Generated from git and the test runner |
 | `kiroween-script.md` | Devpost write-up draft, video script by scene, and a build log of moments worth showing. Updated at every checkpoint |
 | `kiroween-submission.md` | Judging criteria, what demonstrates each, evidence of how the project was built, and what is still missing |
 | `change-process.md` | How every change is planned and executed: change plans, task file lists, sequential and parallel work, sub-agents, what the checks enforce |
@@ -85,6 +89,10 @@ Skeleton decisions:
 16. Apps are planned in four stages (brief, architecture, domain model, feature map) before feature specs. No fixed question bank: questions are written per stage for each app.
 17. Every default is shown to the user as `proposed` before it is applied. Only `confirmed` or `changed` decisions are used by later stages.
 18. Every spec keeps a dated, append-only `progress.md`. Each task ends in one commit named `task(<spec>/<id>): ...`. Every document has `created` and `updated` dates.
+19. Timestamps at the database port are UTC ISO 8601 strings with milliseconds, taken from the Clock port.
+20. Steps declare the ports they use (`uses`). Cache permissions are `cache:<namespace>` strings in the existing permission lists.
+21. Error reporting and metrics are ports (`reporter`, `metrics`), used only by the step wrapper and the strip runner. A strip run is reported when it ends in an internal error of kind unexpected, upstream or network.
+22. `dev` is a boolean derived from `APP_ENV`. It is read-only and selects no adapter. Profiles gate telemetry: none or memory outside prod, never none in prod.
 
 Platform decisions:
 
@@ -100,7 +108,6 @@ Decide when building the part concerned:
 - Lint strictness at first.
 - Where production logs go.
 - How a deliberate permission widening is approved.
-- Timestamp format at the database port.
 - Auth library.
 - Mailer, notifier, and LLM providers.
 - Whether `staging` is required when dev and prod databases differ.
@@ -150,7 +157,7 @@ Taken from past trouble described during the session.
 - PocketBase: deployment, backups, local migrations. It runs as a long-lived server with a local SQLite file, so it does not run inside a Worker.
 - Supabase: local development options.
 - Paystack: payout, split, and transfer support.
-- Storybook: whether a Vite-based builder works with the installed Next.js version.
+- ~~Storybook: whether a Vite-based builder works with the installed Next.js version.~~ Checked in skeleton-core task 1: it works (`@storybook/nextjs-vite` 10 with Next.js 16 and TypeScript 7).
 - Kiroween official rules (see below).
 
 ## 9. Risks and cautions noted

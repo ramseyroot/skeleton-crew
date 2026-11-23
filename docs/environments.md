@@ -112,7 +112,21 @@ Added to the conformance script (`function-strips-plan.md`, section 15):
 4. How seed and demo data are defined and versioned (fixtures files, a seed strip).
 5. Whether demo mode differs from `local` (for example a locked state and a one-click reset).
 
-## 10. To verify before writing adapters
+## 10. What the skeleton ships (skeleton-core)
+
+| Profile | Database | Cache | Storage | Reporter and metrics | Paths |
+|---|---|---|---|---|---|
+| `local` | sqlite file | memory | fs folder | `none` | `.data/local/` (ignored by git), demo users added |
+| `dev` | sqlite file | memory | fs folder | `none` | `DATABASE_PATH` and `STORAGE_PATH` from the environment, no demo users unless `APP_SEED=1` |
+| `prod` | sqlite file | `null` | fs folder | `log` | from the environment, never seeded |
+
+The skeleton can only name adapters that exist, so `dev` and `prod` reuse the local-capable ones. An app replaces them with its own (PocketBase, Supabase, R2, ...).
+
+Startup refuses to run (and lists every problem at once) when: `APP_ENV` is missing or unknown, a profile fails its schema, `local` lists a non-local host, `dev` lists a production host, an adapter is not registered or reaches a host the profile does not allow, a file path is missing or shared with the local one, or, outside local, the clock is not the system clock or ids are not uuids. `prod` also refuses in-memory database or storage.
+
+**Gating.** `reporter` and `metrics` are `none` or `memory` in local and dev, and never `none` in prod, enforced by the profile schema (rule R23 catches a bad profile). **The `dev` flag** that `compose()` returns is `profile.env !== "prod"`. It is information for the app (the demo page footer shows it). It is not an input and chooses nothing: a test shows that `DEV`, `APP_DEV` and `NODE_ENV` do not change it.
+
+## 11. To verify before writing adapters
 
 - Local emulation of Cloudflare bindings, and what it does not cover.
 - Running the chosen database locally, and how its migrations work.

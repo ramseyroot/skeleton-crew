@@ -41,7 +41,7 @@ On top of that is an enforcement layer built on Kiro:
 - Kiro proposed defaults; I confirmed or changed each one before it was used. Plans record which.
 - Kiro executed the spec one task per commit, logging every start, finish, block, and plan deviation in `progress.md`. When something did not match the plan, it stopped and asked. One example: the latest TypeScript (7) no longer ships the compiler API the checker needed, so Kiro blocked the task and laid out three options, and I chose one.
 - The rules are tested against a broken and a clean example each: 138 tests, all offline.
-- **[not built yet]** Steering files that load each kind of function's rules only when the agent works on that folder, and the hooks switched on.
+- Steering files that load each kind of function's rules only when the agent works on that folder, and the hooks switched on and tested live.
 
 ### Challenges
 
@@ -82,17 +82,17 @@ Each scene: what is on screen, and what you say. Times are targets.
 - **On screen:** add a step that returns `e.message` and widens a permission. Run `pnpm check`. Show the violations with file, line, and a link to the rule.
 - **Say:** "Here I add a step the wrong way. The checker lists every violation, not just the first, each with a link to why the rule exists and how to fix it. Forty-one rules cover errors, naming, permissions, providers, environments, plans, and progress."
 
-### Scene 4: The agent sent back (1:15 to 1:45) [not built yet: hooks]
+### Scene 4: The agent sent back (1:15 to 1:45)
 
 - **On screen:** ask Kiro to add a feature. It tries to finish; the Stop hook sends it back with the list; it fixes the items and finishes.
 - **Say:** "When the agent tries to finish, a Stop hook runs the checks and sends it back with the list. If it can't fix something in three tries, it stops and asks me instead of looping."
 
-### Scene 5: Plans and protection (1:45 to 2:15) [not built yet: hooks]
+### Scene 5: Plans and protection (1:45 to 2:15)
 
 - **On screen:** the agent tries to edit an existing shared step that the change plan does not list. The protection hook blocks it with a message to ask me. Then show the change plan with "affected strips".
 - **Say:** "Before any code, a change plan lists which steps are reused, new, or modified, and every strip that depends on them. It counts only once I commit it. If the agent tries to edit something the plan doesn't cover, it's blocked."
 
-### Scene 6: Two apps, one skeleton (2:15 to 2:40) [not built yet: core and apps]
+### Scene 6: Two apps, one skeleton (2:15 to 2:40) [skeleton built, apps not built yet]
 
 - **On screen:** the two app repositories running offline from the same template.
 - **Say:** "Here are two different apps from the same skeleton: [names and one line each]. Both run offline on my PC, with dev data kept apart from production."
@@ -127,3 +127,7 @@ Append at each checkpoint. Each entry: what happened, why it matters, and where 
 | 2026-11-23 19:41 | Strip library built: the compiler rejects a strip whose steps do not chain, a skipped step that cannot be skipped, and a recover route to an unknown fallback; the budget, routing and invalidates checks fail when the module loads. Writing it showed that two confirmed decisions were too narrow (D5, and where recover steps live), so the agent proposed D5b and D12 instead of quietly changing them | Types and load-time checks catching mistakes; the agent flags a deviation from a confirmed default instead of applying it | commit for task 7, design section 11 |
 | 2026-11-23 19:53 | The example works end to end in tests: profile.save and profile.view run against both databases and with the cache on and off, 49 strip tests. Writing it exposed a real design error caught by the tests: normalizing the display name to lowercase stored it lowercased, so the schema now keeps what the user typed and a separate lowercase key for uniqueness. Also found: the checker scans test files and flagged the library's own deliberately broken fixtures, so those tests moved out of src/ | Tests catching a bad assumption in the port design; the enforcement layer's rough edge reported honestly | `progress.md` task 9 rows, `src/strips/` |
 | 2026-11-23 20:05 | The Next.js shell runs offline: the page was served from inside a network namespace with no network, from the local SQLite file, with a readable strip trace in the log. The Server Action returns only the display and a reference code, so internal error text cannot reach the browser, and a test checks the JSON on the wire | Scene 6 footage: the app working offline, dev data on the PC | `progress.md` task 11 |
+| 2026-11-23 20:55 | The builder asked for a dev flag that switches services to production. The agent searched the docs, the code and the git log, found no earlier mention, said so, and proposed a read-only boolean derived from APP_ENV instead, with the reason: a flag that can point a development machine at production breaks data separation. The builder confirmed, and the spec grew by three requirements (error reporter, metrics, gating) | The agent checks before building from a half-remembered requirement, and pushes back where a request would break a rule | requirements 12 to 14, design section 11a |
+| 2026-11-23 20:55 | Gating is in the profile schema: development rejects tracking adapters, production rejects "none". A test shows that DEV, APP_DEV and NODE_ENV cannot change the dev flag. Reports are sent once per failed strip run, never for expected outcomes, never for a retry that works | Rules enforced by the project, not by remembering | tests in `tests/lib/strip.test.ts` and `src/config/compose.test.ts` |
+| 2026-11-23 20:55 | Turning on the test command inside pnpm check made a checker test fail: its fixture projects had inherited the real test command. Found by running the checker's own suite after the config change, fixed in the test helper | Changing the judge needs the judge's tests rerun | `scripts/conformance/test/helpers.ts` |
+| 2026-11-23 20:55 | The plan commit gate in action: the builder set the plan to active but had not committed it, and the agent refused to start the dependent tasks, asking for the commit instead of making it | The agent leaves approvals to the builder | `progress.md` task 14 and 12 rows |

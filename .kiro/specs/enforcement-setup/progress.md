@@ -72,3 +72,5 @@ Append-only. Format and resume procedure: `docs/change-process.md`, section 7.
 | 2026-11-23 17:58 | 22 | blocked | | docs/change-process.md | Live results recorded: protection (write and shell) and Stop hook work; reason field confirmed. Remaining: sub-agent tests need the user present; a stop.ts message fix needs the user's unlock |
 | 2026-11-23 18:00 | 22 | started | | | Resumed with the user: sub-agent tests using a temporary spec .kiro/specs/live-test |
 | 2026-11-23 18:01 | 22 | done | this | docs/change-process.md | Live results recorded. Sub-agents: hooks apply to their tool calls; they are not confined to the worktree (default directory is the main root); finishing does not trigger the Stop hook. Temporary live-test spec and worktree removed. Next: task 23 |
+| 2026-11-23 18:01 | 23 | started | | | Update README status, how to run checks, unlock, resume |
+| 2026-11-23 18:01 | 23 | done | this | docs/README.md (status, how to use the enforcement) | Enforcement spec complete. Next: skeleton core spec |

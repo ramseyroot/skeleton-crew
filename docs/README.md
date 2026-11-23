@@ -5,7 +5,7 @@ updated: 2026-11-23
 
 # Skeleton Crew: Docs Index and Status
 
-Last updated at the end of the first design session. Read this file first.
+Read this file first.
 
 ## 1. What this project is
 
@@ -26,15 +26,23 @@ Core ideas:
 | Item | State |
 |---|---|
 | Design documents (below) | Written, draft |
-| `scripts/check-coverage.mjs` | Built and tested. Checks a filled-in app coverage file. |
-| `.kiro/specs/enforcement-setup/requirements.md` and `design.md` | Approved (25 requirements, 39 rules) |
-| `.kiro/specs/enforcement-setup/` | Approved and active: 27 requirements, 41 rules, 23 tasks. No task started. Progress in `progress.md` |
-| Git repository | Created, branch `main` |
-| `.kiro` steering, hooks, custom agent | Not created (specified in the enforcement-setup spec) |
-| Conformance script (checks the code rules) | Not created, designed in plan section 15 |
-| Skeleton code (`Result`, `defineStep`, `defineStrip`, ports, adapters) | Not created |
-| Storybook setup | Not created |
-| Any app | Not started, and out of scope for the skeleton work |
+| Enforcement setup (`.kiro/specs/enforcement-setup/`) | Done: 27 requirements, 41 rules, 23 tasks, 138 tests passing offline |
+| Conformance checker (`scripts/conformance/`) | Built. `pnpm conformance` |
+| Check command | Built. `pnpm check` (conformance, typecheck, tests, affected strip tests), about 1.2s here |
+| Worktree command | Built. `pnpm worktree create/verify/merge/remove/list <task>` |
+| Hooks (`.kiro/hooks/enforcement.json`) | On: Stop (runs the check), prompt submit (resets attempts), and protection for writes and shell commands. Tested live, including a sub-agent |
+| Steering (`.kiro/steering/`) | Written: `core-rules.md` always loaded, the rest by folder |
+| Coverage checker (`scripts/check-coverage.mjs`) | Built |
+| Skeleton core (`Result`, `defineStep`, `defineStrip`, ports, adapters, Storybook) | Not started. Next spec |
+| Apps | Not started. Separate repositories, after the core |
+
+## How to use the enforcement
+
+- `pnpm check`: everything the Stop hook runs. Fix every item it lists.
+- `pnpm conformance --write-catalog`: regenerate `docs/generated/catalog.*` after changing steps or strips, then commit.
+- `pnpm test:conformance`: the checker's own tests (16s), when the checker changes.
+- Protected files (rules, exceptions, config, hooks, steering) can only be changed after the user runs `touch .conformance/unlock` in their own terminal. The unlock lasts 30 minutes.
+- To switch the hooks off for a moment, set `"enabled": false` in `.kiro/hooks/enforcement.json` (a protected file, so unlock first).
 
 ## Resuming work
 

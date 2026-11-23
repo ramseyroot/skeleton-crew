@@ -174,7 +174,7 @@ Every task: append a `started` row to `progress.md` before writing files. On fin
   - Write the results into `docs/change-process.md`. Adjust the hooks if the reason field name differs (with the unlock file).
   - _Requirements: 25.1 to 25.3_
 
-- [ ] 23. Update status
+- [x] 23. Update status
   - Mode: sequential
   - Writes: docs/README.md
   - Mark the enforcement setup done, list how to run the checks, how to unlock, and how to resume unfinished work.

@@ -33,19 +33,22 @@ export async function createRuntime(env: Env, list: readonly FeatureModule[] = f
 }
 
 const KEY = Symbol.for("skeleton.runtime");
+// Tests of a feature pass their own list, so they still work while the feature is disabled in the app's list.
+let featuresForTests: readonly FeatureModule[] | null = null;
 type Holder = { [KEY]?: Promise<Runtime> };
 
 /** One runtime per process. It survives hot reloads in development. */
 export function getRuntime(): Promise<Runtime> {
   const holder = globalThis as Holder;
-  holder[KEY] ??= createRuntime(process.env).catch((error: unknown) => {
+  holder[KEY] ??= createRuntime(process.env, featuresForTests ?? features).catch((error: unknown) => {
     holder[KEY] = undefined;
     throw error;
   });
   return holder[KEY];
 }
 
-/** For tests. */
-export function resetRuntime(): void {
+/** For tests. Pass a list to build the next runtime from those features instead of the app's list. */
+export function resetRuntime(list?: readonly FeatureModule[]): void {
+  featuresForTests = list ?? null;
   (globalThis as Holder)[KEY] = undefined;
 }

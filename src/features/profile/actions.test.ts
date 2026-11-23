@@ -4,6 +4,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { after, before, test } from "node:test";
 import { saveProfileAction } from "./actions.ts";
+import { profileFeature } from "./feature.ts";
 import { getRuntime, resetRuntime } from "../../app/runtime.ts";
 
 const tmp = mkdtempSync(join(tmpdir(), "skel-actions-"));
@@ -16,7 +17,8 @@ before(() => {
   process.env.APP_SEED = "1";
   process.env.DATABASE_PATH = join(tmp, "actions.db");
   process.env.STORAGE_PATH = join(tmp, "files");
-  resetRuntime();
+  // This feature's own list, so the test still runs while the feature is disabled in the app.
+  resetRuntime([profileFeature]);
 });
 after(() => {
   for (const k of KEYS) {

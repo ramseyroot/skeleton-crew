@@ -155,7 +155,12 @@ If step 5 needs a step change, the port is leaking a provider detail. Fix the po
 4. Current Cloudflare limits and transaction behavior, and PocketBase deployment behavior (verify against the docs before writing the first adapters).
 5. Interface between an external ingestion program and the database port: does the program write into PocketBase directly (so the app's repositories read the same collections), or through an API the app owns?
 
-## 8. Built in the skeleton core
+## 8. Adding and removing a provider
+
+- **Add:** create `src/adapters/<port>/<provider>/` with `index.ts`, `errors.ts` and a test that runs the port's `contract.test.ts`. Add its import and entry to `src/config/registry.ts`. Name it in a profile (`src/config/profiles.ts`). Rule R44 fails if the folder and the registry disagree, and R25 fails if a profile names a missing adapter.
+- **Remove:** delete the folder, its registry lines, and any profile setting that names it. Steps and strips do not change, because they only know the port.
+
+## 9. Built in the skeleton core
 
 Each port below has two or more adapters and one contract suite run against all of them. Planned adapters are not built and are never claimed as built.
 

@@ -11,7 +11,7 @@ Built with Kiro for the Kiroween 2026 hackathon (Skeleton Crew category). It is 
 - A provider (database, cache, storage, logging, error tracking, metrics) sits behind a port. Swapping one means one adapter folder and one setting. Steps and strips never change.
 - A generated catalog lists every step and strip and who uses it, so you can see what removing something touches before you do it.
 
-**2. Good code, not prototype code.** Every step declares its input, output and permissions. Errors are values (`Result`), never strings that look like data. Every port has a shared contract test suite that all its adapters must pass. Forty-one rules are checked by one command, and Kiro hooks stop an AI agent from finishing, or editing code its plan did not cover, until the checks pass.
+**2. Good code, not prototype code.** Every step declares its input, output and permissions. Errors are values (`Result`), never strings that look like data. Every port has a shared contract test suite that all its adapters must pass. Forty-four rules are checked by one command, and Kiro hooks stop an AI agent from finishing, or editing code its plan did not cover, until the checks pass.
 
 **3. The parts prototypes skip.** Observability (every log line carries a strip reference, payloads are redacted in production, an error reporter and metrics with per-step timings), validated config that stops the app at startup on a bad setting, development data kept apart from production data, an offline local mode, and real tests.
 
@@ -19,11 +19,11 @@ Built with Kiro for the Kiroween 2026 hackathon (Skeleton Crew category). It is 
 
 | Promise | Built | Not built yet |
 |---|---|---|
-| Lego | Strips, ports with two or three adapters each, the catalog, permission budgets, profiles that pick adapters | A feature is still spread over several folders (see below). Adding an adapter means editing the adapter registry. Nothing flags a step that no strip uses |
-| Good code | Result type, manifests, contract suites, the checker, hooks, 445 tests | |
+| Lego | Feature folders (one folder per feature), `pnpm feature disable/enable/prune`, ports with two or three adapters each, the catalog, permission budgets, profiles that pick adapters, rules that keep features independent and flag unused steps | Adding an adapter still means one line in the adapter registry. Pulling a feature from a newer version of the template is not built |
+| Good code | Result type, manifests, contract suites, the checker, hooks, about 450 tests | |
 | Parts prototypes skip | Logger with redaction, error reporter and metrics ports, step and strip timings, profile gating, startup guards, offline mode | Hosted error-tracking and metrics adapters, passing the strip reference on outgoing HTTP calls, health check endpoint, audit log, alerting. Auth, API keys, plans, rate limits and payments are not built |
 
-**Where it is not yet Lego.** The example feature (a user's display name) lives in `src/steps/{pure,db,cache}/`, `src/strips/`, `src/domain/`, `src/components/` and `src/app/`. Removing it means touching all of them. The layout is organized by kind of code, not by feature. See `docs/README.md`, "Still open".
+**Lego, concretely.** A feature is one folder, `src/features/<name>/`, holding its steps, strips, domain, UI, actions, page and tests, plus a small `feature.json`. `pnpm feature disable <name> --yes` switches it off (its route stub and its line in `src/app/features.ts` go, the folder stays and stays tested), `enable` switches it back on, and `prune` deletes a disabled one for good. Every command prints a plan first and refuses to run with uncommitted changes, so git can always undo it. Features cannot import each other (rule R42).
 
 An illustrated summary of the build is `docs/today/index.html` (open it in a browser). Start with `docs/README.md`.
 
@@ -48,8 +48,9 @@ pnpm storybook        # component stories, http://localhost:6006
 | `src/lib/` | `Result`, `defineStep`, `defineStrip`, the cache envelope |
 | `src/ports/`, `src/adapters/` | The eight ports and their adapters, with contract tests |
 | `src/config/` | Profiles, the adapter registry, startup checks |
-| `src/steps/`, `src/strips/` | The example feature |
-| `src/app/`, `src/components/` | The Next.js page and the UI components with stories |
+| `src/features/` | One folder per feature (the example is `profile`) |
+| `src/shared/` | Steps and UI used by more than one feature |
+| `src/app/` | Layout, route stubs, the feature list, the runtime |
 | `scripts/conformance/` | The checker, hooks and worktree command |
 | `.kiro/` | Kiro specs, steering and hooks used to build this |
 | `docs/` | Design documents, decisions, and the generated catalog |

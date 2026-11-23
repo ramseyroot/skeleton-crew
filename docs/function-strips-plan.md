@@ -281,49 +281,40 @@ The coverage checker (`scripts/check-coverage.mjs`) already exists for the app c
 
 ## 16. Suggested layout
 
+Organized by feature (decided 2026-11-23). Everything a feature owns is in one folder, so adding or removing it is one folder.
+
 ```
 src/
-  steps/
-    pure/
-    api/
-    db/
-    cache/
-    storage/
-    ui/
-    scrape/            # optional
-  strips/
-    profile.save.strip.ts
-  ports/               # interfaces only, domain terms
+  features/
+    <name>/                   one folder per feature
+      feature.json            manifest: name, module, route stubs
+      index.ts                public surface (the FeatureModule, strips)
+      domain.ts               schemas and types the feature owns
+      steps/<class>/          <domain>.<verb>.ts and its test
+      strips/                 <domain>.<verb>.strip.ts and its test
+      ui/  actions.ts  page.tsx  testing.ts
+  shared/
+    steps/<class>/            steps used by more than one feature
+    ui/                       UI used by more than one feature
+  ports/                      interfaces only, domain terms
   adapters/
     <port>/
-      <provider>/      # the only place provider SDKs are imported
-      memory/
+      <provider>/             the only place provider SDKs are imported
       contract.test.ts
-  lib/
-    result.ts          # Result, StepError, helpers
-    step.ts            # defineStep(), step() wrapper
-    strip.ts           # defineStrip(), routing
-    cache-envelope.ts
-  components/
-    Toast/
-      Toast.tsx
-      Toast.stories.tsx
-  test-utils/
-    fixtures.ts
-scripts/
-  check-conformance
-  check-coverage.mjs
-docs/
-  function-strips-plan.md
-  provider-ports.md
-  app-parts-checklist.md
-  app-coverage.template.md
-  generated/
-    catalog.md         # generated, do not edit
-.kiro/
-  steering/
-  hooks/
+  lib/                        Result, defineStep, defineStrip, cache envelope, FeatureModule
+  config/                     profiles, adapter registry, startup checks
+  app/                        layout, one-line route stubs, features.ts (the feature list), runtime.ts
+  test-utils/                 generic test helpers
+scripts/conformance/          the checker, hooks, worktree and feature commands
+docs/  .kiro/
 ```
+
+Rules: a feature imports only itself, `lib`, `ports` and `shared`, never another feature (R42). A step no strip uses is a warning (R43). The adapter registry and the feature list match their folders (R44).
+
+**Adding a feature:** create its folder with a `feature.json`, then `pnpm feature enable <name> --yes`.
+**Switching one off:** `pnpm feature disable <name> --yes` removes its route stubs and its line in `src/app/features.ts`. The folder stays, and stays tested.
+**Deleting one:** disable it, then `pnpm feature prune <name> --yes`. Git can undo every step, and the commands refuse to run with uncommitted changes.
+**Adding or removing a provider:** one folder under `src/adapters/<port>/`, one import line in `src/config/registry.ts`, one setting in a profile.
 
 ## 17. Decisions
 

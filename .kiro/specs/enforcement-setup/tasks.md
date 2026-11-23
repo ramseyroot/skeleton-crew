@@ -103,7 +103,7 @@ Every task: append a `started` row to `progress.md` before writing files. On fin
   - Report section per active plan: files changed, files planned but unchanged, plan commits with author and time.
   - _Requirements: 16.1 to 16.8, 20.1 to 20.3_
 
-- [ ] 13. Task file and plan comparison rules (R34 to R36, R38, R39)
+- [x] 13. Task file and plan comparison rules (R34 to R36, R38, R39)
   - Mode: sequential
   - Writes: scripts/conformance/tasks.ts, scripts/conformance/rules/R34-tasks-write-declared.ts, scripts/conformance/rules/R35-tasks-write-disjoint.ts, scripts/conformance/rules/R36-parallel-new-files-only.ts, scripts/conformance/rules/R38-plan-shared-new-once.ts, scripts/conformance/rules/R39-plan-no-near-duplicates.ts, scripts/conformance/rules/index.ts, docs/conformance-rules.md, scripts/conformance/test/fixtures/R34/**, scripts/conformance/test/fixtures/R35/**, scripts/conformance/test/fixtures/R36/**, scripts/conformance/test/fixtures/R38/**, scripts/conformance/test/fixtures/R39/**, scripts/conformance/test/tasks.test.ts
   - Parse incomplete tasks, `Mode:` and `Writes:` lines, including `/**` folder entries (CP4).

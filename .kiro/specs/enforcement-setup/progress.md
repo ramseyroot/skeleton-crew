@@ -46,3 +46,5 @@ Append-only. Format and resume procedure: `docs/change-process.md`, section 7.
 | 2026-11-23 17:24 | scope | checkpoint | | | User chose option A: finish the full enforcement spec before the skeleton core and apps, despite the December 4 deadline |
 | 2026-11-23 17:24 | 12 | started | | | Plan deviation: added report.ts and cli.ts to task 12 Writes, for the per-plan report section |
 | 2026-11-23 17:27 | 12 | done | this | plans.ts, rules/R32, R33, R37, rules/index.ts, report.ts and cli.ts (active plan section), docs/conformance-rules.md, fixtures/R32, R33, R37, test/plans.test.ts (98 tests pass) | Start task 13: task file and plan comparison rules |
+| 2026-11-23 17:27 | 13 | started | | | Write tasks.ts, R34 to R36, R38, R39 with fixtures and docs |
+| 2026-11-23 17:29 | 13 | done | this | tasks.ts, rules/R34 to R36, R38, R39, rules/index.ts, docs/conformance-rules.md, fixtures/R34 to R36, R38, R39, test/tasks.test.ts (111 tests pass) | Start task 14: progress and date rules, then checkpoint |

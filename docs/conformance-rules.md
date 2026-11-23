@@ -352,3 +352,49 @@ Each rule section has this shape, and the meta tests check that every label is p
 - **Failing example:** `src/steps/db/user.find.ts` edited while the active plan lists only `src/steps/db/other.ts`.
 - **Passing example:** the file listed in the active plan, committed by the user before the work.
 - **Fix:** undo the change, or propose a plan update for the user to review and commit.
+
+## R34 tasks-write-declared
+
+- **Severity:** error
+- **Catches:** an unfinished task (`- [ ]`) in a spec's `tasks.md` with no `Writes:` line.
+- **Why:** the file list is what lets parallel tasks be checked for overlap, and what the worktree check compares each branch against.
+- **Failing example:** a task with only a description.
+- **Passing example:** `  - Writes: src/steps/db/user.setName.ts, src/steps/db/user.setName.test.ts`.
+- **Fix:** list every file the task creates or edits. A folder ending in `/**` covers all files under it.
+
+## R35 tasks-write-disjoint
+
+- **Severity:** error
+- **Catches:** two unfinished tasks in the same `tasks.md`, neither marked `Mode: sequential`, whose `Writes:` lists overlap (same file, or a folder glob covering the other's file).
+- **Why:** tasks without `sequential` may run at the same time in separate worktrees. Overlapping files would conflict or overwrite.
+- **Failing example:** two parallel tasks that both write `src/steps/db/a.ts`.
+- **Passing example:** parallel tasks with separate files, and shared files handled by one sequential task.
+- **Fix:** mark one of the tasks sequential, or move the shared file into its own sequential task.
+
+## R36 parallel-new-files-only
+
+- **Severity:** error
+- **Catches:** an unfinished task not marked `Mode: sequential` whose `Writes:` list includes a file that exists at git `HEAD` (or a folder glob covering one).
+- **Why:** parallel work only creates new files. Edits to existing code run one at a time, so two agents never change the same code.
+- **Failing example:** a parallel task writing `src/steps/db/a.ts`, which already exists.
+- **Passing example:** the same task marked `Mode: sequential`.
+- **Fix:** add `Mode: sequential` to the task.
+
+## R38 plan-shared-new-once
+
+- **Severity:** error
+- **Catches:** a `new` step that the change plan says more than one strip in the spec uses, when it is not created by exactly one sequential task placed before the tasks of those strips. The step file is found by convention: `src/steps/<class>/<rest of name>.ts`. Strip tasks are found by `src/strips/<strip>.strip.ts` in their `Writes:`.
+- **Why:** without this, two parallel agents each build their own copy of the shared step.
+- **Failing example:** `db.user.setName` used by `profile.save` and `profile.view`, created by a parallel task, or by no task.
+- **Passing example:** task 1 (sequential) writes `src/steps/db/user.setName.ts`, tasks 2 and 3 build the strips.
+- **Fix:** give the shared step its own sequential task before the strip tasks.
+
+## R39 plan-no-near-duplicates
+
+- **Severity:** error
+- **Catches:** a `new` step in a change plan whose name is a near-duplicate (same normalization as R08) of an existing step or of another step earlier in the plan, with no `Distinct from` note.
+- **Why:** catching the duplicate in the plan is cheaper than after two steps exist.
+- **Failing example:** planning `db.user.getByEmail` when `db.user.findByEmail` exists.
+- **Passing example:** reusing `db.user.findByEmail`, or a `Distinct from` note explaining the difference.
+- **Fix:** reuse the existing step, rename the new one, or write the note.
+- **Limits:** name-based. Steps doing the same job under unrelated names are left to plan review.

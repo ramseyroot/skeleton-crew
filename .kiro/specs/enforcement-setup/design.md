@@ -52,11 +52,18 @@ The rules only read code. They never modify files, except that the catalog rule 
 | ESLint custom rules | Editor feedback, familiar | Per-file view, hard to check whole strips, budgets, and catalog. Adds a plugin and config. |
 | Structural search tool (ast-grep and similar) | Short pattern rules | No type or symbol resolution. Extra binary. |
 
-Chosen: the TypeScript compiler API (`typescript` as a dev dependency). ESLint can be added later for editor feedback on the simple rules, without replacing the script.
+Chosen: the TypeScript compiler API. ESLint can be added later for editor feedback on the simple rules, without replacing the script.
+
+**Revision (task 1, 2026-11-23, user chose option A).** The latest TypeScript, 7.0.2, is the native compiler and no longer ships the classic compiler API (its package exports only APIs marked `unstable`). TypeScript 6.0.3 is the last release with the classic API. So:
+
+- `typescript` 7.x is used for type checking (`tsc --noEmit`), which is fast on a low-spec PC.
+- `ts-api` is TypeScript 6.0.3 installed under an alias (`npm:typescript@6.0.3`), imported only by the conformance script (`import ts from "ts-api"`).
+- All compiler API use stays inside `scripts/conformance/project.ts` and `discover.ts`, so moving to TypeScript 7's API once it is stable changes only those files.
+- Risk: TypeScript 6 may fail to parse syntax added after it. The script reports a parse failure as a script error (exit 2), never as a pass.
 
 ### D2. Language and runtime of the script
 
-The script is written in TypeScript and run directly by Node's built-in type stripping (Node 24), with no build step and no extra runner. Only erasable syntax is used (no enums, namespaces, or parameter properties). Task 1 confirms that Node 24 runs the files without flags. If it requires a flag or prints a disruptive warning, the fallback is plain `.mjs` with JSDoc types, which changes no other part of the design.
+The script is written in TypeScript and run directly by Node's built-in type stripping (Node 24), with no build step and no extra runner. Only erasable syntax is used (no enums, namespaces, or parameter properties). Confirmed in task 1 (2026-11-23): Node v24.19.0 runs `.ts` files directly, with relative `.ts` imports, no flag, and no warning. Non-erasable syntax (for example `enum`) fails at run time, and `erasableSyntaxOnly` in `tsconfig.json` reports it at type-check time. The `.mjs` fallback is not needed.
 
 The script's own tests use Node's built-in test runner (`node --test`), so they need no dependency and run offline.
 
@@ -277,7 +284,7 @@ status: active        # draft | active | done
 - "Approved" means the version at git `HEAD` (read with `git show HEAD:<path>`). The working copy is ignored for permissions, so an agent's uncommitted edit grants nothing.
 - Several plans can be `active` at once. Permissions are the union of their file lists.
 
-**`tasks.md` notation.** Each task carries two plain sub-bullets, which Kiro shows as task detail:
+**`tasks.md` notation.** Each task carries two plain sub-bullets, which Kiro shows as task detail. A `Writes:` entry is a file path or a folder ending in `/**`, which covers every file under that folder (used for test fixture folders):
 
 ```markdown
 - [ ] 2. Modify db.user.findById to return deletedAt

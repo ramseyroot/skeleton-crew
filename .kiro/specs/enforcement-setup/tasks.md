@@ -11,10 +11,10 @@ Checkpoints (CP3) stop for user review after tasks 4, 14, and 20.
 
 Every task: append a `started` row to `progress.md` before writing files. On finish, tick the checkbox, append a `done` row, and commit the task's files with both, as `task(enforcement-setup/<id>): <title>`. `progress.md` and `tasks.md` are implicitly in every task's `Writes:`.
 
-- [ ] 1. Project setup and runtime check
+- [x] 1. Project setup and runtime check
   - Mode: sequential
   - Writes: package.json, pnpm-lock.yaml, tsconfig.json, .gitignore, .kiro/specs/enforcement-setup/design.md
-  - Create `package.json` with `packageManager` set to pnpm, `typescript` and `@types/node` as dev dependencies, and scripts `conformance`, `check`, `test:conformance`.
+  - Create `package.json` with `packageManager` set to pnpm, `typescript`, `ts-api` (TypeScript 6 alias, see design D1 revision), and `@types/node` as dev dependencies, and scripts `conformance`, `check`, `test:conformance`.
   - Create `tsconfig.json` (strict, `noEmit`, erasable syntax only, Node 24 module resolution).
   - Confirm Node 24 runs a `.ts` file directly with no flags and no disruptive warning. Record the result in design D2. If it fails, switch D2 to the `.mjs` fallback before continuing.
   - Add the `Writes:` glob note (CP4) to the design.

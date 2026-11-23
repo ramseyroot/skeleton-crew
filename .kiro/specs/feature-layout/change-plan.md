@@ -56,6 +56,8 @@ Existing files outside the guarded folders:
 | scripts/conformance/{config,catalog,cli}.ts, test/** | 2 | Folder keys, feature field, fixtures |
 | .kiro/steering/*.md | 2 | New path patterns (protected, unlock) |
 | docs/conformance-rules.md, docs/README.md, docs/provider-ports.md, docs/function-strips-plan.md, docs/environments.md, docs/today/build.mjs, README.md, docs/generated/catalog.* | 2 to 4 | Layout, rules, procedures, regenerated catalog |
+| src/features/profile/actions.test.ts | 4 | Builds its runtime from the feature's own list, so it still runs while the feature is disabled in the app (found by the disable trial) |
+| src/app/runtime.ts, src/app/runtime.test.ts | 4 | Takes a feature list, so its tests use no real feature |
 | package.json | 4 | `feature` script |
 | src/app/features.ts | 4 | One line per import and per entry, so a tool can edit it |
 | scripts/conformance/rules/index.ts | 4 | R45 (protected, unlock) |

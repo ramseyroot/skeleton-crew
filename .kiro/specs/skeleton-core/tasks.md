@@ -36,7 +36,7 @@ All test files use `node:test`, are named `<name>.test.ts`, and run offline.
 
 - [x] 3. Logger, Clock and IdGenerator ports with adapters
   - Mode: sequential
-  - Writes: src/lib/error-map.ts, src/lib/error-map.test.ts, src/ports/logger.ts, src/ports/clock.ts, src/ports/ids.ts, src/adapters/logger/**, src/adapters/clock/**, src/adapters/ids/**
+  - Writes: src/lib/error-map.ts, src/lib/error-map.test.ts, src/lib/port-error.ts, src/lib/port-error.test.ts, src/ports/logger.ts, src/ports/clock.ts, src/ports/ids.ts, src/adapters/logger/**, src/adapters/clock/**, src/adapters/ids/**
   - Ports with `redact()` in the logger port file. Adapters: `logger/console` and `logger/memory`, `clock/system` and `clock/fixed`, `ids/uuid` and `ids/sequence`.
   - Each port folder: `contract.test.ts`, and per adapter `index.ts`, `errors.ts`, `<adapter>.test.ts`.
   - Only `logger/console` calls `console`.

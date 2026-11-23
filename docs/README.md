@@ -13,7 +13,13 @@ A reusable app skeleton (a template repository) for paid and freemium APIs with 
 
 The skeleton is the focus. It must serve future projects too, not only the two apps planned to prove it. Each app is developed in its own repository, created from the skeleton. The public submission repository (this one) carries the two apps in `apps/` folders, because the Kiroween rules require it (`kiroween-submission.md`, decision 1).
 
-Core ideas:
+Goals, in the builder's words (2026-11-23):
+
+1. Build apps like Lego: add and remove features and providers cleanly, without fishing for deeply nested code.
+2. Make good code, not the throwaway code that is common in prototypes.
+3. Cover the parts that vibe coders tend to ignore, such as observability.
+
+Core ideas (how those goals are met):
 
 - Functions are small steps chained into strips (one strip per feature). Every step returns a `Result`, so a failure can never be mistaken for a value.
 - Each step declares what it takes, returns, and touches. Each strip declares a permission budget. A generated catalog lists them all.
@@ -105,6 +111,12 @@ Platform decisions:
 - Each app must run offline on a PC for development and demos, and keep its dev environment after production launches.
 
 ## 5. Still open
+
+Raised on 2026-11-23, not decided:
+
+- **Feature-oriented layout.** The example feature is spread over `src/steps/<class>/`, `src/strips/`, `src/domain/`, `src/components/` and `src/app/`. For "add or remove a feature by adding or deleting one folder", a feature folder (`src/features/<name>/` holding its steps, strip, domain, UI and tests) would fit better. The checker today expects steps at `src/steps/<class>/` (rule R05, protected files), so this needs checker changes and an unlock. Alternatives: keep the layout and add a `pnpm feature remove <strip>` command that lists everything a strip owns, and a rule that flags steps no strip uses.
+- **Observability still missing** from the checklist (items 20 to 26): passing the strip reference on outgoing HTTP calls, a health endpoint, an audit log, alerting, a status page, and hosted adapters for error tracking and metrics.
+- **Paid-API parts the apps need** (auth, API keys, plans, rate limits, payments): which are shared by both apps and belong in the skeleton.
 
 Decide when building the part concerned:
 

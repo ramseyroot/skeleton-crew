@@ -1,17 +1,31 @@
 # Skeleton Crew
 
-An app template that keeps AI agents honest. The project checks its own rules, and the agent cannot finish its work, or edit code its plan did not cover, until the checks pass.
+A template for building apps like Lego, in code that is meant to last.
 
-Built with Kiro for the Kiroween 2026 hackathon (Skeleton Crew category). The template is the foundation for two applications, Zidolia and MiniCargo, which are developed in their own repositories and will appear in `apps/` here. **Neither app is in this repository yet.**
+Built with Kiro for the Kiroween 2026 hackathon (Skeleton Crew category). It is the foundation for two applications, Zidolia and MiniCargo, which are developed in their own repositories and will appear in `apps/` here. **Neither app is in this repository yet.**
 
-## What is in the template
+## The three promises
 
-- **Guardrails.** A checker with 41 rules (`pnpm conformance`), one command that runs everything (`pnpm check`), Kiro hooks that send the agent back while checks fail and block edits to protected files, and a worktree command for parallel agents.
-- **Skeleton core.** A `Result` type, steps and strips (a feature is a chain of small steps with declared permissions), and eight ports, each with two or three adapters and a shared contract test suite: database, cache, object storage, logger, clock, ids, error reporter, metrics.
-- **Profiles.** `local`, `dev` and `prod`, with startup guards that stop the app on a bad host, path or shared data. `local` runs fully offline.
-- **One example feature** (`profile.save`, `profile.view`), Storybook stories for its states, and a small Next.js page.
+**1. Build like Lego.** Add or remove a feature or a provider cleanly, without hunting through nested code.
+- A feature is a strip: one file that lists its steps, what it may touch, and what happens when a step fails.
+- A provider (database, cache, storage, logging, error tracking, metrics) sits behind a port. Swapping one means one adapter folder and one setting. Steps and strips never change.
+- A generated catalog lists every step and strip and who uses it, so you can see what removing something touches before you do it.
 
-Start with `docs/README.md`. An illustrated summary of the build is `docs/today/index.html` (open it in a browser).
+**2. Good code, not prototype code.** Every step declares its input, output and permissions. Errors are values (`Result`), never strings that look like data. Every port has a shared contract test suite that all its adapters must pass. Forty-one rules are checked by one command, and Kiro hooks stop an AI agent from finishing, or editing code its plan did not cover, until the checks pass.
+
+**3. The parts prototypes skip.** Observability (every log line carries a strip reference, payloads are redacted in production, an error reporter and metrics with per-step timings), validated config that stops the app at startup on a bad setting, development data kept apart from production data, an offline local mode, and real tests.
+
+## Honest status
+
+| Promise | Built | Not built yet |
+|---|---|---|
+| Lego | Strips, ports with two or three adapters each, the catalog, permission budgets, profiles that pick adapters | A feature is still spread over several folders (see below). Adding an adapter means editing the adapter registry. Nothing flags a step that no strip uses |
+| Good code | Result type, manifests, contract suites, the checker, hooks, 445 tests | |
+| Parts prototypes skip | Logger with redaction, error reporter and metrics ports, step and strip timings, profile gating, startup guards, offline mode | Hosted error-tracking and metrics adapters, passing the strip reference on outgoing HTTP calls, health check endpoint, audit log, alerting. Auth, API keys, plans, rate limits and payments are not built |
+
+**Where it is not yet Lego.** The example feature (a user's display name) lives in `src/steps/{pure,db,cache}/`, `src/strips/`, `src/domain/`, `src/components/` and `src/app/`. Removing it means touching all of them. The layout is organized by kind of code, not by feature. See `docs/README.md`, "Still open".
+
+An illustrated summary of the build is `docs/today/index.html` (open it in a browser). Start with `docs/README.md`.
 
 ## Run it
 

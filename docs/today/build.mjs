@@ -158,7 +158,7 @@ code{background:#eef2ff;border-radius:4px;padding:1px 5px;font-size:.92em}footer
 </style></head><body>
 <header><div class="wrap">
 <h1>Skeleton Crew</h1>
-<p>An app template that keeps AI agents honest: the rules are checked by the project, and the agent cannot finish until they pass. This page shows what was built on 23 November 2026.</p>
+<p>A template for building apps like Lego, in code that is meant to last: features and providers that can be added and removed cleanly, good code by default, and the parts prototypes skip, like observability. Agents are kept honest by checks the project runs on itself. This page shows what was built on 23 November 2026.</p>
 <div class="stats">
 <div class="stat"><b>${log.length}</b><span>commits today</span></div>
 <div class="stat"><b>${taskCommits.length}</b><span>task commits (${enforcementTasks.length} guardrails, ${coreTasks.length} skeleton)</span></div>

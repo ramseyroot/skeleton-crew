@@ -7,7 +7,7 @@ updated: 2026-11-23
 
 What you will write on Devpost and say in the video. This is a living draft: the scenes are a starting outline, and the text is rewritten as the project is built, so expect scenes to be added, cut, and reworded. It is updated at every checkpoint. Lines marked **[not built yet]** describe things that do not exist yet: do not record or claim them until they do. The final version is written once the apps are done.
 
-Criteria and evidence map: `kiroween-submission.md`. Check the Devpost rules for the video length limit; the script below is sized for about 3 minutes.
+Criteria and evidence map: `kiroween-submission.md`. The official rules (read 2026-11-23): the video must be under 3 minutes, public on YouTube, show the project running on its device, and use no copyrighted music or third-party trademarks. The script below is sized for about 3 minutes.
 
 ## 1. One-line pitch
 

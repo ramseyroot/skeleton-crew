@@ -200,22 +200,9 @@ A short spike in a throwaway folder, results recorded in `progress.md` and in th
 
 If 2 or 3 fail, the cut order from P10 applies: the shell shrinks first, then Storybook breadth.
 
-## 10. Task outline (to be expanded in `tasks.md`, after the change plan)
+## 10. Task outline
 
-Sequential tasks edit existing files (`package.json`, `tsconfig.json`, catalog). Parallel candidates create new files only.
-
-1. Spike and dependencies (sequential: `package.json`, `tsconfig.json`).
-2. `lib/result.ts`, `lib/cache-envelope.ts` and tests.
-3. `lib/step.ts`, then `lib/strip.ts` (sequential, strip depends on step).
-4. Ports `logger`, `clock`, `ids`, each with two adapters, contract and `errors.ts` (parallel, new files).
-5. Ports `database`, `cache`, `storage` (parallel, new files).
-6. `config/profiles.ts`, `registry.ts`, `compose.ts`.
-7. Steps and strips for the example, catalog regenerated (sequential: catalog).
-8. Components, fixtures, stories.
-9. Next.js shell.
-10. `checks.test` set (needs unlock, P9), docs updates, and the build log entry in `kiroween-script.md`.
-
-The task order, `Writes:` lists and modes are written in `tasks.md` after the change plan is committed.
+The final list, with `Writes:` and modes, is `tasks.md`. In short: 1 setup and spike, 2 `Result` and cache envelope, 3 logger, clock and ID ports, 4 database port and 5 cache and storage ports (parallel), 6 step library, 7 strip library, 8 config, 9 example steps, strips and catalog, 10 components and stories, 11 Next.js shell, 12 final docs and `checks.test`.
 
 ## 11. New defaults (D1 to D11 confirmed)
 

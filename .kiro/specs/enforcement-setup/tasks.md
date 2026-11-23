@@ -132,7 +132,7 @@ Every task: append a `started` row to `progress.md` before writing files. On fin
   - Tests in temporary git repositories: out-of-list file fails verify, merge conflict aborts cleanly, failed post-merge check restores the previous commit, remove refuses unmerged work.
   - _Requirements: 23.2 to 23.9_
 
-- [ ] 17. Stop hook script
+- [x] 17. Stop hook script
   - Mode: sequential
   - Writes: scripts/conformance/hooks/stop.ts, scripts/conformance/test/hooks-stop.test.ts
   - Unchanged-tree skip, check command run, block decision with capped reason, loop counter (block, block, final block, allow), reset on pass, crash log.

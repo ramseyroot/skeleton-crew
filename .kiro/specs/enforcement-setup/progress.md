@@ -56,3 +56,5 @@ Append-only. Format and resume procedure: `docs/change-process.md`, section 7.
 | 2026-11-23 17:39 | 15 | done | this | scripts/conformance/check.ts, test/check.test.ts, package.json, scripts/conformance/files.ts (split from project.ts), git.ts (per-run cache), conformance.config.json (tsc without pnpm) (123 tests pass). Full check on this repo: about 1.2s | Start task 16: worktree command |
 | 2026-11-23 17:39 | 16 | started | | | Write worktree command (create, verify, merge, remove, list) and tests |
 | 2026-11-23 17:42 | 16 | done | this | scripts/conformance/worktree.ts, test/worktree.test.ts, package.json (worktree script), rules/R36 (existing means at the last task-list commit), docs/conformance-rules.md (127 tests pass) | Start task 17: Stop hook script |
+| 2026-11-23 17:42 | 17 | started | | | Write Stop hook script and tests |
+| 2026-11-23 17:43 | 17 | done | this | scripts/conformance/hooks/stop.ts, test/hooks-stop.test.ts (131 tests pass). Added --reset for a prompt-submit hook, so each new user message gets fresh attempts | Start task 18: protection hook script |

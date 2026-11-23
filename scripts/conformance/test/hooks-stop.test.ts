@@ -45,6 +45,7 @@ test("failing checks: block, block, final block, then allow; a pass resets the c
     assert.equal(r1.code, 0);
     assert.equal(decision(r1.out).decision, "block");
     assert.match(decision(r1.out).reason ?? "", /attempt 1 of 3[\s\S]*R01 no-console/);
+    assert.equal(((decision(r1.out).reason ?? "").match(/Full report/g) ?? []).length, 1, "the report line is printed once");
     assert.match(decision(runHook(p.dir).out).reason ?? "", /attempt 2 of 3/);
     assert.match(decision(runHook(p.dir).out).reason ?? "", /still fail after 3 attempts\. Stop fixing now/);
     assert.deepEqual(runHook(p.dir), { code: 0, out: "" }, "over the limit the agent may stop");

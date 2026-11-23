@@ -25,6 +25,8 @@ export function makeProject(
     writeFileSync(join(dir, rel), text);
   };
   const config = repoConfig();
+  // A fixture project has no test runner of its own, whatever the real repository configures.
+  config.checks = { ...(config.checks as Record<string, unknown>), test: null, testFiles: null };
   patch?.(config);
   write(CONFIG_FILE, JSON.stringify(config, null, 2));
   for (const [rel, text] of Object.entries(files)) write(rel, text);

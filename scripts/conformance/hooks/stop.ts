@@ -87,7 +87,7 @@ export function stopHook(eventText: string, argv: string[]): StopOutcome {
   const limit = config.stopHook.maxConsecutiveBlocks;
   const report = `${config.output.reportDir}/report.md`;
   if (s.blocks < limit) {
-    const reason = `The checks failed (attempt ${s.blocks} of ${limit}). Fix every item below before finishing. Do not edit protected files or add exceptions to get around a rule; ask the user instead.\n\n${result.output}\n\nFull report: ${report}`;
+    const reason = `The checks failed (attempt ${s.blocks} of ${limit}). Fix every item below before finishing. Do not edit protected files or add exceptions to get around a rule; ask the user instead.\n\n${result.output}`;
     return { exit: 0, stdout: JSON.stringify({ decision: "block", reason }) };
   }
   if (s.blocks === limit) {

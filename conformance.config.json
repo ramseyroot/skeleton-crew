@@ -28,7 +28,7 @@
     "guardCall": "assertNotProd"
   },
   "output": { "maxChars": 3000, "maxPerRule": 5, "reportDir": ".conformance" },
-  "checks": { "typecheck": "tsc --noEmit", "test": null, "testFiles": null },
+  "checks": { "typecheck": "tsc --noEmit", "test": "pnpm test", "testFiles": "node --test {files}" },
   "stopHook": { "maxConsecutiveBlocks": 3, "skipIfUnchanged": true },
   "steering": { "alwaysMaxLines": 60, "otherMaxLines": 80 },
   "worktrees": { "folder": ".worktrees", "maxParallel": 2 },

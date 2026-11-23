@@ -269,9 +269,9 @@ Both are synchronous, return nothing and never throw, because telemetry must not
 | D5b | Refines D5. `log-and-continue` is allowed on a step when its input is a valid input for the next step (or, for the last step, a valid output). Equal input and output types still qualify. D5's wording was too narrow for the `profile.view` example, where `cache.profile.read` takes `{userId}` and its output adds `cached` | Keep D5 as written (equal types only), and change the example | confirmed (user, 2026-11-23) |
 | D12 | `recover:<step>` names a step in a separate `fallbacks` list of the strip, which is not part of the chain. The design said "must be in `steps`", which would also run the fallback in the chain. The checker reads only `steps`, so fallbacks are budget-checked at load time by `defineStrip` but not by R13 | Fallbacks listed in `steps` and skipped in the chain | confirmed (user, 2026-11-23) |
 | D13 | `dev` is a boolean derived from `APP_ENV` (true for local and dev, false for prod), read-only, and selects no adapter | A setting that picks adapters | confirmed (user, 2026-11-23) |
-| D14 | Ports are named `reporter` and `metrics`, each with adapters `none`, `memory`, `log`. Hosted adapters are `planned` | Other adapter sets | proposed |
-| D15 | A strip run is reported when its final error is internal and of kind `unexpected`, `upstream` or `network`. Other kinds are only logged | Report every internal error | proposed |
-| D16 | Metrics emitted: `strip.runs`, `strip.duration_ms`, `step.duration_ms`. Tag keys limited to `strip`, `step`, `outcome`, `kind` | More metrics or free tags | proposed |
-| D17 | `LogEntry` gets an optional `data` field of small scalar facts, kept by redaction in production | Write metric values into `message` (dropped in prod) | proposed |
-| D18 | Gating is in the profile schema: `none` or `memory` outside prod, not `none` in prod | A runtime check only | proposed |
-| D19 | The shipped `prod` profile uses the `log` adapters for both ports | Leave prod without them until an app adds a hosted adapter | proposed |
+| D14 | Ports are named `reporter` and `metrics`, each with adapters `none`, `memory`, `log`. Hosted adapters are `planned` | Other adapter sets | confirmed (user, 2026-11-23) |
+| D15 | A strip run is reported when its final error is internal and of kind `unexpected`, `upstream` or `network`. Other kinds are only logged | Report every internal error | confirmed (user, 2026-11-23) |
+| D16 | Metrics emitted: `strip.runs`, `strip.duration_ms`, `step.duration_ms`. Tag keys limited to `strip`, `step`, `outcome`, `kind` | More metrics or free tags | confirmed (user, 2026-11-23) |
+| D17 | `LogEntry` gets an optional `data` field of small scalar facts, kept by redaction in production | Write metric values into `message` (dropped in prod) | confirmed (user, 2026-11-23) |
+| D18 | Gating is in the profile schema: `none` or `memory` outside prod, not `none` in prod | A runtime check only | confirmed (user, 2026-11-23) |
+| D19 | The shipped `prod` profile uses the `log` adapters for both ports | Leave prod without them until an app adds a hosted adapter | confirmed (user, 2026-11-23) |

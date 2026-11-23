@@ -44,4 +44,10 @@ The write-up and video script are drafted in `kiroween-script.md` and updated at
 ## Still to plan
 
 - Scope that fits the deadline: which parts of the skeleton and which app slices are needed for an end-to-end demo.
-- Devpost rules check: required repository visibility, license, video length, and whether two apps are required.
+- Devpost rules check. The 2026 rules page (`kiroween.devpost.com/rules`) could not be fetched (HTTP 403). What follows comes from a secondary source about the 2025 edition ([Decoding Kiroween](https://dev.to/brian_mk/decoding-kiroween-4nm), updated 2025-11-23) and a forum snippet saying demo videos must be under 3 minutes. **Unverified for 2026. The builder should read the official page.**
+  - Skeleton Crew: a code template shown with **two distinct applications** built from it. So both apps are likely required, and cutting one app slice is a real risk, not a free cut.
+  - Demo video under 3 minutes that shows the project working.
+  - Public repository with an OSI-approved open source license clearly visible. **This repository has no LICENSE file and no remote yet.**
+  - The `.kiro` directory at the repository root and not in `.gitignore`. It is tracked here (22 files) and not ignored.
+  - A written explanation of how Kiro was used (specs, hooks, steering, MCP, vibe coding). The write-up draft in `kiroween-script.md` covers specs, hooks and steering.
+  - Judging in that source: three equal criteria (potential value, implementation with Kiro, quality and design). The criteria table above lists five, from kiro.dev, and may be the 2026 wording.

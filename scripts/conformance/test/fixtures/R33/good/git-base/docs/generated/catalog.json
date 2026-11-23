@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "steps": [
+    {
+      "name": "db.user.find",
+      "class": "db",
+      "file": "src/steps/db/user.find.ts",
+      "input": "UserId",
+      "output": "User",
+      "permissions": {
+        "reads": [
+          "users"
+        ],
+        "writes": [],
+        "storage": []
+      },
+      "errors": [
+        "network"
+      ],
+      "usedBy": [
+        "orders.list",
+        "profile.view"
+      ]
+    }
+  ],
+  "strips": [
+    {
+      "name": "orders.list",
+      "file": "src/strips/orders.list.strip.ts",
+      "steps": [
+        "db.user.find"
+      ],
+      "budget": null
+    },
+    {
+      "name": "profile.view",
+      "file": "src/strips/profile.view.strip.ts",
+      "steps": [
+        "db.user.find"
+      ],
+      "budget": null
+    }
+  ]
+}

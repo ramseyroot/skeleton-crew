@@ -43,3 +43,6 @@ Append-only. Format and resume procedure: `docs/change-process.md`, section 7.
 | 2026-11-23 17:16 | 11 | started | | | Write R28 to R31 with fixtures and docs |
 | 2026-11-23 17:17 | 11 | started | | | Plan deviation: added scripts/check-coverage.mjs to task 11 Writes (--root option) |
 | 2026-11-23 17:18 | 11 | done | this | rules/R28 to R31, rules/index.ts, docs/conformance-rules.md, fixtures/R28 to R31, scripts/check-coverage.mjs (--root) (88 tests pass) | Start task 12: change plan rules |
+| 2026-11-23 17:24 | scope | checkpoint | | | User chose option A: finish the full enforcement spec before the skeleton core and apps, despite the December 4 deadline |
+| 2026-11-23 17:24 | 12 | started | | | Plan deviation: added report.ts and cli.ts to task 12 Writes, for the per-plan report section |
+| 2026-11-23 17:27 | 12 | done | this | plans.ts, rules/R32, R33, R37, rules/index.ts, report.ts and cli.ts (active plan section), docs/conformance-rules.md, fixtures/R32, R33, R37, test/plans.test.ts (98 tests pass) | Start task 13: task file and plan comparison rules |

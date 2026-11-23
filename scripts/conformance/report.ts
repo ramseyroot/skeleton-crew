@@ -2,6 +2,7 @@
 
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
+import type { PlanSummary } from "./plans.ts";
 import type { ExceptionResult, Violation } from "./types.ts";
 
 export type Report = {
@@ -10,6 +11,8 @@ export type Report = {
   notApplicable: Array<{ rule: string; name: string; missing: string[] }>;
   exceptions: ExceptionResult;
   rulesRun: number;
+  /** Active committed change plans, when the project has git and specs. */
+  plans?: PlanSummary[];
 };
 
 export function sortViolations(vs: Violation[]): Violation[] {
@@ -103,6 +106,16 @@ export function formatMarkdown(r: Report): string {
   out.push("## Not applicable", "");
   if (r.notApplicable.length === 0) out.push("None.");
   for (const n of r.notApplicable) out.push(`- ${n.rule} ${n.name}: missing ${n.missing.join(", ")}`);
+  if (r.plans && r.plans.length > 0) {
+    out.push("", "## Active change plans", "");
+    for (const p of r.plans) {
+      out.push(`### ${p.path}`, "");
+      out.push(`- Planned files changed: ${p.changed.join(", ") || "none"}`);
+      out.push(`- Planned files not changed yet: ${p.plannedUnchanged.join(", ") || "none"}`);
+      out.push(`- Affected strip tests: ${p.affectedTests.join(", ") || "none"}`);
+      out.push(`- Plan commits: ${p.commits.map((c) => `${c.id} ${c.date} ${c.author}: ${c.subject}`).join("; ") || "none"}`, "");
+    }
+  }
   out.push("", `## Exceptions in use: ${r.exceptions.used.length}`, "");
   for (const u of r.exceptions.used) {
     out.push(`- ${u.exception.rule} on \`${u.exception.target}\` (${u.exception.date}): ${u.exception.reason}. Covers ${u.violations.length} violation(s).`);

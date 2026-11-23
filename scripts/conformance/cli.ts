@@ -7,6 +7,7 @@ import { ConfigError, loadConfig, type Config } from "./config.ts";
 import { createProgram, isDir, isGitRepo, listSourceFiles, readRel } from "./project.ts";
 import { buildCatalog, writeCatalog } from "./catalog.ts";
 import { discoverAdapters, discoverDefinitions, discoverPorts } from "./discover.ts";
+import { summarizeActivePlans } from "./plans.ts";
 import { applyExceptions, loadExceptions } from "./exceptions.ts";
 import { exitCode, formatConsole, sortViolations, writeReportFiles, type Report } from "./report.ts";
 import { rules as registry } from "./rules/index.ts";
@@ -131,6 +132,13 @@ export function runConformance(opts: RunOptions): RunResult {
     exceptions: result,
     rulesRun,
   };
+  if (ctx.has.has("git") && ctx.has.has("specs")) {
+    try {
+      report.plans = summarizeActivePlans(root, config.specsFolder);
+    } catch (e) {
+      scriptErrors.push(`plan summary failed: ${e instanceof Error ? e.message : String(e)}`);
+    }
+  }
   const reportPath = `${config.output.reportDir}/report.md`;
   if (opts.writeReport ?? true) writeReportFiles(root, config.output.reportDir, report);
   const output = formatConsole(report, config.output.maxChars, config.output.maxPerRule, reportPath);

@@ -325,3 +325,30 @@ Each rule section has this shape, and the meta tests check that every label is p
 - **Failing example:** a 61-line `always` steering file with a 60-line limit.
 - **Passing example:** short files that point to the full docs instead of copying them.
 - **Fix:** move detail into `docs/` and reference it, or split by `fileMatch` pattern.
+
+## R32 plan-reuse-matches
+
+- **Severity:** error
+- **Catches:** in a change plan that is not `done` (working copy, so drafts get early feedback), a `reuse` step that is not in the committed catalog, or whose input, output, or permissions in the current code differ from the committed catalog.
+- **Why:** `reuse` is a promise that the step is used exactly as it is. If it changed, every other strip using it is affected, and the entry should be `modify`.
+- **Failing example:** `| db.user.find | reuse | ...` while the code gave `db.user.find` a new write permission.
+- **Passing example:** `reuse` of a step whose contract is unchanged since the last commit.
+- **Fix:** change the entry to `modify` (and list its affected strips), or create a new step and mark it `new`.
+
+## R33 plan-impact-complete
+
+- **Severity:** error
+- **Catches:** a `modify` step that is not in the committed catalog, whose "Affected strips" differ from the catalog's "used by" list, or whose affected strips' test files (by convention `x.strip.test.ts` next to `x.strip.ts`) are not all listed under "Affected strip tests".
+- **Why:** the user approves a modify knowing its blast radius. A plan that leaves out an affected strip hides the risk.
+- **Failing example:** `modify` of `db.user.find` listing only `profile.view` when `orders.list` also uses it.
+- **Passing example:** all users of the step listed, with their test files.
+- **Fix:** copy the "used by" strips from `docs/generated/catalog.md` and list their tests.
+
+## R37 change-in-plan
+
+- **Severity:** error
+- **Catches:** a file under the guarded folders (`guardedFolders`) that exists at git `HEAD` and differs in the working tree, when no active change plan committed at `HEAD` lists it under "Existing files to edit". New files are allowed.
+- **Why:** this catches unplanned edits to existing shared code after the fact, including edits made through shell commands that the protection hook cannot see.
+- **Failing example:** `src/steps/db/user.find.ts` edited while the active plan lists only `src/steps/db/other.ts`.
+- **Passing example:** the file listed in the active plan, committed by the user before the work.
+- **Fix:** undo the change, or propose a plan update for the user to review and commit.

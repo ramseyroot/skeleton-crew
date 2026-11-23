@@ -95,9 +95,10 @@ Every task: append a `started` row to `progress.md` before writing files. On fin
   - R28 runs the existing `scripts/check-coverage.mjs` and maps its output.
   - _Requirements: 8.1 to 8.3, 9.3, 9.4, 14.5_
 
-- [ ] 12. Change plan rules (R32, R33, R37)
+- [x] 12. Change plan rules (R32, R33, R37)
   - Mode: sequential
-  - Writes: scripts/conformance/plans.ts, scripts/conformance/rules/R32-plan-reuse-matches.ts, scripts/conformance/rules/R33-plan-impact-complete.ts, scripts/conformance/rules/R37-change-in-plan.ts, scripts/conformance/rules/index.ts, docs/conformance-rules.md, scripts/conformance/test/fixtures/R32/**, scripts/conformance/test/fixtures/R33/**, scripts/conformance/test/fixtures/R37/**, scripts/conformance/test/plans.test.ts
+  - Writes: scripts/conformance/plans.ts, scripts/conformance/rules/R32-plan-reuse-matches.ts, scripts/conformance/rules/R33-plan-impact-complete.ts, scripts/conformance/rules/R37-change-in-plan.ts, scripts/conformance/rules/index.ts, docs/conformance-rules.md, scripts/conformance/test/fixtures/R32/**, scripts/conformance/test/fixtures/R33/**, scripts/conformance/test/fixtures/R37/**, scripts/conformance/test/plans.test.ts, scripts/conformance/report.ts, scripts/conformance/cli.ts
+  - `report.ts` and `cli.ts` (added during the work): the per-plan report section needs a place in the report.
   - Parse `change-plan.md` front matter and tables, read at `HEAD` only for permissions.
   - Report section per active plan: files changed, files planned but unchanged, plan commits with author and time.
   - _Requirements: 16.1 to 16.8, 20.1 to 20.3_

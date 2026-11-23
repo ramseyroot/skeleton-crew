@@ -288,3 +288,40 @@ Each rule section has this shape, and the meta tests check that every label is p
 - **Passing example:** the script calls `assertNotProd()` before doing anything.
 - **Fix:** call the guard at the start of the script.
 - **Limits:** a text check. It confirms the call is present, not that it runs first.
+
+## R28 coverage-valid
+
+- **Severity:** error (unplanned items are reported as warnings)
+- **Catches:** problems in app coverage files in `docs/coverage/`, found by running `scripts/check-coverage.mjs` on each: missing or duplicate rows, empty or invalid statuses, missing reasons, and `planned` references to paths that do not exist. `unplanned` items are listed as warnings.
+- **Why:** the coverage file is how an app shows which of the checklist's parts it planned, skipped on purpose, or deferred. An empty status is a forgotten part.
+- **Failing example:** `| 2 | Logging | planned | docs/missing.md |` when that file does not exist.
+- **Passing example:** every row has a valid status and a reference or reason.
+- **Fix:** fill in the row. Use `deferred` with a trigger, or `not-needed` with a reason, rather than leaving it empty.
+
+## R29 exception-valid
+
+- **Severity:** error
+- **Catches:** an entry in `conformance.exceptions.json` that is not an object, lacks `rule`, `target`, `reason`, or `date`, names an unknown rule, or has a date not written as YYYY-MM-DD. Malformed entries never hide a violation.
+- **Why:** exceptions are the only way to allow a violation. Each one must say what it allows, why, and since when.
+- **Failing example:** `{ "rule": "R13", "target": "orders.cancel", "date": "2026-11-23" }` with no reason.
+- **Passing example:** `{ "rule": "R13", "target": "orders.cancel", "reason": "Refund writes payments, approved for v1", "date": "2026-11-23" }`.
+- **Fix:** complete the entry. The exceptions file is protected, so the user makes the change.
+
+## R30 exception-unused
+
+- **Severity:** warning
+- **Catches:** an exception that matches no violation in a full run.
+- **Why:** a stale exception would silently allow a future violation of the same kind.
+- **Failing example:** an exception for a strip that has since been fixed or removed.
+- **Passing example:** every exception still covers a current violation.
+- **Fix:** remove the entry (the user does this, since the file is protected).
+- **Limits:** skipped in `--files` runs, where some violations are filtered out before exceptions are matched.
+
+## R31 steering-size
+
+- **Severity:** error
+- **Catches:** a steering file in `.kiro/steering/` longer than its limit (`steering.alwaysMaxLines` for files with `inclusion: always` or no front matter, `steering.otherMaxLines` for the rest), or all steering files together over 100,000 characters.
+- **Why:** steering is loaded into the agent's context. Long files crowd out the work and exceed the documented resource budget for custom agents.
+- **Failing example:** a 61-line `always` steering file with a 60-line limit.
+- **Passing example:** short files that point to the full docs instead of copying them.
+- **Fix:** move detail into `docs/` and reference it, or split by `fileMatch` pattern.

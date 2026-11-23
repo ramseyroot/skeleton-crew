@@ -88,9 +88,10 @@ Every task: append a `started` row to `progress.md` before writing files. On fin
   - R23 loads the profiles module, which is project code. Its fixtures use a minimal profiles file and schema without dependencies.
   - _Requirements: 7.1 to 7.5_
 
-- [ ] 11. Coverage, exceptions, and steering rules (R28 to R31)
+- [x] 11. Coverage, exceptions, and steering rules (R28 to R31)
   - Mode: sequential
-  - Writes: scripts/conformance/rules/R28-coverage-valid.ts, scripts/conformance/rules/R29-exception-valid.ts, scripts/conformance/rules/R30-exception-unused.ts, scripts/conformance/rules/R31-steering-size.ts, scripts/conformance/rules/index.ts, docs/conformance-rules.md, scripts/conformance/test/fixtures/R28/**, scripts/conformance/test/fixtures/R29/**, scripts/conformance/test/fixtures/R30/**, scripts/conformance/test/fixtures/R31/**
+  - Writes: scripts/conformance/rules/R28-coverage-valid.ts, scripts/conformance/rules/R29-exception-valid.ts, scripts/conformance/rules/R30-exception-unused.ts, scripts/conformance/rules/R31-steering-size.ts, scripts/conformance/rules/index.ts, docs/conformance-rules.md, scripts/conformance/test/fixtures/R28/**, scripts/conformance/test/fixtures/R29/**, scripts/conformance/test/fixtures/R30/**, scripts/conformance/test/fixtures/R31/**, scripts/check-coverage.mjs
+  - `scripts/check-coverage.mjs` (added during the work): gains a `--root` option, so it resolves `planned` paths against the project being checked rather than its own location.
   - R28 runs the existing `scripts/check-coverage.mjs` and maps its output.
   - _Requirements: 8.1 to 8.3, 9.3, 9.4, 14.5_
 

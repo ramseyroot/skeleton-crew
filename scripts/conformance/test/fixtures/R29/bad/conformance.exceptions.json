@@ -1,0 +1,19 @@
+[
+  {
+    "rule": "R13",
+    "target": "x",
+    "date": "2026-11-23"
+  },
+  {
+    "rule": "R99",
+    "target": "y",
+    "reason": "r",
+    "date": "2026-11-23"
+  },
+  {
+    "rule": "R01",
+    "target": "z",
+    "reason": "r",
+    "date": "23/11/2026"
+  }
+]

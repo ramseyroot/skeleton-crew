@@ -1,0 +1,8 @@
+[
+  {
+    "rule": "no-console",
+    "target": "src/legacy/*.ts",
+    "reason": "Old module, removed in v2",
+    "date": "2026-11-23"
+  }
+]

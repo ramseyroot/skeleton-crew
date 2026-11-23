@@ -29,5 +29,9 @@ import { R24 } from "./R24-local-hosts-only.ts";
 import { R25 } from "./R25-profile-adapter-registered.ts";
 import { R26 } from "./R26-no-prod-secrets-outside-prod.ts";
 import { R27 } from "./R27-destructive-script-guard.ts";
+import { R28 } from "./R28-coverage-valid.ts";
+import { R29 } from "./R29-exception-valid.ts";
+import { R30 } from "./R30-exception-unused.ts";
+import { R31 } from "./R31-steering-size.ts";
 
-export const rules: Rule[] = [R01, R02, R03, R04, R05, R06, R07, R08, R09, R10, R11, R12, R13, R14, R15, R16, R17, R18, R19, R20, R21, R22, R23, R24, R25, R26, R27];
+export const rules: Rule[] = [R01, R02, R03, R04, R05, R06, R07, R08, R09, R10, R11, R12, R13, R14, R15, R16, R17, R18, R19, R20, R21, R22, R23, R24, R25, R26, R27, R28, R29, R30, R31];

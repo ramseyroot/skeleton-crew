@@ -1,0 +1,8 @@
+[
+  {
+    "rule": "R13",
+    "target": "orders.cancel",
+    "reason": "approved",
+    "date": "2026-11-23"
+  }
+]

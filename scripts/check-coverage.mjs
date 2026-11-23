@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Checks an app coverage file (see docs/app-coverage.template.md).
-// Usage: node scripts/check-coverage.mjs <coverage-file> [--strict] [--items=47]
+// Usage: node scripts/check-coverage.mjs <coverage-file> [--strict] [--items=63] [--root=<project dir>]
 //
 // Errors (exit 1): missing or duplicate item rows, empty or invalid status,
 //   missing reference/reason, `planned` reference path that does not exist.
@@ -12,6 +12,7 @@ import { fileURLToPath } from "node:url";
 
 const args = process.argv.slice(2);
 const file = args.find((a) => !a.startsWith("--"));
+const rootArg = args.find((a) => a.startsWith("--root="));
 const strict = args.includes("--strict");
 const itemsArg = args.find((a) => a.startsWith("--items="));
 const expectedItems = itemsArg ? Number(itemsArg.split("=")[1]) : 63;
@@ -21,7 +22,8 @@ if (!file) {
   process.exit(2);
 }
 
-const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
+// `planned` paths resolve against --root when given, else against the repository holding this script.
+const repoRoot = rootArg ? resolve(rootArg.slice("--root=".length)) : resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const STATUSES = new Set(["planned", "unplanned", "not-needed", "deferred"]);
 
 const lines = readFileSync(resolve(file), "utf8").split("\n");

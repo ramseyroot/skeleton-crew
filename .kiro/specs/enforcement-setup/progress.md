@@ -48,3 +48,6 @@ Append-only. Format and resume procedure: `docs/change-process.md`, section 7.
 | 2026-11-23 17:27 | 12 | done | this | plans.ts, rules/R32, R33, R37, rules/index.ts, report.ts and cli.ts (active plan section), docs/conformance-rules.md, fixtures/R32, R33, R37, test/plans.test.ts (98 tests pass) | Start task 13: task file and plan comparison rules |
 | 2026-11-23 17:27 | 13 | started | | | Write tasks.ts, R34 to R36, R38, R39 with fixtures and docs |
 | 2026-11-23 17:29 | 13 | done | this | tasks.ts, rules/R34 to R36, R38, R39, rules/index.ts, docs/conformance-rules.md, fixtures/R34 to R36, R38, R39, test/tasks.test.ts (111 tests pass) | Start task 14: progress and date rules, then checkpoint |
+| 2026-11-23 17:29 | 14 | started | | | Write progress.ts, R40, R41 with fixtures and docs |
+| 2026-11-23 17:32 | 14 | done | this | scripts/conformance/progress.ts, rules/R40, R41, rules/index.ts, docs/conformance-rules.md, fixtures/R40, R41, test/progress.test.ts, scripts/conformance/report.ts (console keeps one violation per rule) (119 tests pass) | Checkpoint: user reviews the full rule set |
+| 2026-11-23 17:32 | 14 | checkpoint | this | | Waiting for user review of the 39 rules and the sample run in .conformance/sample/. Then task 15: check command |

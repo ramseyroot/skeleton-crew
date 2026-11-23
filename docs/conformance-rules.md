@@ -398,3 +398,22 @@ Each rule section has this shape, and the meta tests check that every label is p
 - **Passing example:** reusing `db.user.findByEmail`, or a `Distinct from` note explaining the difference.
 - **Fix:** reuse the existing step, rename the new one, or write the note.
 - **Limits:** name-based. Steps doing the same job under unrelated names are left to plan review.
+
+## R40 progress-consistent
+
+- **Severity:** error
+- **Catches:** in each spec with a `tasks.md`: no `progress.md`; a ticked task with no `done` row; a `done` row whose commit does not exist (`this` means the commit that adds the row, and is accepted); a `done` row naming a file that does not exist; or a task `started` and never marked `done` or `blocked` while a later task started.
+- **Why:** an agent asked to continue unfinished work reads `progress.md` and `git log` to find where it stopped. A log that disagrees with the tasks or the repository sends it to the wrong place.
+- **Failing example:** task 2 ticked in `tasks.md`, with no row saying it was done.
+- **Passing example:** a `started` row, then a `done` row with `this`, committed together with the task's files.
+- **Fix:** add the missing row, or untick the task. Mark abandoned work `blocked` with the reason.
+- **Limits:** in the Files cell, only tokens with a slash whose first folder exists in the repository are checked, so short prose is allowed.
+
+## R41 docs-dated
+
+- **Severity:** error
+- **Catches:** a markdown file in `docs/` (except `docs/generated/`) or in a spec folder without `created` and `updated` front matter as YYYY-MM-DD, or whose `updated` date is earlier than the date of the last commit that changed it.
+- **Why:** dates tell people and agents which documents are current.
+- **Failing example:** a doc last committed on 2026-11-24 that still says `updated: 2026-11-23`.
+- **Passing example:** `updated` changed whenever the file is changed.
+- **Fix:** add the front matter, or set `updated` to today.

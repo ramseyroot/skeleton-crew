@@ -57,7 +57,15 @@ function groups(vs: Violation[]): Array<{ key: string; items: Violation[] }> {
 
 const loc = (v: Violation): string => (v.line > 0 ? `${v.file}:${v.line}` : v.file);
 
-function render(r: Report, perRule: number, reportPath: string, truncated: boolean): string {
+const DOCS_SUFFIX = / \(see (docs\/conformance-rules\.md#[a-z0-9-]+)\)$/;
+
+/** Console lines carry the docs pointer once per rule, not on every violation. */
+function short(message: string, maxLen: number): string {
+  const m = message.replace(DOCS_SUFFIX, "");
+  return m.length <= maxLen ? m : `${m.slice(0, maxLen - 3)}...`;
+}
+
+function render(r: Report, perRule: number, reportPath: string, truncated: boolean, maxLen = 400): string {
   const c = counts(r);
   const lines: string[] = [];
   const status = r.scriptErrors.length > 0 ? "SCRIPT FAILED" : c.errors > 0 ? "FAILED" : "PASSED";
@@ -68,8 +76,9 @@ function render(r: Report, perRule: number, reportPath: string, truncated: boole
   for (const e of r.scriptErrors.slice(0, Math.max(perRule, 1))) lines.push(`  script error: ${e}`);
   if (r.scriptErrors.length > Math.max(perRule, 1)) lines.push(`  ... ${r.scriptErrors.length - Math.max(perRule, 1)} more script error(s)`);
   for (const g of groups(r.violations)) {
-    lines.push(`${g.key}: ${g.items.length}`);
-    for (const v of g.items.slice(0, perRule)) lines.push(`  ${loc(v)} ${v.message}`);
+    const docs = DOCS_SUFFIX.exec(g.items[0]?.message ?? "")?.[1];
+    lines.push(`${g.key}: ${g.items.length}${docs ? ` (see ${docs})` : ""}`);
+    for (const v of g.items.slice(0, perRule)) lines.push(`  ${loc(v)} ${short(v.message, maxLen)}`);
     if (g.items.length > perRule) lines.push(`  ... ${g.items.length - perRule} more`);
   }
   if (r.notApplicable.length > 0) {
@@ -79,10 +88,21 @@ function render(r: Report, perRule: number, reportPath: string, truncated: boole
   return lines.join("\n");
 }
 
-/** Console summary within maxChars. Shortens per-rule lists, then hard-cuts as a last resort. */
+/**
+ * Console summary within maxChars. Shortens per-rule lists down to one violation each, then shortens
+ * messages, then drops the lists, and hard-cuts only as a last resort.
+ */
 export function formatConsole(r: Report, maxChars: number, maxPerRule: number, reportPath: string): string {
-  for (let per = maxPerRule; per >= 0; per--) {
+  for (let per = maxPerRule; per >= 1; per--) {
     const text = render(r, per, reportPath, per < maxPerRule);
+    if (text.length <= maxChars) return text;
+  }
+  for (const len of [160, 100, 60]) {
+    const text = render(r, 1, reportPath, true, len);
+    if (text.length <= maxChars) return text;
+  }
+  {
+    const text = render(r, 0, reportPath, true);
     if (text.length <= maxChars) return text;
   }
   const tail = `\n... output cut. Full report: ${reportPath}`;

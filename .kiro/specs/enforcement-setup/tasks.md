@@ -109,9 +109,10 @@ Every task: append a `started` row to `progress.md` before writing files. On fin
   - Parse incomplete tasks, `Mode:` and `Writes:` lines, including `/**` folder entries (CP4).
   - _Requirements: 17.1, 17.2, 18.1 to 18.4, 22.1 to 22.3_
 
-- [ ] 14. Progress and date rules (R40, R41)
+- [x] 14. Progress and date rules (R40, R41)
   - Mode: sequential
-  - Writes: scripts/conformance/progress.ts, scripts/conformance/rules/R40-progress-consistent.ts, scripts/conformance/rules/R41-docs-dated.ts, scripts/conformance/rules/index.ts, docs/conformance-rules.md, scripts/conformance/test/fixtures/R40/**, scripts/conformance/test/fixtures/R41/**, scripts/conformance/test/progress.test.ts
+  - Writes: scripts/conformance/progress.ts, scripts/conformance/rules/R40-progress-consistent.ts, scripts/conformance/rules/R41-docs-dated.ts, scripts/conformance/rules/index.ts, docs/conformance-rules.md, scripts/conformance/test/fixtures/R40/**, scripts/conformance/test/fixtures/R41/**, scripts/conformance/test/progress.test.ts, scripts/conformance/report.ts
+  - `report.ts` (fixed during the checkpoint run): with many rules failing, the console summary shrank to counts only. It now keeps at least one violation per rule and shows the docs link once per rule.
   - Parse `progress.md`, resolve `this` commits, check against `tasks.md` and git.
   - **Checkpoint: user reviews the full rule set and a run over the fixtures.**
   - _Requirements: 26.6, 27.1 to 27.4_

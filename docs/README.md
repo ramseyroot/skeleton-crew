@@ -48,6 +48,7 @@ To continue where work stopped, read the last rows of the active spec's `progres
 | `provider-ports.md` | Port list, per-port decisions, contract tests, how to switch a provider |
 | `environments.md` | Profiles (`local`, `dev`, `staging`, `prod`), offline local mode, data separation, provider differences between dev and prod |
 | `app-planning.md` | How an app is planned before feature specs: four repeating stages (brief, architecture, domain, features), questions per stage, every default shown before it is applied |
+| `kiroween-submission.md` | Judging criteria, what demonstrates each, evidence of how the project was built, and what is still missing |
 | `change-process.md` | How every change is planned and executed: change plans, task file lists, sequential and parallel work, sub-agents, what the checks enforce |
 | `app-parts-checklist.md` | 63 parts of an app, grouped, with a build order |
 | `app-coverage.template.md` | Copy per app. Mark each of the 63 items `planned`, `unplanned`, `not-needed`, or `deferred` |

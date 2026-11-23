@@ -28,7 +28,7 @@ Checkpoints stop for review after tasks 2 and 4.
   - Each rule has a bad and a good fixture, an entry in the rules document in the standard format, and a registry entry. The repository itself must pass them.
   - _Requirements: 2.1 to 2.4, 5.2_
 
-- [ ] 4. The `feature` command, manifest, rule R45, removal test, docs and gates (unlock for R45)
+- [x] 4. The `feature` command, manifest, rule R45, removal test, docs and gates (unlock for R45)
   - Mode: sequential
   - Writes: scripts/conformance/feature.ts, scripts/conformance/test/feature.test.ts, scripts/conformance/rules/R45-feature-manifest.ts, scripts/conformance/rules/index.ts, scripts/conformance/test/fixtures/R45/**, src/features/profile/feature.json, src/app/features.ts, package.json, README.md, docs/README.md, docs/provider-ports.md, docs/function-strips-plan.md, docs/environments.md, docs/conformance-rules.md, docs/kiroween-script.md, docs/today/build.mjs, docs/today/index.html, docs/generated/catalog.md, docs/generated/catalog.json
   - `list`, `show`, `disable`, `enable`, `prune` with tests on a temporary git project, covering each refusal. The feature list becomes line-oriented. `feature.json` for the profile feature. Rule R45 with fixtures and its section in the rules document. Try `disable profile`, `prune profile` and `enable profile` once on a copy of the repository, run `pnpm check` after each, and record the results in `progress.md`. Document adding and removing a feature and a provider. Regenerate the page. Run `pnpm check`, the checker tests, and the skeleton tests with the network blocked.

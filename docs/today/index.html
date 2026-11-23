@@ -30,10 +30,10 @@ code{background:#eef2ff;border-radius:4px;padding:1px 5px;font-size:.92em}footer
 <h1>Skeleton Crew</h1>
 <p>A template for building apps like Lego, in code that is meant to last: features and providers that can be added and removed cleanly, good code by default, and the parts prototypes skip, like observability. Agents are kept honest by checks the project runs on itself. This page shows what was built on 23 November 2026.</p>
 <div class="stats">
-<div class="stat"><b>84</b><span>commits today</span></div>
-<div class="stat"><b>44</b><span>task commits (23 guardrails, 16 skeleton)</span></div>
+<div class="stat"><b>86</b><span>commits today</span></div>
+<div class="stat"><b>45</b><span>task commits (23 guardrails, 16 skeleton)</span></div>
 <div class="stat"><b>451</b><span>tests passing (17 skipped on purpose, 0 failing)</span></div>
-<div class="stat"><b>8,615</b><span>lines of code (4,164 skeleton, 4,451 guardrails)</span></div>
+<div class="stat"><b>8,665</b><span>lines of code (4,164 skeleton, 4,501 guardrails)</span></div>
 <div class="stat"><b>8</b><span>ports with adapters and shared test suites</span></div>
 <div class="stat"><b>5 + 2</b><span>example steps and strips in the catalog</span></div>
 </div></div></header>
@@ -157,11 +157,11 @@ code{background:#eef2ff;border-radius:4px;padding:1px 5px;font-size:.92em}footer
 
 <section><h2>The numbers</h2>
 <div class="card">
-<div class="bar"><span class="bl">Skeleton code</span><span class="bt"><i style="width:93.55201078409347%;background:#7c3aed"></i></span><span class="bv">4,164</span></div>
-<div class="bar"><span class="bl">Skeleton tests</span><span class="bt"><i style="width:93.37227589305775%;background:#a78bfa"></i></span><span class="bv">4,156</span></div>
-<div class="bar"><span class="bl">Guardrail scripts</span><span class="bt"><i style="width:100%;background:#0ea5e9"></i></span><span class="bv">4,451</span></div>
-<div class="bar"><span class="bl">Guardrail tests</span><span class="bt"><i style="width:32.19501235677376%;background:#7dd3fc"></i></span><span class="bv">1,433</span></div>
-<p style="color:var(--mute);margin:14px 0 0;font-size:14px">Lines, counted 2026-11-23 23:15 UTC. The skeleton has 79 code files and 45 test files. All 468 skeleton tests run offline (17 are skipped on purpose, for example the null cache cannot store anything).</p>
+<div class="bar"><span class="bl">Skeleton code</span><span class="bt"><i style="width:92.51277493890247%;background:#7c3aed"></i></span><span class="bv">4,164</span></div>
+<div class="bar"><span class="bl">Skeleton tests</span><span class="bt"><i style="width:92.33503665852034%;background:#a78bfa"></i></span><span class="bv">4,156</span></div>
+<div class="bar"><span class="bl">Guardrail scripts</span><span class="bt"><i style="width:100%;background:#0ea5e9"></i></span><span class="bv">4,501</span></div>
+<div class="bar"><span class="bl">Guardrail tests</span><span class="bt"><i style="width:31.948455898689183%;background:#7dd3fc"></i></span><span class="bv">1,438</span></div>
+<p style="color:var(--mute);margin:14px 0 0;font-size:14px">Lines, counted 2026-11-23 23:23 UTC. The skeleton has 79 code files and 45 test files. All 468 skeleton tests run offline (17 are skipped on purpose, for example the null cache cannot store anything).</p>
 </div></section>
 
 <section><h2>What went wrong, and what caught it</h2>
@@ -170,18 +170,18 @@ code{background:#eef2ff;border-radius:4px;padding:1px 5px;font-size:.92em}footer
 
 <section><h2>Where things stand</h2>
 <table><thead><tr><th>Part</th><th>State</th></tr></thead><tbody>
-<tr><td>Guardrails: 44 rules, check command, worktree command, hooks, steering</td><td><span class="tag done">built, hooks on</span></td></tr>
+<tr><td>Guardrails: 45 rules, check command, worktree command, hooks, steering</td><td><span class="tag done">built, hooks on</span></td></tr>
 <tr><td>Skeleton core: Result, steps, strips, six ports with two adapters each, profiles</td><td><span class="tag done">built</span></td></tr>
 <tr><td>Example feature, Storybook stories, Next.js page running offline</td><td><span class="tag done">built</span></td></tr>
 <tr><td>Error reporter, metrics, gating, and a read-only <code>dev</code> flag derived from APP_ENV</td><td><span class="tag done">built</span> (hosted adapters planned)</td></tr>
 <tr><td>Test command inside <code>pnpm check</code>, Stop-hook message fix</td><td><span class="tag done">done</span></td></tr>
 <tr><td>Real adapters: PocketBase, Supabase, Workers KV, R2, hosted error and metrics services</td><td><span class="tag plan">planned</span></td></tr>
-<tr><td>Feature layout: one folder per feature, disable, enable and prune, rules R42 to R44</td><td><span class="tag done">built</span> (manifest rule R45 and two rule fixes wait for an unlock)</td></tr>
+<tr><td>Feature layout: one folder per feature, disable, enable and prune, rules R42 to R45</td><td><span class="tag done">built</span></td></tr>
 <tr><td>Auth, API keys, plans, metering, rate limits, payments (shared by both apps)</td><td><span class="tag plan">next spec, not started</span></td></tr>
 <tr><td>Zidolia and MiniCargo apps</td><td><span class="tag plan">not started</span></td></tr>
 <tr><td>Clicking Save in a real browser</td><td><span class="tag todo">not verified</span> (the action is tested in Node)</td></tr>
 </tbody></table></section>
 
 </main>
-<footer><div class="wrap">Generated 2026-11-23 23:15 UTC by <code>node docs/today/build.mjs</code> from git and the test runner. Nothing on this page needs a network.</div></footer>
+<footer><div class="wrap">Generated 2026-11-23 23:23 UTC by <code>node docs/today/build.mjs</code> from git and the test runner. Nothing on this page needs a network.</div></footer>
 </body></html>

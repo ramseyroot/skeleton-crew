@@ -165,7 +165,7 @@ Every task: append a `started` row to `progress.md` before writing files. On fin
   - Added during the work: a `UserPromptSubmit` hook running `stop.ts --reset`, so each new user message gives fresh attempts (built in task 17).
   - _Requirements: 12.1, 12.3, 12.6_
 
-- [ ] 22. Live test session with the user
+- [x] 22. Live test session with the user
   - Mode: sequential
   - Writes: docs/change-process.md
   - In a Kiro CLI session: trigger a violation and confirm the agent is sent back with the list, confirm a protected write is blocked, confirm the unlock works and expires.

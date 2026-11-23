@@ -167,7 +167,13 @@ Recorded in a Kiro CLI 3.5.0 session on 2026-11-23 (task 22 of the enforcement s
 | Stop hook with a violation (`console.log` in a temporary `src/live-test.ts`) | The agent was sent back with "attempt 1 of 3" and the R01 violation. This confirms the `reason` field name |
 | Stop hook after the fix | Passed; the agent could finish |
 | Hooks load in the session where the hook file is created | Yes, without restarting |
-| Sub-agent confined to a worktree, sub-agents and the Stop hook, task hook event fields | Not tested yet |
+| Sub-agent writing its task's file inside its worktree | Allowed |
+| Sub-agent writing a file in its worktree that is not in the task's `Writes:` | Blocked with the task's file list in the message. So hooks apply to sub-agents' tool calls |
+| Sub-agent writing a new file in a guarded folder of the main tree while a worktree is open | Blocked ("the main tree is not edited during the parallel phase") |
+| Sub-agent's default directory | The main tree root, not the worktree. Sub-agents are not confined to a folder; the prompt must give the worktree path, and the hook enforces it |
+| Sub-agent committing on its task branch, then `worktree verify` | Commit made; verify passed (file inside the list, check passing in the worktree) |
+| Does a sub-agent finishing trigger the Stop hook? | No, in this test: the Stop state file did not change although the main tree had changed. Sub-agent work is therefore checked by `worktree verify` and by the main agent's own Stop, not by a Stop hook of its own |
+| Pre and Post Task Execution hook fields | Not tested: these fire only when spec tasks run through Kiro's spec runner, and this project does not use them |
 
 Known cosmetic issue: the Stop hook's reason repeats the "Full report" line. The fix is in `scripts/conformance/hooks/stop.ts`, a protected file, so it waits for the user's unlock.
 

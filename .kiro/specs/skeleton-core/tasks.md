@@ -42,7 +42,7 @@ All test files use `node:test`, are named `<name>.test.ts`, and run offline.
   - Only `logger/console` calls `console`.
   - _Requirements: 4.1 to 4.5, 7.2, 7.3, 7.10_
 
-- [ ] 4. Database port with memory and sqlite adapters
+- [x] 4. Database port with memory and sqlite adapters
   - Writes: src/ports/database.ts, src/adapters/database/**
   - Port and semantics as in design section 5: `read`, `write`, `batch`, `health`, `migrate`, ISO 8601 timestamps, text IDs, cursor pagination, normalization, `conflict` and `not_found`.
   - Adapters `memory` and `sqlite` (`node:sqlite`), each with `index.ts`, `errors.ts` (including a mapping table test that triggers a real constraint failure), and `<adapter>.test.ts`. One `contract.test.ts` for both.

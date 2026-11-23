@@ -19,3 +19,4 @@ Append-only. Format and resume procedure: `docs/change-process.md`, section 7.
 | 2026-11-23 19:18 | 3 | done | this | src/lib/port-error.ts, src/lib/port-error.test.ts (addendum to task 3) | Adapters in tasks 4 and 5 need a way to build errors before they know the step and strip. This helper is created now, because the main tree cannot be edited while worktrees are open. Task 6 must replace step and stripId on port errors |
 | 2026-11-23 19:19 | 4 | started | | | Database port: worktree .worktrees/task-4, branch task/4, sub-agent |
 | 2026-11-23 19:19 | 5 | started | | | Cache and storage ports: worktree .worktrees/task-5, branch task/5, sub-agent |
+| 2026-11-23 19:27 | 4 | done | 98e08f6 | src/ports/database.ts, src/adapters/database/** (101 tests; verified in worktree) | Merge task 4, then task 5. Row written before the merge because R40 flags a task that is started when a later one starts, which parallel tasks always do |

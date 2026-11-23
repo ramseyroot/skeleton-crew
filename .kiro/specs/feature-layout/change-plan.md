@@ -68,10 +68,10 @@ Existing files outside the guarded folders:
 
 ## Affected strip tests
 
-The strips move in task 2 and their tests move with them. Both run as affected tests. The check needs the listed files to exist, so the paths below are the current ones, and task 2 changes them to `src/features/profile/strips/...` in the same commit as the move:
+The strips and their tests moved in task 2. Both run as affected tests:
 
-- src/strips/profile.save.strip.test.ts
-- src/strips/profile.view.strip.test.ts
+- src/features/profile/strips/profile.save.strip.test.ts
+- src/features/profile/strips/profile.view.strip.test.ts
 
 ## Execution mode
 

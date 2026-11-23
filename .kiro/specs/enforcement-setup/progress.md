@@ -65,3 +65,4 @@ Append-only. Format and resume procedure: `docs/change-process.md`, section 7.
 | 2026-11-23 17:47 | 20 | started | | | Run the full check on this repository and offline tests |
 | 2026-11-23 17:48 | 20 | done | this | pnpm check passes (conformance 0.3s, typecheck 0.3s); catalog regenerated with no diff; 138 tests pass with the network blocked (unshare -rn), 16s | Checkpoint: user reviews results before hooks are enabled |
 | 2026-11-23 17:48 | 20 | checkpoint | this | | Waiting for user: approve enabling hooks (task 21), and decide checks.test for this repo (protected config) |
+| 2026-11-23 17:53 | 20 | checkpoint | | | User chose A: checks.test stays null in the skeleton; apps set their own test runner. Hook enabling (task 21) still needs the user's yes |

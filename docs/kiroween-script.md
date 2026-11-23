@@ -5,7 +5,7 @@ updated: 2026-11-23
 
 # Kiroween: Write-up and Video Script
 
-What you will write on Devpost and say in the video, drafted as the project is built. Updated at every checkpoint. Lines marked **[not built yet]** describe things that do not exist yet: do not record or claim them until they do.
+What you will write on Devpost and say in the video. This is a living draft: the scenes are a starting outline, and the text is rewritten as the project is built, so expect scenes to be added, cut, and reworded. It is updated at every checkpoint. Lines marked **[not built yet]** describe things that do not exist yet: do not record or claim them until they do. The final version is written once the apps are done.
 
 Criteria and evidence map: `kiroween-submission.md`. Check the Devpost rules for the video length limit; the script below is sized for about 3 minutes.
 

@@ -22,7 +22,7 @@ Checkpoints stop for review after tasks 2 and 4.
   - One commit. Do not commit while `pnpm check` or `pnpm test:conformance` fails.
   - _Requirements: 1.1 to 1.5, 3.1 to 3.6, 6.1 to 6.3, 7.1_
 
-- [ ] 3. New rules R42 to R44 (unlock)
+- [x] 3. New rules R42 to R44 (unlock)
   - Mode: sequential
   - Writes: scripts/conformance/rules/R42-feature-isolation.ts, scripts/conformance/rules/R43-step-used.ts, scripts/conformance/rules/R44-registry-matches-folders.ts, scripts/conformance/rules/index.ts, scripts/conformance/test/fixtures/R42/**, scripts/conformance/test/fixtures/R43/**, scripts/conformance/test/fixtures/R44/**, scripts/conformance/test/rules.test.ts, docs/conformance-rules.md
   - Each rule has a bad and a good fixture, an entry in the rules document in the standard format, and a registry entry. The repository itself must pass them.

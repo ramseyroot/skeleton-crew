@@ -1,0 +1,5 @@
+[
+  { "file": "src/features/accounts/steps/pure/total.ts", "line": 1 },
+  { "file": "src/lib/helper.ts", "line": 1 },
+  { "file": "src/shared/ui/badge.ts", "line": 1 }
+]

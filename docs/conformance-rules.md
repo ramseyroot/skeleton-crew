@@ -417,3 +417,33 @@ Each rule section has this shape, and the meta tests check that every label is p
 - **Failing example:** a doc last committed on 2026-11-24 that still says `updated: 2026-11-23`.
 - **Passing example:** `updated` changed whenever the file is changed.
 - **Fix:** add the front matter, or set `updated` to today.
+
+## R42 feature-isolation
+
+- **Severity:** error
+- **Catches:** an import that crosses a feature boundary. A file in one feature importing another feature. A file in `src/shared/` importing a feature. A file outside the features folder importing something inside a feature other than its `index.ts` (or its `page.tsx`, which a route stub in `src/app/` re-exports). Imports of a feature's own files, of `src/shared/`, of `src/lib/` and of `src/ports/` are fine.
+- **Why:** features that reach into each other cannot be removed or changed alone. Isolation is what makes "delete the folder" a complete removal.
+- **Failing example:** `src/features/accounts/steps/pure/total.ts` importing `../../../billing/domain.ts`.
+- **Passing example:** the same step importing a helper from `src/shared/`, or the app's `features.ts` importing `../features/billing/index.ts`.
+- **Fix:** move what both features need to `src/shared/` (a step goes to `src/shared/steps/<class>/`), or call the other feature through the app, not from inside a feature.
+- **Limits:** only relative imports are followed. A path alias that points into another feature would not be seen.
+
+## R43 step-used
+
+- **Severity:** warning
+- **Catches:** a step defined in a steps folder (not in a test) that no strip lists in `steps`, and that is not listed in a strip's `fallbacks`.
+- **Why:** a step nobody uses is dead code that looks like part of the design, and it keeps a permission declaration in the catalog that no strip needs.
+- **Failing example:** `pure.accounts.orphan` defined, and no strip names it.
+- **Passing example:** the step listed in a strip, or in `fallbacks` of one.
+- **Fix:** use the step, or delete it (`pnpm feature show <name>` lists a feature's steps).
+- **Limits:** a step referenced only through an alias or a computed list is reported as unused.
+
+## R44 registry-matches-folders
+
+- **Severity:** error
+- **Catches:** in `src/config/registry.ts`, an adapter folder (`src/adapters/<port>/<provider>/`) that the registry does not import, and an import of an adapter folder that does not exist. In `src/app/features.ts`, a feature folder that is not listed, and a listed feature without an `index.ts`.
+- **Why:** the registry and the feature list are the one place a provider or a feature is switched on. A folder that is not listed is dead, and a listing without a folder fails at startup, often only in the environment that uses it.
+- **Failing example:** `src/adapters/cache/kv/` exists and `registry.ts` has no line for it.
+- **Passing example:** every adapter folder and every feature folder has exactly one import in its list.
+- **Fix:** add the missing line, or delete the folder or the stale line. Profiles name adapters separately (R25).
+- **Limits:** only imports are read. A folder imported but never used in the registry's table passes.

@@ -101,7 +101,7 @@ All test files use `node:test`, are named `<name>.test.ts`, and run offline.
   - If `node:sqlite` cannot be bundled, use the fallback in design section 7 and record it.
   - _Requirements: 10.1 to 10.6_
 
-- [ ] 12. Reporter and Metrics ports with adapters
+- [x] 12. Reporter and Metrics ports with adapters
   - Mode: sequential
   - Writes: src/ports/logger.ts, src/adapters/logger/contract.test.ts, src/ports/reporter.ts, src/ports/metrics.ts, src/adapters/reporter/**, src/adapters/metrics/**
   - Needs the change plan committed `active` (edits two existing guarded files).

@@ -74,6 +74,14 @@ export function runLoggerContract(name: string, make: MakeLogger): void {
     assert.equal(written()[0]?.input, undefined);
   });
 
+  test(`${name}: structured data is kept in every environment, prod included`, () => {
+    for (const env of ["local", "dev", "prod", "staging"]) {
+      const { logger, written } = make(env, createFixedClock());
+      logger.log({ ...START, data: { metric: "strip.runs", value: 1, ok: true } });
+      assert.deepEqual(written()[0]?.data, { metric: "strip.runs", value: 1, ok: true }, env);
+    }
+  });
+
   test(`${name}: order is kept`, () => {
     const { logger, written } = make("local", createFixedClock());
     logger.log(START);

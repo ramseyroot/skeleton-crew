@@ -27,8 +27,13 @@ export type LogEntry = {
   input?: unknown;
   output?: unknown;
   error?: { kind: ErrorKind; audience: "user" | "internal"; message?: string };
-  /** Free text for `debug` entries, for example "cache entry corrupt, deleted". */
+  /** Free text for `debug` entries, for example "cache entry corrupt, deleted". Dropped by redaction outside local and dev. */
   message?: string;
+  /**
+   * Small structured facts such as a metric name, its value and tags. Kept by redaction in every environment,
+   * so it must never hold payloads, user data or free text.
+   */
+  data?: Record<string, string | number | boolean>;
 };
 
 /** What callers pass. The adapter fills `env` and `at`. */
@@ -40,7 +45,7 @@ export interface Logger {
 
 const KEEP_PAYLOAD = new Set(["local", "dev"]);
 
-/** Removes payloads and free text outside `local` and `dev`. Keeps ids, names, source, duration and error kind. */
+/** Removes payloads and free text outside `local` and `dev`. Keeps ids, names, source, duration, error kind and `data`. */
 export function redact(entry: LogEntry): LogEntry {
   if (KEEP_PAYLOAD.has(entry.env)) return entry;
   const { input: _input, output: _output, message: _message, error, ...rest } = entry;

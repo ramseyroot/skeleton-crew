@@ -58,14 +58,14 @@ All test files use `node:test`, are named `<name>.test.ts`, and run offline.
 
 - [x] 6. Step library
   - Mode: sequential
-  - Writes: src/lib/step.ts, src/lib/step.test.ts
+  - Writes: src/lib/step.ts, tests/lib/step.test.ts
   - `defineStep`, the wrapper, `ctx` built from `uses` and narrowed by permissions (design section 3, D2 and D3), entry and exit logging.
   - Tests: input and output schema failures give `validation`, a throw gives `unexpected`, a typed error keeps its kind, a `Result` passes through, a write outside the permissions gives `forbidden`, `writes: []` gives no write method (type test), logging entries match the shape.
   - _Requirements: 2.1 to 2.8_
 
 - [x] 7. Strip library
   - Mode: sequential
-  - Writes: src/lib/strip.ts, src/lib/strip.test.ts
+  - Writes: src/lib/strip.ts, tests/lib/strip.test.ts
   - `defineStrip`, type chain check, load-time checks (D4), runner, routing actions (D5), invalidation with placeholders (D6), `StripResult` and `Display`.
   - Tests: type mismatch (type test), budget exceeded, missing routing, missing `invalidates`, each routing action, retry only when `retryable`, internal `toast` downgraded to generic with reference, `recover`, runner never throws.
   - _Requirements: 3.1 to 3.10_
@@ -78,9 +78,9 @@ All test files use `node:test`, are named `<name>.test.ts`, and run offline.
   - Tests: unknown or missing `APP_ENV`, schema failure lists all problems, `local` with a non-local host, `dev` using a `prod` host, unregistered adapter, `dev` and `prod` require their env paths.
   - _Requirements: 5.1 to 5.7_
 
-- [ ] 9. Example steps, strips and catalog
+- [x] 9. Example steps, strips and catalog
   - Mode: sequential
-  - Writes: src/steps/pure/profile.parseForm.ts, src/steps/db/user.setDisplayName.ts, src/steps/cache/profile.read.ts, src/steps/db/user.findProfile.ts, src/steps/cache/profile.write.ts, src/steps/pure/profile.parseForm.test.ts, src/steps/db/user.setDisplayName.test.ts, src/steps/db/user.findProfile.test.ts, src/steps/cache/profile.read.test.ts, src/steps/cache/profile.write.test.ts, src/strips/profile.save.strip.ts, src/strips/profile.view.strip.ts, src/strips/profile.save.strip.test.ts, src/strips/profile.view.strip.test.ts, src/test-utils/ports.ts, docs/generated/catalog.md, docs/generated/catalog.json
+  - Writes: src/domain/profile.ts, src/steps/pure/profile.parseForm.ts, src/steps/db/user.setDisplayName.ts, src/steps/cache/profile.read.ts, src/steps/db/user.findProfile.ts, src/steps/cache/profile.write.ts, src/steps/pure/profile.parseForm.test.ts, src/steps/db/user.setDisplayName.test.ts, src/steps/db/user.findProfile.test.ts, src/steps/cache/profile.read.test.ts, src/steps/cache/profile.write.test.ts, src/strips/profile.save.strip.ts, src/strips/profile.view.strip.ts, src/strips/profile.save.strip.test.ts, src/strips/profile.view.strip.test.ts, src/test-utils/ports.ts, docs/generated/catalog.md, docs/generated/catalog.json
   - Five steps and two strips from design section 6, with trigger, end states and side-effect boundary written in each strip file.
   - Strip tests: both database adapters, cache memory and `null`, the five end states of requirement 8.5, and that `profile.save` removes `profile:<userId>` from the cache.
   - `pnpm conformance --write-catalog`, then commit the result.

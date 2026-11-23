@@ -1,0 +1,56 @@
+// Ports for tests: real adapters, fixed clock, a memory logger, and the example users seeded.
+// Used by step and strip tests so each test runs against both database adapters and with the cache on and off.
+
+import { mkdtempSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { createMemoryCache } from "../adapters/cache/memory/index.ts";
+import { createNullCache } from "../adapters/cache/null/index.ts";
+import { createFixedClock } from "../adapters/clock/fixed/index.ts";
+import { createMemoryDatabase } from "../adapters/database/memory/index.ts";
+import { createSqliteDatabase } from "../adapters/database/sqlite/index.ts";
+import { createSequenceIds } from "../adapters/ids/sequence/index.ts";
+import { createMemoryLogger } from "../adapters/logger/memory/index.ts";
+import { createMemoryStorage } from "../adapters/storage/memory/index.ts";
+import { DEMO_USERS, collections, nameFields } from "../domain/profile.ts";
+import type { Ports } from "../lib/step.ts";
+import type { Database } from "../ports/database.ts";
+
+export type DatabaseKind = "memory" | "sqlite";
+export type CacheKind = "memory" | "null";
+
+export const DATABASE_KINDS: readonly DatabaseKind[] = ["memory", "sqlite"];
+export const CACHE_KINDS: readonly CacheKind[] = ["memory", "null"];
+
+export async function makeTestPorts(options: { database?: DatabaseKind; cache?: CacheKind; env?: string } = {}) {
+  const env = options.env ?? "local";
+  const clock = createFixedClock("2026-11-23T12:00:00.000Z");
+  const logger = createMemoryLogger({ env, clock });
+  let dir: string | null = null;
+  let database: Database;
+  if (options.database === "sqlite") {
+    dir = mkdtempSync(join(tmpdir(), "skel-test-"));
+    database = createSqliteDatabase({ clock, path: join(dir, "test.db") });
+  } else {
+    database = createMemoryDatabase({ clock });
+  }
+  const migrated = await database.migrate(collections);
+  if (!migrated.ok) throw new Error(`test database could not migrate: ${migrated.error.message}`);
+  const users = database.write("users");
+  for (const { id, displayName } of DEMO_USERS) {
+    const created = await users.create({ id, ...nameFields(displayName) });
+    if (!created.ok) throw new Error(`test database could not seed ${id}: ${created.error.message}`);
+  }
+  const cacheOptions = { app: "test", env, schemaVersion: 1, clock, logger };
+  const cache = options.cache === "null" ? createNullCache(cacheOptions) : createMemoryCache(cacheOptions);
+  const ports: Ports = { database, cache, storage: createMemoryStorage(), clock, ids: createSequenceIds("strip"), logger };
+  return {
+    ports,
+    logger,
+    clock,
+    cleanup(): void {
+      if (database.name === "sqlite") (database as ReturnType<typeof createSqliteDatabase>).close();
+      if (dir) rmSync(dir, { recursive: true, force: true });
+    },
+  };
+}

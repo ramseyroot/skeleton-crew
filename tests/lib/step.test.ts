@@ -1,16 +1,16 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { z } from "zod";
-import { createFixedClock } from "../adapters/clock/fixed/index.ts";
-import { createMemoryCache } from "../adapters/cache/memory/index.ts";
-import { createMemoryDatabase } from "../adapters/database/memory/index.ts";
-import { createSequenceIds } from "../adapters/ids/sequence/index.ts";
-import { createMemoryLogger } from "../adapters/logger/memory/index.ts";
-import { createMemoryStorage } from "../adapters/storage/memory/index.ts";
-import { portError } from "./port-error.ts";
-import { err, makeError, ok, typedError } from "./result.ts";
-import { defineStep } from "./step.ts";
-import type { Ports } from "./step.ts";
+import { createFixedClock } from "../../src/adapters/clock/fixed/index.ts";
+import { createMemoryCache } from "../../src/adapters/cache/memory/index.ts";
+import { createMemoryDatabase } from "../../src/adapters/database/memory/index.ts";
+import { createSequenceIds } from "../../src/adapters/ids/sequence/index.ts";
+import { createMemoryLogger } from "../../src/adapters/logger/memory/index.ts";
+import { createMemoryStorage } from "../../src/adapters/storage/memory/index.ts";
+import { portError } from "../../src/lib/port-error.ts";
+import { err, makeError, ok, typedError } from "../../src/lib/result.ts";
+import { defineStep } from "../../src/lib/step.ts";
+import type { Ports } from "../../src/lib/step.ts";
 
 async function makePorts(env = "local") {
   const clock = createFixedClock("2026-11-23T12:00:00.000Z");

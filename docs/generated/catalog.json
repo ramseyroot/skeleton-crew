@@ -1,5 +1,148 @@
 {
   "version": 1,
-  "steps": [],
-  "strips": []
+  "steps": [
+    {
+      "name": "cache.profile.read",
+      "class": "cache",
+      "file": "src/steps/cache/profile.read.ts",
+      "input": "z.object({ userId: z.string() })",
+      "output": "z.object({ userId: z.string(), cached: ProfileSchema.nullable() })",
+      "permissions": {
+        "reads": [
+          "cache:profile"
+        ],
+        "writes": [],
+        "storage": []
+      },
+      "errors": [
+        "network",
+        "unexpected"
+      ],
+      "usedBy": [
+        "profile.view"
+      ]
+    },
+    {
+      "name": "cache.profile.write",
+      "class": "cache",
+      "file": "src/steps/cache/profile.write.ts",
+      "input": "ProfileSchema",
+      "output": "ProfileSchema",
+      "permissions": {
+        "reads": [],
+        "writes": [
+          "cache:profile"
+        ],
+        "storage": []
+      },
+      "errors": [
+        "network",
+        "unexpected"
+      ],
+      "usedBy": [
+        "profile.view"
+      ]
+    },
+    {
+      "name": "db.user.findProfile",
+      "class": "db",
+      "file": "src/steps/db/user.findProfile.ts",
+      "input": "z.object({ userId: z.string(), cached: ProfileSchema.nullish() })",
+      "output": "ProfileSchema",
+      "permissions": {
+        "reads": [
+          "users"
+        ],
+        "writes": [],
+        "storage": []
+      },
+      "errors": [
+        "network",
+        "not_found",
+        "unexpected"
+      ],
+      "usedBy": [
+        "profile.view"
+      ]
+    },
+    {
+      "name": "db.user.setDisplayName",
+      "class": "db",
+      "file": "src/steps/db/user.setDisplayName.ts",
+      "input": "z.object({ userId: z.string(), displayName: z.string() })",
+      "output": "ProfileSchema",
+      "permissions": {
+        "reads": [],
+        "writes": [
+          "users"
+        ],
+        "storage": []
+      },
+      "errors": [
+        "conflict",
+        "network",
+        "not_found",
+        "unexpected"
+      ],
+      "usedBy": [
+        "profile.save"
+      ]
+    },
+    {
+      "name": "pure.profile.parseForm",
+      "class": "pure",
+      "file": "src/steps/pure/profile.parseForm.ts",
+      "input": "z.object({ userId: z.string().min(1), displayName: z.string() })",
+      "output": "z.object({ userId: z.string().min(1), displayName: z.string().min(1).max(60) })",
+      "permissions": {
+        "reads": [],
+        "writes": [],
+        "storage": []
+      },
+      "errors": [
+        "validation"
+      ],
+      "usedBy": [
+        "profile.save"
+      ]
+    }
+  ],
+  "strips": [
+    {
+      "name": "profile.save",
+      "file": "src/strips/profile.save.strip.ts",
+      "steps": [
+        "pure.profile.parseForm",
+        "db.user.setDisplayName"
+      ],
+      "budget": {
+        "reads": [
+          "users"
+        ],
+        "writes": [
+          "users"
+        ],
+        "storage": []
+      }
+    },
+    {
+      "name": "profile.view",
+      "file": "src/strips/profile.view.strip.ts",
+      "steps": [
+        "cache.profile.read",
+        "db.user.findProfile",
+        "cache.profile.write"
+      ],
+      "budget": {
+        "reads": [
+          "cache:profile",
+          "users"
+        ],
+        "writes": [
+          "cache:profile"
+        ],
+        "storage": []
+      }
+    }
+  ]
 }

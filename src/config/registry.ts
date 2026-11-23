@@ -3,6 +3,12 @@
 
 import { mkdirSync } from "node:fs";
 import { dirname } from "node:path";
+import { createLogMetrics } from "../adapters/metrics/log/index.ts";
+import { createMemoryMetrics } from "../adapters/metrics/memory/index.ts";
+import { createNoneMetrics } from "../adapters/metrics/none/index.ts";
+import { createLogReporter } from "../adapters/reporter/log/index.ts";
+import { createMemoryReporter } from "../adapters/reporter/memory/index.ts";
+import { createNoneReporter } from "../adapters/reporter/none/index.ts";
 import { createMemoryCache } from "../adapters/cache/memory/index.ts";
 import { createNullCache } from "../adapters/cache/null/index.ts";
 import { createFixedClock } from "../adapters/clock/fixed/index.ts";
@@ -20,6 +26,8 @@ import type { Clock } from "../ports/clock.ts";
 import type { Database } from "../ports/database.ts";
 import type { IdGenerator } from "../ports/ids.ts";
 import type { Logger } from "../ports/logger.ts";
+import type { Metrics } from "../ports/metrics.ts";
+import type { ErrorReporter } from "../ports/reporter.ts";
 import type { ObjectStorage } from "../ports/storage.ts";
 
 export type Settings = {
@@ -44,6 +52,8 @@ export type Registry = {
   database: Record<string, Entry<Database, { clock: Clock }>>;
   cache: Record<string, Entry<Cache, { clock: Clock; logger: Logger }>>;
   storage: Record<string, Entry<ObjectStorage, Record<never, never>>>;
+  reporter: Record<string, Entry<ErrorReporter, { logger: Logger }>>;
+  metrics: Record<string, Entry<Metrics, { logger: Logger }>>;
 };
 
 const OFFLINE: readonly string[] = [];
@@ -84,5 +94,15 @@ export const registry: Registry = {
         return createFsStorage({ root: s.storagePath });
       },
     },
+  },
+  reporter: {
+    none: { hosts: OFFLINE, create: () => createNoneReporter() },
+    memory: { hosts: OFFLINE, create: () => createMemoryReporter() },
+    log: { hosts: OFFLINE, create: (_s, d) => createLogReporter({ logger: d.logger }) },
+  },
+  metrics: {
+    none: { hosts: OFFLINE, create: () => createNoneMetrics() },
+    memory: { hosts: OFFLINE, create: () => createMemoryMetrics() },
+    log: { hosts: OFFLINE, create: (_s, d) => createLogMetrics({ logger: d.logger }) },
   },
 };

@@ -102,3 +102,33 @@ test("composeOrThrow reports all problems in one error", () => {
     (e: unknown) => e instanceof Error && /Startup stopped\. 2 problem\(s\)/.test(e.message) && /DATABASE_PATH/.test(e.message) && /STORAGE_PATH/.test(e.message),
   );
 });
+
+test("dev is true for local and dev, false for prod, and comes only from the profile", () => {
+  const paths = (name: string) => ({ DATABASE_PATH: join(tmp, `${name}.db`), STORAGE_PATH: join(tmp, `${name}-files`) });
+  const local = compose({ env: { APP_ENV: "local" }, profiles: set });
+  const dev = compose({ env: { APP_ENV: "dev", ...paths("flag-dev") } });
+  const prod = compose({ env: { APP_ENV: "prod", ...paths("flag-prod") } });
+  assert.equal(local.ok && local.value.dev, true);
+  assert.equal(dev.ok && dev.value.dev, true);
+  assert.equal(prod.ok && prod.value.dev, false);
+  // No environment variable named DEV, APP_DEV or similar changes the answer.
+  const forced = compose({ env: { APP_ENV: "prod", DEV: "true", APP_DEV: "1", NODE_ENV: "development", ...paths("flag-forced") } });
+  assert.equal(forced.ok && forced.value.dev, false);
+});
+
+test("dev builds the none adapters, prod builds the log adapters, and the ports carry the environment name", () => {
+  const paths = (name: string) => ({ DATABASE_PATH: join(tmp, `${name}.db`), STORAGE_PATH: join(tmp, `${name}-files`) });
+  const dev = compose({ env: { APP_ENV: "dev", ...paths("tel-dev") } });
+  const prod = compose({ env: { APP_ENV: "prod", ...paths("tel-prod") } });
+  assert.equal(dev.ok && dev.value.ports.env, "dev");
+  assert.equal(prod.ok && prod.value.ports.env, "prod");
+  // The none adapters have no memory of what they were given.
+  assert.equal(dev.ok && "reports" in dev.value.ports.reporter, false);
+  assert.equal(dev.ok && "points" in dev.value.ports.metrics, false);
+});
+
+test("a prod profile with reporting switched off does not start", () => {
+  const prod = { ...profiles.prod, adapters: { ...profiles.prod.adapters, reporter: "none" } };
+  const problems = problemsOf(compose({ env: { APP_ENV: "prod", DATABASE_PATH: join(tmp, "p.db"), STORAGE_PATH: join(tmp, "p-files") }, profiles: { ...set, prod } }));
+  assert.match(problems.join(), /adapters\.reporter: prod must report/);
+});

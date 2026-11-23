@@ -6,6 +6,8 @@ import { createMemoryCache } from "../../src/adapters/cache/memory/index.ts";
 import { createMemoryDatabase } from "../../src/adapters/database/memory/index.ts";
 import { createSequenceIds } from "../../src/adapters/ids/sequence/index.ts";
 import { createMemoryLogger } from "../../src/adapters/logger/memory/index.ts";
+import { createMemoryMetrics } from "../../src/adapters/metrics/memory/index.ts";
+import { createMemoryReporter } from "../../src/adapters/reporter/memory/index.ts";
 import { createMemoryStorage } from "../../src/adapters/storage/memory/index.ts";
 import { err, makeError } from "../../src/lib/result.ts";
 import { defineStep } from "../../src/lib/step.ts";
@@ -19,8 +21,10 @@ async function makePorts() {
   await database.migrate([{ name: "users", fields: { displayName: { type: "string", optional: true } } }]);
   await database.write("users").create({ id: "u1", displayName: "Old" });
   const cache = createMemoryCache({ app: "t", env: "local", schemaVersion: 1, clock, logger });
-  const ports: Ports = { database, cache, storage: createMemoryStorage(), clock, ids: createSequenceIds("strip"), logger };
-  return { ports, logger, cache, database };
+  const reporter = createMemoryReporter();
+  const metrics = createMemoryMetrics();
+  const ports: Ports = { env: "local", database, cache, storage: createMemoryStorage(), clock, ids: createSequenceIds("strip"), logger, reporter, metrics };
+  return { ports, logger, cache, database, reporter, metrics };
 }
 
 const NONE = { reads: [], writes: [], storage: [] } as const;
@@ -320,4 +324,109 @@ test("the strip's input and output types come from its first and last step", asy
     const done: { id: string; displayName: string } = r.value;
     assert.equal(done.id, "u1");
   }
+});
+
+// ---- telemetry ----------------------------------------------------------------
+
+const exploding = (kind: "unexpected" | "network" | "not_found", audience: "internal" | "user" = "internal") =>
+  defineStep({
+    name: "api.t.exploding",
+    class: "api",
+    input: Form,
+    output: Form,
+    permissions: NONE,
+    errors: ["network", "not_found"],
+    run: () =>
+      err(
+        audience === "user"
+          ? makeError(kind, "api.t.exploding", "", "boom", { audience: "user", userMessage: "Try later" })
+          : makeError(kind, "api.t.exploding", "", "boom"),
+      ),
+  });
+
+test("a strip that ends in an unexpected internal error is reported once, with its strip and reference", async () => {
+  const { ports, reporter } = await makePorts();
+  const strip = defineStrip({ ...base, invalidates: [], steps: [exploding("unexpected")], routing: { "*": "abort" } });
+  const r = await runStrip(strip, ports, { userId: "u1", name: "Ada" });
+  assert.equal(r.ok, false);
+  assert.equal(reporter.reports.length, 1);
+  const [report] = reporter.reports;
+  assert.equal(report?.error.kind, "unexpected");
+  assert.deepEqual(report?.context, { strip: "profile.t", stripId: "strip-1", env: "local" });
+});
+
+test("upstream and network failures are reported too", async () => {
+  const { ports, reporter } = await makePorts();
+  const strip = defineStrip({ ...base, invalidates: [], steps: [exploding("network")], routing: { "*": "abort" } });
+  await runStrip(strip, ports, { userId: "u1", name: "Ada" });
+  assert.deepEqual(reporter.reports.map((r) => r.error.kind), ["network"]);
+});
+
+test("expected outcomes and user errors are not reported", async () => {
+  const { ports, reporter } = await makePorts();
+  const missing = defineStrip({ ...base, invalidates: [], steps: [exploding("not_found")], routing: { "*": "abort" } });
+  await runStrip(missing, ports, { userId: "u1", name: "Ada" });
+  const userNetwork = defineStrip({ ...base, invalidates: [], steps: [exploding("network", "user")], routing: { "*": "toast" } });
+  await runStrip(userNetwork, ports, { userId: "u1", name: "Ada" });
+  const strip = defineStrip({ ...base, steps: [parse, rename], routing: { "pure.t.parse": { validation: "toast" }, "*": "abort" } });
+  await runStrip(strip, ports, { userId: "u1", name: "   " });
+  await runStrip(strip, ports, { userId: "ghost", name: "Ada" });
+  assert.equal(reporter.reports.length, 0);
+});
+
+test("a success, a skipped step, a recovered step and a retry that works are not reported", async () => {
+  const { ports, reporter } = await makePorts();
+  const ok1 = defineStrip({ ...base, steps: [parse, rename], routing: { "*": "abort" } });
+  await runStrip(ok1, ports, { userId: "u1", name: "Ada" });
+
+  const f = flaky(1, true);
+  const retried = defineStrip({ ...base, invalidates: [], steps: [f.step], routing: { "api.t.flaky": { network: "retry:2" }, "*": "abort" } });
+  assert.equal((await runStrip(retried, ports, { userId: "u1", name: "Ada" })).ok, true);
+
+  const down = exploding("network");
+  const backup = defineStep({ name: "pure.t.backup", class: "pure", input: Form, output: Form, permissions: NONE, errors: [], run: (i) => i });
+  const recovered = defineStrip({ ...base, invalidates: [], steps: [down], fallbacks: [backup], routing: { "api.t.exploding": "recover:pure.t.backup", "*": "abort" } });
+  assert.equal((await runStrip(recovered, ports, { userId: "u1", name: "Ada" })).ok, true);
+
+  const skipped = defineStrip({ ...base, invalidates: [], steps: [exploding("network")], routing: { "api.t.exploding": "log-and-continue", "*": "abort" } });
+  assert.equal((await runStrip(skipped, ports, { userId: "u1", name: "Ada" })).ok, true);
+  assert.equal(reporter.reports.length, 0);
+});
+
+test("a retry that runs out is reported once, not once per attempt", async () => {
+  const { ports, reporter } = await makePorts();
+  const f = flaky(5, true);
+  const strip = defineStrip({ ...base, invalidates: [], steps: [f.step], routing: { "api.t.flaky": { network: "retry:2" }, "*": "abort" } });
+  const r = await runStrip(strip, ports, { userId: "u1", name: "Ada" });
+  assert.equal(r.ok, false);
+  assert.equal(f.calls.n, 3);
+  assert.equal(reporter.reports.length, 1);
+});
+
+test("a reporter or metrics adapter that throws does not change the strip's result", async () => {
+  const { ports } = await makePorts();
+  const throwing = {
+    ...ports,
+    reporter: { report: () => { throw new Error("tracker down"); } },
+    metrics: { increment: () => { throw new Error("down"); }, timing: () => { throw new Error("down"); } },
+  };
+  const strip = defineStrip({ ...base, invalidates: [], steps: [exploding("unexpected")], routing: { "*": "abort" } });
+  const r = await runStrip(strip, throwing, { userId: "u1", name: "Ada" });
+  assert.equal(r.ok, false);
+  if (!r.ok) assert.equal(r.error.kind, "unexpected");
+});
+
+test("a run emits strip.runs and strip.duration_ms with the strip, the outcome and, on failure, the kind", async () => {
+  const { ports, metrics } = await makePorts();
+  const strip = defineStrip({ ...base, steps: [parse, rename], routing: { "*": "abort" } });
+  await runStrip(strip, ports, { userId: "u1", name: "Ada" });
+  await runStrip(strip, ports, { userId: "ghost", name: "Ada" });
+  const strips = metrics.points.filter((p) => p.name.startsWith("strip."));
+  assert.deepEqual(strips.map((p) => [p.name, p.tags]), [
+    ["strip.runs", { strip: "profile.t", outcome: "ok" }],
+    ["strip.duration_ms", { strip: "profile.t", outcome: "ok" }],
+    ["strip.runs", { strip: "profile.t", outcome: "error", kind: "not_found" }],
+    ["strip.duration_ms", { strip: "profile.t", outcome: "error", kind: "not_found" }],
+  ]);
+  assert.equal(metrics.points.some((p) => p.name === "step.duration_ms" && p.tags.step === "db.t.rename"), true);
 });

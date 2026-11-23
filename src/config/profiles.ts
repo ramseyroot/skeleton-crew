@@ -6,6 +6,9 @@
 // The skeleton can only name adapters that exist. `dev` and `prod` therefore reuse the local-capable adapters
 // (sqlite, fs) with paths that must come from environment variables, so they can never silently share the
 // local files. An app replaces them with its own adapters (PocketBase, Supabase, R2, ...) when it has them.
+//
+// Gating: `reporter` and `metrics` are none or memory in local and dev, and never none in prod. That is how "dev"
+// turns tracking off. The `dev` boolean that compose() returns is only information derived from this profile.
 
 import { z } from "zod";
 
@@ -22,6 +25,8 @@ export const profileSchema = z
         database: z.enum(["memory", "sqlite"]),
         cache: z.enum(["memory", "null"]),
         storage: z.enum(["memory", "fs"]),
+        reporter: z.enum(["none", "memory", "log"]),
+        metrics: z.enum(["none", "memory", "log"]),
       })
       .strict(),
     /** Hosts this profile may reach. Every adapter declares the hosts it reaches, and each must be in this list. */
@@ -45,6 +50,16 @@ export const profileSchema = z
         ctx.addIssue({ code: "custom", path: ["adapters", "ids"], message: `${profile.env} must use uuid ids` });
       }
     }
+    // Gating: development sends nothing to tracking services, production always sends.
+    for (const port of ["reporter", "metrics"] as const) {
+      const adapter = profile.adapters[port];
+      if (profile.env === "prod" && adapter === "none") {
+        ctx.addIssue({ code: "custom", path: ["adapters", port], message: `prod must report: ${port} cannot be "none"` });
+      }
+      if (profile.env !== "prod" && adapter === "log") {
+        ctx.addIssue({ code: "custom", path: ["adapters", port], message: `${profile.env} must not send ${port} to tracking: use "none" or "memory"` });
+      }
+    }
     if (profile.env === "prod") {
       for (const port of ["database", "storage"] as const) {
         if (profile.adapters[port] === "memory") {
@@ -60,21 +75,21 @@ export type ProfileName = (typeof ENVS)[number];
 export const profiles = {
   local: {
     env: "local",
-    adapters: { logger: "console", clock: "system", ids: "uuid", database: "sqlite", cache: "memory", storage: "fs" },
+    adapters: { logger: "console", clock: "system", ids: "uuid", database: "sqlite", cache: "memory", storage: "fs", reporter: "none", metrics: "none" },
     allowedHosts: ["localhost", "127.0.0.1"],
     paths: { database: ".data/local/app.db", storage: ".data/local/files" },
     logFormat: "pretty",
   },
   dev: {
     env: "dev",
-    adapters: { logger: "console", clock: "system", ids: "uuid", database: "sqlite", cache: "memory", storage: "fs" },
+    adapters: { logger: "console", clock: "system", ids: "uuid", database: "sqlite", cache: "memory", storage: "fs", reporter: "none", metrics: "none" },
     allowedHosts: [],
     paths: {},
     logFormat: "json",
   },
   prod: {
     env: "prod",
-    adapters: { logger: "console", clock: "system", ids: "uuid", database: "sqlite", cache: "null", storage: "fs" },
+    adapters: { logger: "console", clock: "system", ids: "uuid", database: "sqlite", cache: "null", storage: "fs", reporter: "log", metrics: "log" },
     allowedHosts: [],
     paths: {},
     logFormat: "json",

@@ -57,3 +57,33 @@ test("cross-profile problems: non-local host in local, prod host in dev, shared 
   const shared = crossProfileProblems({ ...base, dev: { ...base.dev, paths: { database: base.local.paths.database! } } });
   assert.equal(shared.some((p) => /share the database path/.test(p)), true);
 });
+
+test("gating: local and dev send nothing to tracking, so reporter and metrics must be none or memory", () => {
+  for (const name of ["local", "dev"] as const) {
+    for (const port of ["reporter", "metrics"] as const) {
+      const bad = { ...profiles[name], adapters: { ...profiles[name].adapters, [port]: "log" } };
+      const r = profileSchema.safeParse(bad);
+      assert.equal(r.success, false, `${name} ${port} log`);
+      if (!r.success) assert.match(r.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join(), new RegExp(`adapters\\.${port}: ${name} must not send`));
+      const memory = { ...profiles[name], adapters: { ...profiles[name].adapters, [port]: "memory" } };
+      assert.equal(profileSchema.safeParse(memory).success, true, `${name} ${port} memory`);
+    }
+  }
+});
+
+test("gating: prod must report, so reporter and metrics cannot be none", () => {
+  const none = { ...profiles.prod, adapters: { ...profiles.prod.adapters, reporter: "none", metrics: "none" } };
+  const r = profileSchema.safeParse(none);
+  assert.equal(r.success, false);
+  if (!r.success) {
+    const text = r.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join("\n");
+    assert.match(text, /adapters\.reporter: prod must report/);
+    assert.match(text, /adapters\.metrics: prod must report/);
+  }
+});
+
+test("the shipped profiles: nothing is reported or measured outside prod, and prod uses the log adapters", () => {
+  assert.deepEqual([profiles.local.adapters.reporter, profiles.local.adapters.metrics], ["none", "none"]);
+  assert.deepEqual([profiles.dev.adapters.reporter, profiles.dev.adapters.metrics], ["none", "none"]);
+  assert.deepEqual([profiles.prod.adapters.reporter, profiles.prod.adapters.metrics], ["log", "log"]);
+});

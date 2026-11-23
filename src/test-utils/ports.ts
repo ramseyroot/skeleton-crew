@@ -11,6 +11,8 @@ import { createMemoryDatabase } from "../adapters/database/memory/index.ts";
 import { createSqliteDatabase } from "../adapters/database/sqlite/index.ts";
 import { createSequenceIds } from "../adapters/ids/sequence/index.ts";
 import { createMemoryLogger } from "../adapters/logger/memory/index.ts";
+import { createMemoryMetrics } from "../adapters/metrics/memory/index.ts";
+import { createMemoryReporter } from "../adapters/reporter/memory/index.ts";
 import { createMemoryStorage } from "../adapters/storage/memory/index.ts";
 import { DEMO_USERS, collections, nameFields } from "../domain/profile.ts";
 import type { Ports } from "../lib/step.ts";
@@ -43,11 +45,15 @@ export async function makeTestPorts(options: { database?: DatabaseKind; cache?: 
   }
   const cacheOptions = { app: "test", env, schemaVersion: 1, clock, logger };
   const cache = options.cache === "null" ? createNullCache(cacheOptions) : createMemoryCache(cacheOptions);
-  const ports: Ports = { database, cache, storage: createMemoryStorage(), clock, ids: createSequenceIds("strip"), logger };
+  const reporter = createMemoryReporter();
+  const metrics = createMemoryMetrics();
+  const ports: Ports = { env, database, cache, storage: createMemoryStorage(), clock, ids: createSequenceIds("strip"), logger, reporter, metrics };
   return {
     ports,
     logger,
     clock,
+    reporter,
+    metrics,
     cleanup(): void {
       if (database.name === "sqlite") (database as ReturnType<typeof createSqliteDatabase>).close();
       if (dir) rmSync(dir, { recursive: true, force: true });

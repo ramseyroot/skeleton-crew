@@ -10,6 +10,7 @@
 //                           `invalidates` when a step writes, action syntax, duplicate step names.
 // The runner itself never throws: it always returns a StripResult.
 
+import { shouldReport } from "../ports/reporter.ts";
 import type { Permissions, Ports, Step } from "./step.ts";
 import { fromThrown } from "./result.ts";
 import type { ErrorKind, StepError } from "./result.ts";
@@ -252,6 +253,19 @@ export async function runStrip<I, O, N extends string>(
     const ms = Math.round(performance.now() - started);
     if (result.ok) log({ phase: "end", ok: true, ms });
     else log({ phase: "end", ok: false, ms, error: { kind: result.error.kind, audience: result.error.audience, message: result.error.message } });
+    // Telemetry is sent last and can never change the result.
+    try {
+      const tags = result.ok ? { strip: strip.name, outcome: "ok" as const } : { strip: strip.name, outcome: "error" as const, kind: result.error.kind };
+      ports.metrics.increment("strip.runs", tags);
+      ports.metrics.timing("strip.duration_ms", ms, tags);
+    } catch {
+      // ignored
+    }
+    try {
+      if (!result.ok && shouldReport(result.error)) ports.reporter.report(result.error, { strip: strip.name, stripId, env: ports.env });
+    } catch {
+      // ignored
+    }
     return result;
   };
   const abort = (error: StepError): StripResult<O> => finish({ ok: false, error, display: displayFor(error, stripId), stripId });

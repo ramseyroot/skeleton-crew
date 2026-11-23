@@ -17,7 +17,7 @@ export default async function Page() {
       <h1>Profile</h1>
       <ProfileEditor profile={viewStateOf(toPublicResult(result))} />
       <p style={{ color: "#667085", fontSize: 13 }}>
-        profile: {runtime.profile.env} | database: {runtime.ports.database.name} | cache: {runtime.ports.cache.name}
+        profile: {runtime.profile.env} | dev: {String(runtime.dev)} | database: {runtime.ports.database.name} | cache: {runtime.ports.cache.name}
       </p>
     </main>
   );

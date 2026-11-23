@@ -108,7 +108,7 @@ All test files use `node:test`, are named `<name>.test.ts`, and run offline.
   - `LogEntry.data` (kept by redaction), `shouldReport`, `cleanTags`, and the three adapters of each port with `errors.ts`, a contract suite each, and adapter tests. The `log` adapters write through the Logger port.
   - _Requirements: 12.1, 12.2, 12.5, 12.6, 13.1, 13.2, 13.4, 13.5, 13.6_
 
-- [ ] 13. Wire reporting, metrics and the `dev` flag
+- [x] 13. Wire reporting, metrics and the `dev` flag
   - Mode: sequential
   - Writes: src/lib/step.ts, src/lib/strip.ts, src/config/profiles.ts, src/config/registry.ts, src/config/compose.ts, src/config/profiles.test.ts, src/config/compose.test.ts, src/test-utils/ports.ts, tests/lib/step.test.ts, tests/lib/strip.test.ts, src/app/page.tsx
   - `Ports` gets `reporter` and `metrics`. The step wrapper emits `step.duration_ms`. The runner reports final internal errors of the reported kinds and emits `strip.runs` and `strip.duration_ms`. Telemetry failures never change a result.

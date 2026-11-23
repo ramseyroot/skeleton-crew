@@ -21,10 +21,16 @@ export type ComposeOptions = {
   registry?: Registry;
 };
 
-export type Composed = { profile: Profile; app: string; ports: Ports };
+export type Composed = {
+  profile: Profile;
+  app: string;
+  /** True for local and dev, false for prod. Read-only information derived from the profile. It selects no adapter. */
+  dev: boolean;
+  ports: Ports;
+};
 export type ComposeResult = { ok: true; value: Composed } | { ok: false; problems: string[] };
 
-const PORT_ORDER = ["clock", "logger", "ids", "database", "cache", "storage"] as const;
+const PORT_ORDER = ["clock", "logger", "ids", "database", "cache", "storage", "reporter", "metrics"] as const;
 
 export function compose(options: ComposeOptions): ComposeResult {
   const problems: string[] = [];
@@ -106,7 +112,10 @@ export function compose(options: ComposeOptions): ComposeResult {
     const database = reg.database[profile.adapters.database]!.create(settings, { clock });
     const cache = reg.cache[profile.adapters.cache]!.create(settings, { clock, logger });
     const storage = reg.storage[profile.adapters.storage]!.create(settings, {});
-    return { ok: true, value: { profile, app, ports: { database, cache, storage, clock, ids, logger } } };
+    const reporter = reg.reporter[profile.adapters.reporter]!.create(settings, { logger });
+    const metrics = reg.metrics[profile.adapters.metrics]!.create(settings, { logger });
+    const dev = profile.env !== "prod";
+    return { ok: true, value: { profile, app, dev, ports: { env: profile.env, database, cache, storage, clock, ids, logger, reporter, metrics } } };
   } catch (thrown) {
     return { ok: false, problems: [`could not build the adapters for profile ${selected}: ${thrown instanceof Error ? thrown.message : String(thrown)}`] };
   }

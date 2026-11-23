@@ -21,6 +21,8 @@ import type { Clock } from "../ports/clock.ts";
 import type { BatchOp, Database, DbReader, DbWriter, Scalar } from "../ports/database.ts";
 import type { IdGenerator } from "../ports/ids.ts";
 import type { Logger } from "../ports/logger.ts";
+import type { Metrics } from "../ports/metrics.ts";
+import type { ErrorReporter } from "../ports/reporter.ts";
 import type { ObjectStorage } from "../ports/storage.ts";
 import { isPortError } from "./port-error.ts";
 import { err, fromThrown, makeError, ok } from "./result.ts";
@@ -37,12 +39,17 @@ export type Permissions = {
 
 /** The real ports of a running app, built from the active profile by `config/compose.ts`. */
 export type Ports = {
+  /** The profile's environment name: local, dev or prod. Only the runner reads it (for report context). */
+  env: string;
   database: Database;
   cache: Cache;
   storage: ObjectStorage;
   clock: Clock;
   ids: IdGenerator;
   logger: Logger;
+  /** Used by the step wrapper and the strip runner only. Steps never receive it. */
+  reporter: ErrorReporter;
+  metrics: Metrics;
 };
 
 /** What the strip runner (or a test) gives a step each time it runs. */
@@ -174,6 +181,15 @@ export function defineStep<
 
       const finish = (result: Result<z.output<Out>>): Result<z.output<Out>> => {
         const ms = Math.round(performance.now() - started);
+        try {
+          run.ports.metrics.timing(
+            "step.duration_ms",
+            ms,
+            result.ok ? { step: def.name, outcome: "ok" } : { step: def.name, outcome: "error", kind: result.error.kind },
+          );
+        } catch {
+          // Telemetry never fails a step.
+        }
         if (result.ok) {
           safeLog({ ...base, phase: "end", ok: true, ms, output: result.value });
         } else {

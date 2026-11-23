@@ -6,6 +6,8 @@ import { createMemoryCache } from "../../src/adapters/cache/memory/index.ts";
 import { createMemoryDatabase } from "../../src/adapters/database/memory/index.ts";
 import { createSequenceIds } from "../../src/adapters/ids/sequence/index.ts";
 import { createMemoryLogger } from "../../src/adapters/logger/memory/index.ts";
+import { createMemoryMetrics } from "../../src/adapters/metrics/memory/index.ts";
+import { createMemoryReporter } from "../../src/adapters/reporter/memory/index.ts";
 import { createMemoryStorage } from "../../src/adapters/storage/memory/index.ts";
 import { portError } from "../../src/lib/port-error.ts";
 import { err, makeError, ok, typedError } from "../../src/lib/result.ts";
@@ -21,7 +23,12 @@ async function makePorts(env = "local") {
     { name: "orders", fields: { total: { type: "number" } } },
   ]);
   assert.equal(migrated.ok, true);
+  const reporter = createMemoryReporter();
+  const metrics = createMemoryMetrics();
   const ports: Ports = {
+    env,
+    reporter,
+    metrics,
     database,
     cache: createMemoryCache({ app: "t", env, schemaVersion: 1, clock, logger }),
     storage: createMemoryStorage(),
@@ -29,7 +36,7 @@ async function makePorts(env = "local") {
     ids: createSequenceIds(),
     logger,
   };
-  return { ports, logger, clock };
+  return { ports, logger, clock, metrics, reporter };
 }
 
 const run = (ports: Ports) => ({ stripId: "strip-1", ports });
@@ -384,4 +391,59 @@ test("step input and output types are inferred for chaining", () => {
   void typed;
   // @ts-expect-error wrong input shape
   void step.execute({ nam: "x" }, { stripId: "s", ports: undefined as never });
+});
+
+test("each run emits a step duration with the step name and the outcome", async () => {
+  const { ports, metrics } = await makePorts();
+  const step = defineStep({
+    name: "pure.name.length",
+    class: "pure",
+    input: Name,
+    output: Len,
+    permissions: NONE,
+    errors: [],
+    run: (input) => ({ length: input.name.length }),
+  });
+  await step.execute({ name: "Ada" }, run(ports));
+  await step.execute({ name: "" }, run(ports));
+  assert.deepEqual(metrics.points.map((p) => [p.type, p.name, p.tags]), [
+    ["timing", "step.duration_ms", { step: "pure.name.length", outcome: "ok" }],
+    ["timing", "step.duration_ms", { step: "pure.name.length", outcome: "error", kind: "validation" }],
+  ]);
+});
+
+test("a metrics adapter that throws does not change the step result", async () => {
+  const { ports } = await makePorts();
+  const broken = { ...ports, metrics: { increment: () => { throw new Error("down"); }, timing: () => { throw new Error("down"); } } };
+  const step = defineStep({
+    name: "pure.name.length",
+    class: "pure",
+    input: Name,
+    output: Len,
+    permissions: NONE,
+    errors: [],
+    run: (input) => ({ length: input.name.length }),
+  });
+  assert.deepEqual(await step.execute({ name: "Ada" }, run(broken)), ok({ length: 3 }));
+});
+
+test("steps cannot reach the reporter or the metrics port", async () => {
+  const { ports } = await makePorts();
+  const step = defineStep({
+    name: "pure.ctx.telemetry",
+    class: "pure",
+    input: Name,
+    output: z.object({ keys: z.string() }),
+    permissions: NONE,
+    errors: [],
+    uses: ["clock", "ids"],
+    run: (_input, ctx) => {
+      // @ts-expect-error telemetry is not part of a step's context
+      assert.equal(ctx.metrics, undefined);
+      // @ts-expect-error telemetry is not part of a step's context
+      assert.equal(ctx.reporter, undefined);
+      return { keys: Object.keys(ctx).sort().join(",") };
+    },
+  });
+  assert.deepEqual(await step.execute({ name: "x" }, run(ports)), ok({ keys: "clock,ids,log,stripId" }));
 });

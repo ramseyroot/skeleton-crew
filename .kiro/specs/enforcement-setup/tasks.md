@@ -144,7 +144,7 @@ Every task: append a `started` row to `progress.md` before writing files. On fin
   - Protected files with unlock expiry, guarded existing files against active committed plans, worktree path handling and task file lists, main-tree block while worktrees are open, shell command patterns.
   - _Requirements: 12.3 to 12.5, 19.1 to 19.5, 24.1 to 24.3_
 
-- [ ] 19. Steering files
+- [x] 19. Steering files
   - Mode: sequential
   - Writes: .kiro/steering/core-rules.md, .kiro/steering/steps-pure.md, .kiro/steering/steps-api.md, .kiro/steering/steps-db.md, .kiro/steering/steps-cache.md, .kiro/steering/steps-storage.md, .kiro/steering/steps-ui.md, .kiro/steering/steps-scrape.md, .kiro/steering/strips.md, .kiro/steering/ports-adapters.md, .kiro/steering/environments.md
   - Within the size limits (checked by R31). Each states which rules the check command enforces. `core-rules.md` includes the change process summary, the resume procedure, and points to `docs/change-process.md`.

@@ -60,3 +60,5 @@ Append-only. Format and resume procedure: `docs/change-process.md`, section 7.
 | 2026-11-23 17:43 | 17 | done | this | scripts/conformance/hooks/stop.ts, test/hooks-stop.test.ts (131 tests pass). Added --reset for a prompt-submit hook, so each new user message gets fresh attempts | Start task 18: protection hook script |
 | 2026-11-23 17:43 | 18 | started | | | Write protection hook script and tests |
 | 2026-11-23 17:45 | 18 | done | this | scripts/conformance/hooks/protect.ts, test/hooks-protect.test.ts (138 tests pass). Hook does not load the compiler; about 0.2 to 0.4s per call | Start task 19: steering files |
+| 2026-11-23 17:47 | 19 | started | | | Write steering files within size limits |
+| 2026-11-23 17:47 | 19 | done | this | .kiro/steering/core-rules.md, .kiro/steering/strips.md, .kiro/steering/ports-adapters.md, .kiro/steering/environments.md, seven steps-<class>.md files (368 lines total, all within limits; R31 passes) | Start task 20: self-check, then checkpoint |

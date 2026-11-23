@@ -140,3 +140,39 @@ Each rule section has this shape, and the meta tests check that every label is p
 - **Failing example:** `const NAME = "db.a.one"; defineStep({ name: NAME, ... })`.
 - **Passing example:** `defineStep({ name: "db.a.one", ... })`.
 - **Fix:** write the value inline as a string or a list of strings.
+
+## R12 strip-routing-complete
+
+- **Severity:** error
+- **Catches:** a strip with steps and no `routing` table, or a step with no routing entry when the table has no `"*"` entry. Also a step that cannot be resolved to its `defineStep()` declaration, since its routing cannot be checked.
+- **Why:** every failure needs a decided route (toast, retry, abort, continue, recover). An unrouted step's errors would be handled by accident.
+- **Failing example:** `routing: { "db.user.find": { network: "retry:2" } }` in a strip that also runs `db.user.save`.
+- **Passing example:** an entry for each step, or `"*": "abort"` as the fallback.
+- **Fix:** add the missing entries or a `"*"` entry. Import steps directly from their files so they resolve.
+
+## R13 strip-budget
+
+- **Severity:** error
+- **Catches:** a strip with steps and no `budget`, or a step whose `reads`, `writes`, or `storage` permissions are not allowed by the strip's budget. Storage entries in the budget may be globs: `*` matches within one folder level and `**` any depth, so `avatars/**` allows a step scoped to `avatars/user-1/*`, and `avatars/*` does not. Also unresolved steps, since their permissions cannot be checked.
+- **Why:** the budget is the strip's declared scope. A step with more access than the strip needs is how a strip quietly gains write access it should not have.
+- **Failing example:** budget `writes: []` with a step that declares `writes: ["users"]`.
+- **Passing example:** budget `writes: ["users"]`, or a narrower step that does not write.
+- **Fix:** use or create a narrower step. Widen the budget only if the strip really needs it, and say so in the change plan.
+
+## R14 strip-invalidates
+
+- **Severity:** error
+- **Catches:** a strip containing a step that writes, with no `invalidates` property.
+- **Why:** writes make cached data stale. Declaring the affected keys, even as an empty list, forces the decision to be made.
+- **Failing example:** `defineStrip({ name: "profile.save", steps: [findUser, saveUser] })`.
+- **Passing example:** the same with `invalidates: ["profile:{userId}"]`, or `invalidates: []` when nothing cached is affected.
+- **Fix:** add `invalidates` with the cache keys the writes affect.
+
+## R15 strip-routing-unknown-step
+
+- **Severity:** error
+- **Catches:** a routing entry (other than `"*"`) that names a step not in the strip.
+- **Why:** usually a typo or a leftover after a step was replaced, which leaves the real step routed by the fallback.
+- **Failing example:** `routing: { "db.user.delete": { ... } }` in a strip without that step.
+- **Passing example:** routing keys that match the strip's step names.
+- **Fix:** correct or remove the entry.

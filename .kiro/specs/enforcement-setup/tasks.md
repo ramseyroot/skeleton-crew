@@ -60,7 +60,7 @@ Every task: append a `started` row to `progress.md` before writing files. On fin
   - The near-duplicate normalizer is a shared function, reused by R39 in task 13.
   - _Requirements: 3.1 to 3.6_
 
-- [ ] 7. Strip rules (R12 to R15)
+- [x] 7. Strip rules (R12 to R15)
   - Mode: sequential
   - Writes: scripts/conformance/rules/R12-strip-routing-complete.ts, scripts/conformance/rules/R13-strip-budget.ts, scripts/conformance/rules/R14-strip-invalidates.ts, scripts/conformance/rules/R15-strip-routing-unknown-step.ts, scripts/conformance/rules/index.ts, docs/conformance-rules.md, scripts/conformance/test/fixtures/R12/**, scripts/conformance/test/fixtures/R13/**, scripts/conformance/test/fixtures/R14/**, scripts/conformance/test/fixtures/R15/**
   - Resolve each strip's step identifiers to their `defineStep()` declarations through the type checker.

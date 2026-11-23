@@ -29,3 +29,5 @@ Append-only. Format and resume procedure: `docs/change-process.md`, section 7.
 | 2026-11-23 17:05 | 5 | done | this | rules/_ast.ts, rules/R01 to R04, rules/index.ts, docs/conformance-rules.md, fixtures/R01 to R04 (31 tests pass) | Start task 6: naming and step rules |
 | 2026-11-23 17:05 | 6 | started | | | Write R05 to R11 with fixtures and docs |
 | 2026-11-23 17:08 | 6 | done | this | rules/R05 to R11, rules/index.ts, docs/conformance-rules.md, fixtures/R05 to R11 (46 tests pass) | Start task 7: strip rules |
+| 2026-11-23 17:08 | 7 | started | | | Write R12 to R15 with fixtures and docs |
+| 2026-11-23 17:10 | 7 | done | this | rules/R12 to R15, rules/index.ts, docs/conformance-rules.md, fixtures/R12 to R15 (54 tests pass). Decided: storage budget globs use * for one level and ** for any depth | Start task 8: catalog and no-widening |

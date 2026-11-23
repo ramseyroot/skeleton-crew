@@ -2,7 +2,7 @@
 
 Status: draft. No code yet. Stack assumed: Next.js, TypeScript, Storybook for UI preview. Hosting target for the web and API: Cloudflare Workers through the OpenNext adapter. Databases and background work are chosen per app and may run elsewhere (for example PocketBase with SQLite, or a separate program for scraping).
 
-Related docs: `app-parts-checklist.md` (parts of an app), `provider-ports.md` (ports, adapters, contracts), `environments.md` (profiles, offline local mode, data separation), `app-coverage.template.md` (per-app coverage).
+Related docs: `change-process.md` (how changes are planned and executed), `app-parts-checklist.md` (parts of an app), `provider-ports.md` (ports, adapters, contracts), `environments.md` (profiles, offline local mode, data separation), `app-coverage.template.md` (per-app coverage).
 
 ## 1. Goals
 

@@ -210,6 +210,77 @@ Type compatibility between consecutive steps is checked by the compiler, not by 
 2. WHEN a violation is printed, THEN its message SHALL name the rule's entry in the rules document.
 3. WHEN a rule exists in the script without an entry in the rules document, THEN the test suite SHALL fail.
 
+### Requirement 16: Every change to existing code starts with an approved change plan
+
+**User Story:** As a developer, I want to see which existing steps, strips, and shared files a change will touch, and which other strips depend on them, before any code is edited, so that a change to one strip does not silently break another.
+
+#### Acceptance Criteria
+
+1. WHEN a spec adds or changes a strip, THEN its folder SHALL contain a change plan file (`change-plan.md`) before any task that edits code runs.
+2. THE change plan SHALL list every step the work needs, each marked `reuse`, `new`, or `modify`.
+3. THE change plan SHALL list every existing file the work will edit, under the guarded folders (steps, strips, ports, adapters, core library).
+4. FOR each `modify` entry, THE change plan SHALL list every strip that uses the step, taken from the catalog, and the test files of those strips.
+5. WHEN a `reuse` entry's input, output, or permissions do not match the catalog, THEN the conformance script SHALL report an error for rule `plan-reuse-matches`.
+6. WHEN a `modify` entry's list of affected strips differs from the catalog's "used by" list, THEN the conformance script SHALL report an error for rule `plan-impact-complete`.
+7. A change plan SHALL count as approved only in the version committed to git. Uncommitted edits to the plan SHALL NOT change what is allowed.
+8. THE change plan SHALL have a status (`draft`, `active`, `done`). Only `active` plans grant permission to edit existing files.
+
+### Requirement 17: Changes to shared existing code run alone and in order
+
+**User Story:** As a developer, I want changes to existing shared steps to happen one at a time, before the work that depends on them, so that parallel agents never edit the same shared code.
+
+#### Acceptance Criteria
+
+1. EACH `modify` entry SHALL have its own task in `tasks.md`, placed before any task that depends on the modified step.
+2. TASKS that edit existing files SHALL be marked `sequential` in `tasks.md`.
+3. `sequential` tasks SHALL be run one at a time by the main agent, not dispatched to sub-agents and not run with "run all tasks", because Kiro's parallel waves cannot be forced to be sequential.
+4. WHEN a `modify` task finishes, THEN the tests of every affected strip listed in the change plan SHALL pass before the next task starts.
+5. THE check command SHALL run the tests of every affected strip in the active change plans, in addition to the configured test command.
+
+### Requirement 18: Parallel work only creates new files, with disjoint write sets
+
+**User Story:** As a developer, I want parallel sub-agents to work only on separate new files, so that one agent's save never overwrites another's.
+
+#### Acceptance Criteria
+
+1. EACH task in `tasks.md` SHALL list the files it writes on a `Writes:` line.
+2. WHEN two tasks that are not marked `sequential` list the same file, THEN the conformance script SHALL report an error for rule `tasks-write-disjoint`.
+3. WHEN a task not marked `sequential` lists a file that already exists in git, THEN the conformance script SHALL report an error for rule `parallel-new-files-only`.
+4. WHEN a task has no `Writes:` line, THEN the conformance script SHALL report an error for rule `tasks-write-declared`.
+5. BEFORE dispatching sub-agents, THE main agent SHALL run the conformance script on `tasks.md` and SHALL NOT dispatch while these rules fail.
+
+### Requirement 19: The protection hook blocks unplanned edits to existing code
+
+**User Story:** As a developer, I want agent edits to existing shared code blocked unless the approved plan allows them, so that the plan is followed during the work and not only checked afterwards.
+
+#### Acceptance Criteria
+
+1. WHEN the agent attempts to write a file that exists in git under a guarded folder, THEN the protection hook SHALL block the write unless an `active`, committed change plan lists that file.
+2. WHEN the agent creates a new file in a guarded folder, THEN the hook SHALL allow it.
+3. WHEN the hook blocks a write, THEN its message SHALL name the file, say that it is not in the active change plan, and tell the agent to propose a plan change to the user.
+4. THE change plan files SHALL NOT be protected from agent edits, since the agent drafts them. Approval is the commit (16.7).
+5. THE hook SHALL work without knowing which agent or sub-agent is writing.
+
+### Requirement 20: A git-based check catches unplanned changes after the fact
+
+**User Story:** As a developer, I want a check that compares the work with the last commit, so that changes the hook missed (for example through shell commands) are still caught.
+
+#### Acceptance Criteria
+
+1. WHEN a file that exists in git under a guarded folder has changed and no `active` committed change plan lists it, THEN the conformance script SHALL report an error for rule `change-in-plan`.
+2. WHEN a step marked `modify` changed its input, output, or permissions, THEN rule `no-widening` SHALL still apply, and the change SHALL also require an exception entry (Requirement 9).
+3. THE report SHALL list, for each active plan, the files changed, the files planned but unchanged, and the affected strips' test results.
+
+### Requirement 21: The change process is documented
+
+**User Story:** As a developer, I want the change process written down once, so that every future spec and agent follows the same steps.
+
+#### Acceptance Criteria
+
+1. THE project SHALL include `docs/change-process.md` describing: writing the change plan, approval by commit, the order of tasks, sequential and parallel tasks, how sub-agents are dispatched, what the hooks and checks enforce, and their limits.
+2. THE `always` steering file SHALL state the core of the process in a few lines and point to that document.
+3. THE spec template guidance (in `docs/change-process.md`) SHALL show the `change-plan.md` format and the `Writes:` and `sequential` notation in `tasks.md`.
+
 ---
 
 ## Out of scope
@@ -223,6 +294,7 @@ Type compatibility between consecutive steps is checked by the compiler, not by 
 ## Dependencies and ordering
 
 - Rules that inspect `defineStep()`, `defineStrip()`, the catalog, and ports depend on the core library's shape. They are written and tested first against fixtures that follow the shapes in `docs/function-strips-plan.md`, and are adjusted when the core library is built.
+- Requirements 16 to 21 apply to this spec's own tasks as far as possible: there is no existing code yet, so every task creates new files, and the change plan for this spec lists only new files.
 - The Stop hook and the protection hook are enabled last, after the script's test suite passes, because the protection hook would otherwise block the agent from finishing this setup.
 
 ## Decisions for the design stage

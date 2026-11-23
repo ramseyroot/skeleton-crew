@@ -85,9 +85,11 @@ One JSON file at the repository root, `conformance.config.json`. JSON keeps it r
   "prodSecretNames": [],
   "destructiveScripts": { "globs": ["scripts/db/seed*", "scripts/db/reset*", "scripts/db/migrate-down*"], "guardCall": "assertNotProd" },
   "output": { "maxChars": 3000, "maxPerRule": 5, "reportDir": ".conformance" },
-  "checks": { "typecheck": "npx tsc --noEmit", "test": null },
+  "checks": { "typecheck": "npx tsc --noEmit", "test": null, "testFiles": null },
   "stopHook": { "maxConsecutiveBlocks": 3, "skipIfUnchanged": true },
   "steering": { "alwaysMaxLines": 60, "otherMaxLines": 80 },
+  "guardedFolders": ["src/steps", "src/strips", "src/ports", "src/adapters", "src/lib"],
+  "specsFolder": ".kiro/specs",
   "protected": [
     "conformance.config.json",
     "conformance.exceptions.json",
@@ -100,7 +102,7 @@ One JSON file at the repository root, `conformance.config.json`. JSON keeps it r
 }
 ```
 
-`checks.test` is `null` until a test runner is set up, which makes the check command print `not configured` (Requirement 11.2).
+`checks.testFiles` is a command template with `{files}` (for example `npx vitest run {files}`), used to run affected strip tests. `checks.test` and `checks.testFiles` are `null` until a test runner is set up, which makes the check command print `not configured` (Requirement 11.2).
 
 ### D5. Where reports and state live
 
@@ -223,6 +225,74 @@ Notes:
 - R23 runs project code (the profiles module). It is the only rule that does. It is skipped when the file is missing.
 - R17 needs a git repository with a committed catalog. Until then it is `not-applicable`.
 
+### Change plans and task files
+
+Facts this part relies on, from the Kiro docs ([specs](https://kiro.dev/docs/specs.md), [sub-agents](https://kiro.dev/docs/custom-agents/subagents.md)):
+
+- Sub-agents share the workspace files. They have isolated conversations, not isolated folders.
+- Kiro infers the dependency waves of spec tasks itself. No syntax to force tasks to run in sequence is documented.
+- The docs do not say whether hook events identify a sub-agent, or whether sub-agents trigger the Stop hook.
+
+So the design does not rely on agent identity or on Kiro's wave order. It relies on a committed plan, file existence in git, and the protection hook.
+
+**`change-plan.md`** lives in the spec folder. The script parses its front matter and tables:
+
+```markdown
+---
+status: active        # draft | active | done
+---
+
+## Steps
+
+| Step | Action | Affected strips | Reason |
+|---|---|---|---|
+| db.user.findByEmail | reuse | | |
+| db.user.setDisplayName | new | | |
+| db.user.findById | modify | profile.view, orders.list | Return deletedAt for soft-deleted users |
+
+## Existing files to edit
+
+| File | Task | Reason |
+|---|---|---|
+| src/steps/db/user.findById.ts | 2 | modify entry above |
+| src/strips/profile.view.strip.ts | 3 | uses the new field |
+
+## Affected strip tests
+
+- src/strips/profile.view.strip.test.ts
+- src/strips/orders.list.strip.test.ts
+```
+
+- "Approved" means the version at git `HEAD` (read with `git show HEAD:<path>`). The working copy is ignored for permissions, so an agent's uncommitted edit grants nothing.
+- Several plans can be `active` at once. Permissions are the union of their file lists.
+
+**`tasks.md` notation.** Each task carries two plain sub-bullets, which Kiro shows as task detail:
+
+```markdown
+- [ ] 2. Modify db.user.findById to return deletedAt
+  - Mode: sequential
+  - Writes: src/steps/db/user.findById.ts, src/steps/db/user.findById.test.ts
+- [ ] 4. Add db.user.setDisplayName step
+  - Writes: src/steps/db/user.setDisplayName.ts, src/steps/db/user.setDisplayName.test.ts
+```
+
+Process rule (in `docs/change-process.md` and steering): `sequential` tasks are run one at a time by the main agent. Only tasks without `sequential` may be dispatched to sub-agents, and only after the task rules pass.
+
+### Change rules
+
+| ID | Name | Sev | Detection |
+|---|---|---|---|
+| R32 | plan-reuse-matches | error | A `reuse` step whose catalog entry (at `HEAD`) does not exist, or whose current input, output, or permissions differ from it |
+| R33 | plan-impact-complete | error | A `modify` step whose "Affected strips" differ from the catalog's "used by" list, or whose affected strips' test files are not all listed |
+| R34 | tasks-write-declared | error | A task in a `tasks.md` with no `Writes:` line |
+| R35 | tasks-write-disjoint | error | Two non-sequential tasks in the same `tasks.md` list the same file |
+| R36 | parallel-new-files-only | error | A non-sequential task lists a file that exists at `HEAD` |
+| R37 | change-in-plan | error | A file under a guarded folder that exists at `HEAD` and differs in the working tree, not listed in any active committed plan |
+
+R32, R33, R36, and R37 need git (`not-applicable` without it). Task rules only check incomplete tasks (`- [ ]`), so finished tasks do not keep failing.
+
+For a `modify` entry that changes a step's contract, R17 `no-widening` still fails until an exception is recorded (Requirement 20.2). Changing a shared step's contract therefore always reaches the user twice: once in the plan review, once in the exceptions file, which only the user can unlock.
+
 ### Exceptions
 
 `conformance.exceptions.json`:
@@ -251,8 +321,9 @@ Flags: `--files a.ts,b.ts` (Requirement 1.8; project-wide rules such as R07, R13
 1. Conformance script.
 2. `checks.typecheck`, if set and a `tsconfig.json` exists. Otherwise prints `typecheck: not configured`.
 3. `checks.test`, if set. Otherwise prints `tests: not configured`.
+4. `checks.testFiles` with the affected strip tests from all active committed change plans, if any exist. If plans list affected tests and `checks.testFiles` is not set, this is reported as `not configured` and counts as a failure, because a planned safety check would otherwise be skipped silently.
 
-All three run even if an earlier one fails, so the agent sees every problem at once. Each one's output is capped and the combined output stays under `maxChars`. Exit code is non-zero if any configured check fails. `not configured` never counts as passed: it is listed as such in the summary.
+All of them run even if an earlier one fails, so the agent sees every problem at once. Each one's output is capped and the combined output stays under `maxChars`. Exit code is non-zero if any configured check fails. `not configured` never counts as passed: it is listed as such in the summary.
 
 ### Stop hook
 
@@ -305,7 +376,10 @@ Behavior of `protect.ts`:
 1. Read `tool_input` from STDIN. Collect every string value under keys that name paths (`path`, `file_path`, `paths`, `target`, `source`, `destination`), resolved against `cwd`.
 2. With `--shell`, read `tool_input.command` and look for any protected path together with a write form: `>`, `>>`, `tee`, `sed -i`, `mv`, `cp`, `rm`, `truncate`, `git checkout --`, `git restore`.
 3. If a protected path is targeted and `.conformance/unlock` does not exist or is older than 30 minutes, write a message to STDERR and exit 2. The message names the file and tells the agent to ask the user.
-4. Otherwise exit 0.
+4. **Guarded existing files** (Requirement 19). If a targeted path is under `guardedFolders`, exists at git `HEAD`, and is not listed in any `active` change plan at `HEAD`, write a message to STDERR and exit 2. The message names the file, says it is not in the active change plan, and tells the agent to propose a plan change to the user. New files (not at `HEAD`) are allowed. The unlock file does not bypass this check: the way through is an updated, committed plan.
+5. Otherwise exit 0.
+
+The check reads plans and file existence from git, so it needs no knowledge of which agent or sub-agent is writing. To keep it fast, the hook caches the parsed plans keyed by the `HEAD` commit ID in `.conformance/`.
 
 Unlocking for a deliberate change (confirmed by the user): the user runs `touch .conformance/unlock` in their own terminal. The unlock file is itself protected, so the agent cannot create it through its tools. It expires after 30 minutes.
 
@@ -313,6 +387,7 @@ Known limits, stated in the rules doc and README:
 
 - The shell check is pattern-based. A determined or creative command can get past it. It is a guard against accidental edits, not a security boundary.
 - The protection does not stop the user's own edits (by design).
+- An agent could commit a plan change itself through the shell. The Stop hook does not prevent that. Plan commits are listed in the report with their author and time, and `docs/change-process.md` asks that only the user commits plan status changes. Isolating sub-agents in separate git worktrees would make this stronger, at the cost of a merge step per task. It is not part of this design.
 
 Exit code 2 is used rather than the JSON `permissionDecision` form, because it works on every CLI V3 version and in the IDE.
 
@@ -339,6 +414,7 @@ No custom agent is created. The default agent loads workspace steering. If a cus
 - **Fixture tests** (`rules.test.ts`): for each rule, `fixtures/<rule-id>/bad/` is a small project that triggers the rule, with `expected.json` listing the expected violations (rule, file, line). `good/` must produce no violation for that rule. Each fixture includes its own minimal `conformance.config.json`.
 - **Meta tests** (`meta.test.ts`): every rule in the registry has both fixture folders and a docs section, and every docs section corresponds to a rule (Requirements 10.4, 15.3).
 - **Report tests**: stable ordering, the character cap, exit codes, `not-applicable` listing, and exception matching.
+- **Change tests**: fixture repositories (created with `git init` inside a temporary folder during the test) with committed plans and catalogs, covering R32 to R37 and the guarded-file branch of `protect.ts`.
 - **Hook tests**: `stop.ts` and `protect.ts` are run as child processes with sample event JSON on STDIN, checking exit codes, STDOUT JSON, the loop counter sequence (block, block, final block, allow), the unchanged-tree skip, and the unlock expiry.
 - All tests run with `node --test`, offline.
 - **Manual check** after enabling the hooks: one session in Kiro CLI that triggers a violation, confirms the agent is sent back, and confirms a protected write is blocked. This confirms the Stop reason field name.
@@ -377,9 +453,16 @@ The script follows the skeleton's own rule: its failures are never reported as s
 | 13 | stop.ts loop counter |
 | 14 | steering files, R31 |
 | 15 | conformance-rules.md, meta tests |
+| 16 | change-plan.md format, R32, R33 |
+| 17 | `sequential` notation, process rule, check command step 4 |
+| 18 | `Writes:` notation, R34 to R36 |
+| 19 | protect.ts step 4 |
+| 20 | R37, R17 plus exceptions, report section per plan |
+| 21 | docs/change-process.md, core-rules.md steering |
 
 ## Changes from the requirements
 
 - Added rule R11 `manifest-static`, needed so that the script can read manifests without running code.
 - Added R31 `steering-size`, so that Requirement 14.5 is checked continuously, not once.
+- The `Writes:` and `Mode: sequential` lines are this project's notation, not Kiro syntax. Kiro treats them as task detail text.
 - The Stop hook skips when the tree is unchanged since the last pass. This is not in the requirements. It keeps conversation-only turns from running the full check.

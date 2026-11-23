@@ -23,7 +23,9 @@ Core ideas:
 | Design documents (below) | Written, draft |
 | `scripts/check-coverage.mjs` | Built and tested. Checks a filled-in app coverage file. |
 | `.kiro/specs/enforcement-setup/requirements.md` | Approved |
-| `.kiro/specs/enforcement-setup/design.md` | Written, awaiting review. Tasks not started. |
+| `.kiro/specs/enforcement-setup/requirements.md` additions (Req 16 to 21) | Written, awaiting review |
+| `.kiro/specs/enforcement-setup/design.md` | Written (37 rules, change plans included), awaiting review. Tasks not started. |
+| Git repository | Created, branch `main` |
 | `.kiro` steering, hooks, custom agent | Not created (specified in the enforcement-setup spec) |
 | Conformance script (checks the code rules) | Not created, designed in plan section 15 |
 | Skeleton code (`Result`, `defineStep`, `defineStrip`, ports, adapters) | Not created |
@@ -37,6 +39,7 @@ Core ideas:
 | `function-strips-plan.md` | Main design: error model, step wrapper, function classes, manifests and permissions, strips, catalog, ports rules, cache rules, logging, Storybook, enforcement, decisions |
 | `provider-ports.md` | Port list, per-port decisions, contract tests, how to switch a provider |
 | `environments.md` | Profiles (`local`, `dev`, `staging`, `prod`), offline local mode, data separation, provider differences between dev and prod |
+| `change-process.md` | How every change is planned and executed: change plans, task file lists, sequential and parallel work, sub-agents, what the checks enforce |
 | `app-parts-checklist.md` | 63 parts of an app, grouped, with a build order |
 | `app-coverage.template.md` | Copy per app. Mark each of the 63 items `planned`, `unplanned`, `not-needed`, or `deferred` |
 | `../scripts/check-coverage.mjs` | `node scripts/check-coverage.mjs <file> [--strict]` validates a coverage file |
@@ -55,6 +58,8 @@ Skeleton decisions:
 8. UI previews through Storybook, to avoid running the heavy app on a low-spec PC.
 9. Errors carry an `audience` field (`user` or `internal`, default `internal`). Only `user` errors reach toasts, with a written `userMessage`.
 10. Steps report facts (`kind`). Strips decide routing and presentation.
+11. Protected enforcement files are unlocked by the user running `touch .conformance/unlock` in their own terminal. The unlock lasts 30 minutes.
+12. Every change starts with a change plan, approved by committing it. Changes to existing shared code run one at a time before other work. Sub-agents only create new files.
 
 Platform decisions:
 
@@ -97,6 +102,7 @@ Taken from past trouble described during the session.
 | Cache and local storage corruption after switching or turning off | Versioned envelopes, corrupt equals miss, namespaced keys, cache-off tested, no browser storage before hydration | plan 12 |
 | Similarly named functions confused | Unique structured names, generated catalog, near-duplicate warning | plan 9 |
 | Agent reuses a step with the wrong inputs, outputs, or too much permission | Step manifests, strip permission budgets, injected ports, no widening of existing steps | plan 7, 8, 10 |
+| Parallel agents edit steps shared across strips | Change plan with impact list, approval by commit, shared-step changes run alone and first, parallel tasks only create new files, hook blocks unplanned edits | change-process |
 | Agent applies a requirement to a few functions, then skips the rest | Conformance script lists every violation, a Stop hook blocks finishing until it passes | plan 15 |
 | Dev and prod data mixing | Separate instances and credentials, startup host guard, destructive commands refuse on prod | environments 4 |
 | Dev database differs from production database | Contract suite on both engines in CI, optional staging | environments 5 |

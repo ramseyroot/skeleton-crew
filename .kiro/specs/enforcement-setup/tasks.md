@@ -138,7 +138,7 @@ Every task: append a `started` row to `progress.md` before writing files. On fin
   - Unchanged-tree skip, check command run, block decision with capped reason, loop counter (block, block, final block, allow), reset on pass, crash log.
   - _Requirements: 12.1, 12.2, 13.1 to 13.4_
 
-- [ ] 18. Protection hook script
+- [x] 18. Protection hook script
   - Mode: sequential
   - Writes: scripts/conformance/hooks/protect.ts, scripts/conformance/test/hooks-protect.test.ts
   - Protected files with unlock expiry, guarded existing files against active committed plans, worktree path handling and task file lists, main-tree block while worktrees are open, shell command patterns.

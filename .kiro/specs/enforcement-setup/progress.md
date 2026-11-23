@@ -58,3 +58,5 @@ Append-only. Format and resume procedure: `docs/change-process.md`, section 7.
 | 2026-11-23 17:42 | 16 | done | this | scripts/conformance/worktree.ts, test/worktree.test.ts, package.json (worktree script), rules/R36 (existing means at the last task-list commit), docs/conformance-rules.md (127 tests pass) | Start task 17: Stop hook script |
 | 2026-11-23 17:42 | 17 | started | | | Write Stop hook script and tests |
 | 2026-11-23 17:43 | 17 | done | this | scripts/conformance/hooks/stop.ts, test/hooks-stop.test.ts (131 tests pass). Added --reset for a prompt-submit hook, so each new user message gets fresh attempts | Start task 18: protection hook script |
+| 2026-11-23 17:43 | 18 | started | | | Write protection hook script and tests |
+| 2026-11-23 17:45 | 18 | done | this | scripts/conformance/hooks/protect.ts, test/hooks-protect.test.ts (138 tests pass). Hook does not load the compiler; about 0.2 to 0.4s per call | Start task 19: steering files |

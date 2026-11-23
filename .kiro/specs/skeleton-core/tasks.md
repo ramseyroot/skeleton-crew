@@ -70,7 +70,7 @@ All test files use `node:test`, are named `<name>.test.ts`, and run offline.
   - Tests: type mismatch (type test), budget exceeded, missing routing, missing `invalidates`, each routing action, retry only when `retryable`, internal `toast` downgraded to generic with reference, `recover`, runner never throws.
   - _Requirements: 3.1 to 3.10_
 
-- [ ] 8. Config and profiles
+- [x] 8. Config and profiles
   - Mode: sequential
   - Writes: src/config/profiles.ts, src/config/registry.ts, src/config/compose.ts, src/config/profiles.test.ts, src/config/compose.test.ts
   - `profiles` (`local`, `dev`, `prod`, D7) and `profileSchema`. `profiles.ts` imports only zod and runs under plain Node (R23).

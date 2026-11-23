@@ -37,3 +37,6 @@ Append-only. Format and resume procedure: `docs/change-process.md`, section 7.
 | 2026-11-23 17:13 | 9 | started | | | Write R18 to R22 with fixtures and docs |
 | 2026-11-23 17:14 | 9 | started | | | Plan deviation: added package.json to task 9 Writes. Test glob matched fixture .test.ts files; narrowed to test/*.test.ts |
 | 2026-11-23 17:14 | 9 | done | this | rules/R18 to R22, rules/index.ts, docs/conformance-rules.md, fixtures/R18 to R22, package.json (test glob) (70 tests pass) | Start task 10: environment rules |
+| 2026-11-23 17:14 | 10 | started | | | Write R23 to R27 with fixtures and docs |
+| 2026-11-23 17:15 | 10 | started | | | Plan deviation: added .gitignore to task 10 Writes, so R26 fixture .env files are committed |
+| 2026-11-23 17:16 | 10 | done | this | rules/R23 to R27, rules/index.ts, docs/conformance-rules.md, fixtures/R23 to R27, .gitignore (80 tests pass). profiles.ts contract: export profiles and profileSchema with safeParse() | Start task 11: coverage, exceptions, steering rules |

@@ -81,9 +81,10 @@ Every task: append a `started` row to `progress.md` before writing files. On fin
   - `package.json` (added during the work): the test command must not pick up `.test.ts` files inside fixtures, which adapter fixtures need.
   - _Requirements: 6.1 to 6.5_
 
-- [ ] 10. Environment rules (R23 to R27)
+- [x] 10. Environment rules (R23 to R27)
   - Mode: sequential
-  - Writes: scripts/conformance/rules/R23-profile-valid.ts, scripts/conformance/rules/R24-local-hosts-only.ts, scripts/conformance/rules/R25-profile-adapter-registered.ts, scripts/conformance/rules/R26-no-prod-secrets-outside-prod.ts, scripts/conformance/rules/R27-destructive-script-guard.ts, scripts/conformance/rules/index.ts, docs/conformance-rules.md, scripts/conformance/test/fixtures/R23/**, scripts/conformance/test/fixtures/R24/**, scripts/conformance/test/fixtures/R25/**, scripts/conformance/test/fixtures/R26/**, scripts/conformance/test/fixtures/R27/**
+  - Writes: scripts/conformance/rules/R23-profile-valid.ts, scripts/conformance/rules/R24-local-hosts-only.ts, scripts/conformance/rules/R25-profile-adapter-registered.ts, scripts/conformance/rules/R26-no-prod-secrets-outside-prod.ts, scripts/conformance/rules/R27-destructive-script-guard.ts, scripts/conformance/rules/index.ts, docs/conformance-rules.md, scripts/conformance/test/fixtures/R23/**, scripts/conformance/test/fixtures/R24/**, scripts/conformance/test/fixtures/R25/**, scripts/conformance/test/fixtures/R26/**, scripts/conformance/test/fixtures/R27/**, .gitignore
+  - `.gitignore` (added during the work): R26 fixtures contain `.env` files, which the ignore rules would otherwise leave out of git.
   - R23 loads the profiles module, which is project code. Its fixtures use a minimal profiles file and schema without dependencies.
   - _Requirements: 7.1 to 7.5_
 

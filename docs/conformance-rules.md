@@ -240,3 +240,51 @@ Each rule section has this shape, and the meta tests check that every label is p
 - **Failing example:** `import type { RecordModel } from "pocketbase";` in `src/ports/users.ts`.
 - **Passing example:** the port returns `User` from the app's own types.
 - **Fix:** define domain types and convert inside the adapter.
+
+## R23 profile-valid
+
+- **Severity:** error
+- **Catches:** `src/config/profiles.ts` failing to load, not exporting `profiles` and `profileSchema`, or a profile that `profileSchema.safeParse()` rejects.
+- **Why:** an invalid profile fails at startup at best, or connects to the wrong services at worst.
+- **Failing example:** a `dev` profile with no `env` field.
+- **Passing example:** every profile parses with the schema.
+- **Fix:** correct the profile. The module contract is: export `profiles` (an object of named profiles, each with `env`, `adapters`, and `allowedHosts`) and `profileSchema` with a zod-style `safeParse()`.
+- **Limits:** this is the only rule that runs project code. It loads the module in a separate Node process with a 30-second limit.
+
+## R24 local-hosts-only
+
+- **Severity:** error
+- **Catches:** no `local` profile, or a `local` profile whose `allowedHosts` include anything other than `localhost`, `127.0.0.1`, or `::1`.
+- **Why:** the local profile must run offline and must never reach shared or production services.
+- **Failing example:** `local: { allowedHosts: ["localhost", "db.example.com"] }`.
+- **Passing example:** `local: { allowedHosts: ["localhost", "127.0.0.1"] }`.
+- **Fix:** point local adapters at local files, processes, or in-memory adapters.
+
+## R25 profile-adapter-registered
+
+- **Severity:** error
+- **Catches:** a profile that names an adapter for a port when `src/adapters/<port>/<adapter>/` does not exist.
+- **Why:** a profile pointing at a missing adapter fails at startup, often only in the environment where it is used.
+- **Failing example:** `adapters: { cache: "kv" }` with no `src/adapters/cache/kv/`.
+- **Passing example:** every named adapter has its folder.
+- **Fix:** create the adapter or correct the name.
+
+## R26 no-prod-secrets-outside-prod
+
+- **Severity:** error
+- **Catches:** a name in `prodSecretNames` given a non-empty value in a root `.env*` file whose name does not contain `prod`. Empty placeholders, as in `.env.example`, are allowed.
+- **Why:** production secrets on a development machine or in development config are how dev and prod data get mixed, or keys leak.
+- **Failing example:** `PAYSTACK_SECRET_KEY=sk_live_123` in `.env.local`.
+- **Passing example:** the key only in the production environment, and `PAYSTACK_SECRET_KEY=` in `.env.example`.
+- **Fix:** remove the value and use a test key in non-production files. Rotate the key if it was ever committed.
+- **Limits:** only root `.env*` files and configured names are checked. List production secret names in `prodSecretNames`.
+
+## R27 destructive-script-guard
+
+- **Severity:** error
+- **Catches:** a script matching `destructiveScripts.globs` (seed, reset, migrate-down) whose text does not call the configured guard (`assertNotProd()`).
+- **Why:** seeding or resetting must never run against production data.
+- **Failing example:** `scripts/db/seed.ts` that writes data without a guard.
+- **Passing example:** the script calls `assertNotProd()` before doing anything.
+- **Fix:** call the guard at the start of the script.
+- **Limits:** a text check. It confirms the call is present, not that it runs first.

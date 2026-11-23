@@ -1,0 +1,5 @@
+{
+  "prodSecretNames": [
+    "PAYSTACK_SECRET_KEY"
+  ]
+}

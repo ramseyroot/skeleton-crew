@@ -48,9 +48,10 @@ Every task: append a `started` row to `progress.md` before writing files. On fin
   - **Checkpoint: user reviews the runner's output format and a sample run.**
   - _Requirements: 10.1, 10.2, 10.4, 15.1 to 15.3_
 
-- [ ] 5. Code pattern rules (R01 to R04)
+- [x] 5. Code pattern rules (R01 to R04)
   - Mode: sequential
-  - Writes: scripts/conformance/rules/R01-no-console.ts, scripts/conformance/rules/R02-no-error-as-value.ts, scripts/conformance/rules/R03-provider-import-boundary.ts, scripts/conformance/rules/R04-no-raw-queries.ts, scripts/conformance/rules/index.ts, docs/conformance-rules.md, scripts/conformance/test/fixtures/R01/**, scripts/conformance/test/fixtures/R02/**, scripts/conformance/test/fixtures/R03/**, scripts/conformance/test/fixtures/R04/**
+  - Writes: scripts/conformance/rules/_ast.ts, scripts/conformance/rules/R01-no-console.ts, scripts/conformance/rules/R02-no-error-as-value.ts, scripts/conformance/rules/R03-provider-import-boundary.ts, scripts/conformance/rules/R04-no-raw-queries.ts, scripts/conformance/rules/index.ts, docs/conformance-rules.md, scripts/conformance/test/fixtures/R01/**, scripts/conformance/test/fixtures/R02/**, scripts/conformance/test/fixtures/R03/**, scripts/conformance/test/fixtures/R04/**
+  - `rules/_ast.ts` (added during the work): shared parsing and import helpers for rules, so `types.ts` and `cli.ts` stay unchanged.
   - _Requirements: 2.1 to 2.5_
 
 - [ ] 6. Naming and step rules (R05 to R11)

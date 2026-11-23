@@ -24,3 +24,6 @@ Append-only. Format and resume procedure: `docs/change-process.md`, section 7.
 | 2026-11-23 16:58 | 4 | started | | | Write docs/conformance-rules.md, meta tests, fixture runner |
 | 2026-11-23 16:59 | 4 | done | this | docs/conformance-rules.md, scripts/conformance/test/meta.test.ts, scripts/conformance/test/rules.test.ts (24 tests pass, typecheck ok) | Checkpoint: user reviews output format |
 | 2026-11-23 16:59 | 4 | checkpoint | this | | Waiting for user review of the runner output. Then task 5: code pattern rules R01 to R04 |
+| 2026-11-23 17:03 | 4 | checkpoint | | | User reviewed sample output in .conformance/sample/. Confirmed: exceptions only in the full report. Continue with tasks 5 to 14 |
+| 2026-11-23 17:03 | 5 | started | | | Plan deviation: added rules/_ast.ts to task 5 Writes (shared rule helpers). Write R01 to R04 with fixtures and docs |
+| 2026-11-23 17:05 | 5 | done | this | rules/_ast.ts, rules/R01 to R04, rules/index.ts, docs/conformance-rules.md, fixtures/R01 to R04 (31 tests pass) | Start task 6: naming and step rules |

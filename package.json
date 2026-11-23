@@ -21,7 +21,8 @@
     "storybook": "storybook dev -p 6006 --no-open",
     "build-storybook": "storybook build",
     "start": "NEXT_TELEMETRY_DISABLED=1 next start",
-    "start:local": "NEXT_TELEMETRY_DISABLED=1 APP_ENV=local next start"
+    "start:local": "NEXT_TELEMETRY_DISABLED=1 APP_ENV=local next start",
+    "feature": "node scripts/conformance/feature.ts"
   },
   "devDependencies": {
     "@storybook/nextjs-vite": "^10.6.8",

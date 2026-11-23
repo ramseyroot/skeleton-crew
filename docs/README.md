@@ -22,8 +22,6 @@ Core ideas:
 |---|---|
 | Design documents (below) | Written, draft |
 | `scripts/check-coverage.mjs` | Built and tested. Checks a filled-in app coverage file. |
-| `.kiro/specs/enforcement-setup/requirements.md` | Approved |
-| `.kiro/specs/enforcement-setup/requirements.md` additions (Req 16 to 25) | Written, awaiting review |
 | `.kiro/specs/enforcement-setup/design.md` | Written (37 rules, change plans included), awaiting review. Tasks not started. |
 | Git repository | Created, branch `main` |
 | `.kiro` steering, hooks, custom agent | Not created (specified in the enforcement-setup spec) |

@@ -1,4 +1,4 @@
-import { toPublicResult, viewStateOf } from "../components/view-state.ts";
+import { toPublicResult, viewStateOf } from "../shared/ui/view-state.ts";
 import { runStrip } from "../lib/strip.ts";
 import { viewProfile } from "../strips/profile.view.strip.ts";
 import { ProfileEditor } from "./ProfileEditor.tsx";

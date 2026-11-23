@@ -1,6 +1,6 @@
 // What a component shows, derived from a StripResult. Components receive this, never a strip (plan section 14).
 
-import type { Display, StripResult } from "../lib/strip.ts";
+import type { Display, StripResult } from "../../lib/strip.ts";
 
 /**
  * What may cross to the browser: the display and the reference, never the StepError.

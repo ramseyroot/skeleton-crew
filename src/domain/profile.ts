@@ -2,6 +2,8 @@
 // Schemas live here because a step file may export only steps (rule R09), and several steps share them.
 
 import { z } from "zod";
+import { defineFeature } from "../lib/feature.ts";
+import { err, ok } from "../lib/result.ts";
 import type { CollectionDef } from "../ports/database.ts";
 
 export const ProfileSchema = z.object({ userId: z.string(), displayName: z.string() });
@@ -34,3 +36,23 @@ export const DEMO_USERS: readonly { id: string; displayName: string }[] = [
   { id: "u1", displayName: "Ada" },
   { id: "u2", displayName: "Grace" },
 ];
+
+/**
+ * What the profile feature tells the app. In the feature layout this moves to `src/features/profile/index.ts`.
+ * `seed` adds the demo users and is safe to run twice.
+ */
+export const profileFeature = defineFeature({
+  name: "profile",
+  collections,
+  seed: async (ports) => {
+    for (const user of DEMO_USERS) {
+      const existing = await ports.database.read("users").get(user.id);
+      if (!existing.ok) return err(existing.error);
+      if (existing.value === null) {
+        const created = await ports.database.write("users").create({ id: user.id, ...nameFields(user.displayName) });
+        if (!created.ok) return err(created.error);
+      }
+    }
+    return ok(undefined);
+  },
+});

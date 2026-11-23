@@ -1,8 +1,8 @@
 "use client";
 
 import type { Profile } from "../../domain/profile.ts";
-import { Toast } from "../Toast/Toast.tsx";
-import type { PublicResult, ViewState } from "../view-state.ts";
+import { Toast } from "../../shared/ui/Toast/Toast.tsx";
+import type { PublicResult, ViewState } from "../../shared/ui/view-state.ts";
 
 export type ProfileFormProps = {
   /** The profile to show: from the profile.view strip. */

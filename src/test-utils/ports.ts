@@ -14,7 +14,8 @@ import { createMemoryLogger } from "../adapters/logger/memory/index.ts";
 import { createMemoryMetrics } from "../adapters/metrics/memory/index.ts";
 import { createMemoryReporter } from "../adapters/reporter/memory/index.ts";
 import { createMemoryStorage } from "../adapters/storage/memory/index.ts";
-import { DEMO_USERS, collections, nameFields } from "../domain/profile.ts";
+import { profileFeature } from "../domain/profile.ts";
+import type { FeatureModule } from "../lib/feature.ts";
 import type { Ports } from "../lib/step.ts";
 import type { Database } from "../ports/database.ts";
 
@@ -24,7 +25,14 @@ export type CacheKind = "memory" | "null";
 export const DATABASE_KINDS: readonly DatabaseKind[] = ["memory", "sqlite"];
 export const CACHE_KINDS: readonly CacheKind[] = ["memory", "null"];
 
-export async function makeTestPorts(options: { database?: DatabaseKind; cache?: CacheKind; env?: string } = {}) {
+/**
+ * `features` are migrated and seeded, like the app's runtime does. The default is the profile feature, which the
+ * example steps and strips need. In the feature layout each feature passes its own list.
+ */
+export async function makeTestPorts(
+  options: { database?: DatabaseKind; cache?: CacheKind; env?: string; features?: readonly FeatureModule[] } = {},
+) {
+  const features = options.features ?? [profileFeature];
   const env = options.env ?? "local";
   const clock = createFixedClock("2026-11-23T12:00:00.000Z");
   const logger = createMemoryLogger({ env, clock });
@@ -36,18 +44,17 @@ export async function makeTestPorts(options: { database?: DatabaseKind; cache?: 
   } else {
     database = createMemoryDatabase({ clock });
   }
-  const migrated = await database.migrate(collections);
+  const migrated = await database.migrate(features.flatMap((f) => f.collections));
   if (!migrated.ok) throw new Error(`test database could not migrate: ${migrated.error.message}`);
-  const users = database.write("users");
-  for (const { id, displayName } of DEMO_USERS) {
-    const created = await users.create({ id, ...nameFields(displayName) });
-    if (!created.ok) throw new Error(`test database could not seed ${id}: ${created.error.message}`);
-  }
   const cacheOptions = { app: "test", env, schemaVersion: 1, clock, logger };
   const cache = options.cache === "null" ? createNullCache(cacheOptions) : createMemoryCache(cacheOptions);
   const reporter = createMemoryReporter();
   const metrics = createMemoryMetrics();
   const ports: Ports = { env, database, cache, storage: createMemoryStorage(), clock, ids: createSequenceIds("strip"), logger, reporter, metrics };
+  for (const feature of features) {
+    const seeded = await feature.seed?.(ports);
+    if (seeded && !seeded.ok) throw new Error(`test database could not seed ${feature.name}: ${seeded.error.message}`);
+  }
   return {
     ports,
     logger,

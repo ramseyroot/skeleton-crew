@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { displayText, toPublicResult, viewStateOf } from "../../src/components/view-state.ts";
+import { displayText, toPublicResult, viewStateOf } from "../../src/shared/ui/view-state.ts";
 import { errResult, okResult } from "../../src/test-utils/fixtures.ts";
 
 test("a successful result is ready, or empty when the caller says so", () => {

@@ -1,6 +1,6 @@
 "use client";
 
-import type { Display } from "../../lib/strip.ts";
+import type { Display } from "../../../lib/strip.ts";
 import { displayText } from "../view-state.ts";
 
 /** Shows a strip failure to the user. Receives the strip's `display`, never an error object. */

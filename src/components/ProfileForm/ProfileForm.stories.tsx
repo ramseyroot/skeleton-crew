@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { errResult, okResult } from "../../test-utils/fixtures.ts";
-import { viewStateOf } from "../view-state.ts";
+import { viewStateOf } from "../../shared/ui/view-state.ts";
 import { ProfileForm } from "./ProfileForm.tsx";
 
 const ada = { userId: "u1", displayName: "Ada" };

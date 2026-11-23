@@ -9,7 +9,7 @@ All tasks are sequential, run by the main agent, one at a time. Each passes `pnp
 
 Checkpoints stop for review after tasks 2 and 4.
 
-- [ ] 1. Preparation on the old layout
+- [x] 1. Preparation on the old layout
   - Mode: sequential
   - Writes: src/lib/feature.ts, src/app/features.ts, src/app/runtime.ts, src/app/runtime.test.ts, src/shared/ui/**, src/components/Toast/**, src/components/view-state.ts, src/components/ProfileForm/ProfileForm.tsx, src/components/ProfileForm/ProfileForm.stories.tsx, src/app/ProfileEditor.tsx, src/test-utils/ports.ts, src/test-utils/fixtures.ts, tests/lib/view-state.test.ts, src/steps/**, src/strips/**, src/domain/profile.ts
   - `FeatureModule` type, `app/features.ts`, `runtime.ts` migrates and seeds by looping over the listed features. `test-utils/ports.ts` takes collections and a seed function. Toast and view-state move to `src/shared/ui/`. The profile feature exposes a `FeatureModule` from its domain file for now. Step and strip files only get their import paths updated if a moved file requires it.

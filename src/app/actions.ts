@@ -2,8 +2,8 @@
 
 import type { Profile } from "../domain/profile.ts";
 import { runStrip } from "../lib/strip.ts";
-import { toPublicResult } from "../components/view-state.ts";
-import type { PublicResult } from "../components/view-state.ts";
+import { toPublicResult } from "../shared/ui/view-state.ts";
+import type { PublicResult } from "../shared/ui/view-state.ts";
 import { saveProfile } from "../strips/profile.save.strip.ts";
 import { getRuntime } from "./runtime.ts";
 

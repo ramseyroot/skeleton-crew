@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { errResult } from "../../test-utils/fixtures.ts";
+import { errResult } from "../../../test-utils/fixtures.ts";
 import { Toast } from "./Toast.tsx";
 
 const meta = { title: "Toast", component: Toast } satisfies Meta<typeof Toast>;

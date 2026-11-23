@@ -11,7 +11,7 @@ Read this file first.
 
 A reusable app skeleton (a template repository) for paid and freemium APIs with a companion website, server-centered, with occasional mobile apps. It is also an entry for the Kiroween 2026 hackathon, Skeleton Crew category.
 
-The skeleton is the focus. It must serve future projects too, not only the two apps planned to prove it. Each app was planned as its own repository, created from the skeleton. The Kiroween rules require two app folders in one public repo, so this is under review (`kiroween-submission.md`, decision 1).
+The skeleton is the focus. It must serve future projects too, not only the two apps planned to prove it. Each app is developed in its own repository, created from the skeleton. The public submission repository (this one) carries the two apps in `apps/` folders, because the Kiroween rules require it (`kiroween-submission.md`, decision 1).
 
 Core ideas:
 
@@ -93,6 +93,9 @@ Skeleton decisions:
 20. Steps declare the ports they use (`uses`). Cache permissions are `cache:<namespace>` strings in the existing permission lists.
 21. Error reporting and metrics are ports (`reporter`, `metrics`), used only by the step wrapper and the strip runner. A strip run is reported when it ends in an internal error of kind unexpected, upstream or network.
 22. `dev` is a boolean derived from `APP_ENV`. It is read-only and selects no adapter. Profiles gate telemetry: none or memory outside prod, never none in prod.
+23. The public submission repo holds the apps in `apps/` folders. Apps are developed in their own repos and synced in (subtree proposed).
+24. The repo is licensed AGPL-3.0-only.
+25. The two apps are hosted for real, not demoed, and a video is submitted too.
 
 Platform decisions:
 
@@ -173,7 +176,7 @@ Taken from past trouble described during the session.
 
 - Category: Skeleton Crew, Kiroween 2026. Entries describe it as a template lean enough to be clear but flexible enough to support two distinct apps.
 - Submissions close December 4 at 2:00 PM PT, per kiro.dev/events (not re-checked since).
-- The official rules were read on 2026-11-23 (summary in `kiroween-submission.md`). Two demo apps are required, as two folders in one public GitHub repo with an open source license. This conflicts with the earlier decision that each app is its own repository: the builder must decide.
+- The official rules were read on 2026-11-23 (summary in `kiroween-submission.md`). Two apps are required, as two folders in one public GitHub repo with an open source license. The repo is licensed AGPL-3.0-only. The apps must be hosted and stay available to judges until January 29, 2027.
 - A small number of areas working end to end, plus a clear module pattern for the rest, will likely show better than a long list of stubs.
 
 ## 11. Next steps

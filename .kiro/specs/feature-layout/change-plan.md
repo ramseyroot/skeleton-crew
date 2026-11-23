@@ -57,13 +57,16 @@ Existing files outside the guarded folders:
 | .kiro/steering/*.md | 2 | New path patterns (protected, unlock) |
 | docs/conformance-rules.md, docs/README.md, docs/provider-ports.md, docs/function-strips-plan.md, docs/environments.md, docs/today/build.mjs, README.md, docs/generated/catalog.* | 2 to 4 | Layout, rules, procedures, regenerated catalog |
 | package.json | 4 | `feature` script |
+| src/app/features.ts | 4 | One line per import and per entry, so a tool can edit it |
+| scripts/conformance/rules/index.ts | 4 | R45 (protected, unlock) |
 
 ## New files
 
 - `src/lib/feature.ts` (task 1), `src/app/features.ts` (task 1)
 - `src/shared/ui/**` (task 1), `src/features/profile/**` (task 2)
 - `scripts/conformance/layout.ts` (task 2), `scripts/conformance/feature.ts` and its tests (task 4)
-- `scripts/conformance/rules/R42-*.ts`, `R43-*.ts`, `R44-*.ts` and their fixtures (task 3)
+- `scripts/conformance/rules/R42-*.ts`, `R43-*.ts`, `R44-*.ts` and their fixtures (task 3), `R45-feature-manifest.ts` and its fixtures (task 4)
+- `src/features/profile/feature.json` (task 4)
 - `.kiro/steering/features.md` (task 2)
 
 ## Affected strip tests
@@ -75,7 +78,7 @@ The strips and their tests moved in task 2. Both run as affected tests:
 
 ## Execution mode
 
-All four tasks are `sequential`, one at a time in the main tree, by the main agent. They edit existing files, and the layout switch cannot be split without leaving `pnpm check` red. Tasks 2 and 3 need the user's `touch .conformance/unlock` first.
+All four tasks are `sequential`, one at a time in the main tree, by the main agent. They edit existing files, and the layout switch cannot be split without leaving `pnpm check` red. Tasks 2, 3 and 4 (for R45) need the user's `touch .conformance/unlock` first.
 
 ## Decisions
 

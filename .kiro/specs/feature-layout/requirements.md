@@ -64,18 +64,30 @@ Values marked **(proposed)** are shown for review. They become decisions only wh
 5. THE old locations `src/steps/` and `src/strips/` SHALL no longer be used. **(proposed: the new layout only, no support for both)**
 6. THE checker's own tests and fixtures SHALL be updated to the new layout, and all of them SHALL pass.
 
-### Requirement 4: A command to see and remove a feature
+### Requirement 4: Commands to see, disable, enable and prune a feature
 
-**User Story:** As an app author, I want one command that shows what a feature owns and removes it, so that removal is safe and complete.
+**User Story:** As an app author, I want to switch a feature off and back on, and to delete it for good only when I mean to, so that removing something is never a one-way door.
 
 #### Acceptance Criteria
 
-1. `pnpm feature list` SHALL print each feature with its strips, its steps and its route stubs.
-2. `pnpm feature show <name>` SHALL print the feature's files, its strips and steps with their permissions, every file outside the feature that refers to it, and which shared steps it uses.
-3. `pnpm feature remove <name>` SHALL, without `--yes`, print what it would delete and delete nothing.
-4. WHEN run with `--yes`, THEN the command SHALL delete the feature folder and its route stubs, and SHALL stop with a message before deleting anything if code outside the feature still refers to it.
-5. THE command SHALL NOT delete shared steps, adapters or ports, and SHALL say which shared steps are no longer used by any feature.
-6. THE command SHALL never run outside a git repository with a clean working tree for the feature's folder, so a deletion can always be undone with git.
+1. `pnpm feature list` SHALL print each feature with its state (`enabled` or `disabled`), its strips, its steps and its route stubs.
+2. `pnpm feature show <name>` SHALL print the feature's files, its strips and steps with their permissions, every file outside the feature that refers to it, and the shared steps it uses.
+3. `pnpm feature disable <name>` SHALL delete the feature's route stubs and its entry in the app's feature list, and SHALL keep the feature folder. WHEN code outside the feature (other than its stubs and the feature list) refers to it, THEN the command SHALL change nothing and SHALL list those references.
+4. `pnpm feature enable <name>` SHALL recreate the route stubs and the feature-list entry from the feature's manifest. WHEN a stub's path is taken by a different file, THEN the command SHALL change nothing and SHALL name the file.
+5. `pnpm feature prune <name>` SHALL delete the folder of a **disabled** feature, and SHALL refuse an enabled one. It SHALL say which shared steps no feature uses any more.
+6. EVERY command that changes files SHALL print what it would do and change nothing unless `--yes` is given.
+7. `disable`, `enable` and `prune` SHALL refuse when the feature's folder or the files they would change have uncommitted changes, so git can always undo them.
+8. A disabled feature SHALL stay in the type check, the tests and every rule, so it cannot rot while switched off.
+
+### Requirement 9: The feature manifest
+
+**User Story:** As an app author, I want each feature to say how it is wired in, so that switching it on again does not depend on anyone remembering.
+
+#### Acceptance Criteria
+
+1. EACH feature SHALL have a `feature.json` in its folder with: `name`, `module` (the exported name of its `FeatureModule` in `index.ts`), and `routes` (a list of `{ "stub": "<path>", "content": "<the stub's one line>" }`).
+2. A rule SHALL report a feature folder without a valid `feature.json`, and a manifest whose `name` differs from its folder. **(proposed severity: error)**
+3. `enable` and `disable` SHALL read only the manifest and the feature list, so they work for any feature that follows the format.
 
 ### Requirement 5: Providers stay clean to add and remove
 
@@ -127,4 +139,5 @@ Values marked **(proposed)** are shown for review. They become decisions only wh
 | F6 | Route stubs are one-line re-exports in `src/app/` | Features own `src/app` routes directly | confirmed (user, 2026-11-23) |
 | F7 | `pnpm feature list`, `show` and `remove`, with `remove` printing a plan unless `--yes` is given | Only `list` and `show` | confirmed (user, 2026-11-23) |
 | F8 | A rule keeps the adapter registry and the adapter folders in step | Leave the registry unchecked | confirmed (user, 2026-11-23) |
+| F10 | Features can be disabled and enabled, and only a disabled one can be pruned. Each has a `feature.json` manifest | Delete-only removal | confirmed (user, 2026-11-23) |
 | F9 | The platform parts (auth, API keys, authorization, plans, metering, rate limits, payments) are a separate spec after this one, since both apps share all of them | Build them first | confirmed (user, 2026-11-23) |

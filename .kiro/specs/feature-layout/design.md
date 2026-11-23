@@ -70,14 +70,40 @@ All three are protected files, so they need an unlock. IDs continue from R41.
 
 R44 reads imports with the TypeScript AST, like R03.
 
-## 5. The `feature` command
+## 5. The `feature` command and the manifest
 
-`scripts/conformance/feature.ts` (new, not protected), run as `pnpm feature <list|show|remove> [name] [--yes]`.
+`scripts/conformance/feature.ts` (new, not protected), run as `pnpm feature <list|show|disable|enable|prune> [name] [--yes]`.
 
-- **list**: for each folder in `src/features/`, its strips, steps and route stubs.
-- **show `<name>`**: files, strips and steps with permissions, shared steps it uses, and every file outside the folder that mentions it, split into route stubs, the `features.ts` entry, and other references.
-- **remove `<name>`**: without `--yes` prints the plan and deletes nothing. With `--yes`, if any "other references" exist it stops and lists them. Otherwise it deletes the folder, its route stubs and its line in `features.ts`, then prints which shared steps no feature uses any more. It refuses when the feature's folder has uncommitted changes (requirement 4.6), so git can undo it.
-- A **route stub** is a file under `src/app/` whose only statement is `export { default } from "<path into this feature>"`.
+**The manifest**, `src/features/<name>/feature.json`:
+
+```json
+{
+  "name": "profile",
+  "module": "profileFeature",
+  "routes": [{ "stub": "src/app/page.tsx", "content": "export { default } from \"../features/profile/page.tsx\";" }]
+}
+```
+
+**The feature list** (`src/app/features.ts`) is written so a tool can edit it by line: one import line per feature, and one entry line in the array.
+
+```ts
+import { profileFeature } from "../features/profile/index.ts";
+export const features: readonly FeatureModule[] = [
+  profileFeature,
+];
+```
+
+**States.** A feature is `enabled` when its entry is in the list and its stubs exist, and `disabled` when neither is. Anything in between is reported as `inconsistent`.
+
+- **list**: each folder, its state, strips, steps and stubs.
+- **show `<name>`**: files, strips and steps with permissions, shared steps it uses, and every file outside the folder that mentions it, split into its stubs, the list entry, and other references.
+- **disable**: refuses while other references exist. Otherwise deletes the stubs (only when they still hold the manifest's content) and the two list lines.
+- **enable**: writes the stubs and the two list lines. Refuses if a stub path holds a different file.
+- **prune**: only for a disabled feature, with no references left. Deletes the folder and lists the shared steps that no remaining feature uses.
+- Every changing command prints a plan and does nothing without `--yes`, and refuses when git shows uncommitted changes in the files it would touch.
+- References are found by reading relative import specifiers (a text scan, not the TypeScript compiler). A reference by a computed path is not seen.
+
+A new rule, **R45 feature-manifest** (error), keeps the manifests honest (requirement 9.2). It is a protected file, so it needs one more unlock; it is written together with the command in task 4.
 
 ## 6. Moving the example
 
@@ -110,10 +136,11 @@ The layout, the config, the rules, the fixtures and the example must change toge
 
 | # | Proposal | Alternative | State |
 |---|---|---|---|
-| G1 | A feature tells the app about itself through a `FeatureModule` (collections and optional seed), listed in `src/app/features.ts` | Auto-discover features by scanning folders | proposed |
-| G2 | Shared UI (Toast, view-state) lives in `src/shared/ui/` | Keep `src/components/` | proposed |
-| G3 | Pages opt into dynamic rendering with `await connection()` so the route stub can be a plain re-export | Keep a `dynamic` export in each route stub | proposed |
-| G4 | Fixtures are moved mechanically to a `demo` feature under `src/features/demo/` | Rewrite the fixtures by hand | proposed |
-| G5 | R42 allows the app (outside `features/`) to import a feature only through `index.ts` or a route stub's page file | No restriction outside features | proposed |
-| G6 | `feature remove` refuses when the feature's folder has uncommitted changes | Allow it with `--force` | proposed |
-| G7 | Four sequential tasks, two of them under an unlock (the layout switch and the new rules) | One unlock for everything | proposed |
+| G1 | A feature tells the app about itself through a `FeatureModule` (collections and optional seed), listed in `src/app/features.ts` | Auto-discover features by scanning folders | confirmed (user, 2026-11-23) |
+| G2 | Shared UI (Toast, view-state) lives in `src/shared/ui/` | Keep `src/components/` | confirmed (user, 2026-11-23) |
+| G3 | Pages opt into dynamic rendering with `await connection()` so the route stub can be a plain re-export | Keep a `dynamic` export in each route stub | confirmed (user, 2026-11-23) |
+| G4 | Fixtures are moved mechanically to a `demo` feature under `src/features/demo/` | Rewrite the fixtures by hand | confirmed (user, 2026-11-23) |
+| G5 | R42 allows the app (outside `features/`) to import a feature only through `index.ts` or a route stub's page file | No restriction outside features | confirmed (user, 2026-11-23) |
+| G6 | `feature remove` refuses when the feature's folder has uncommitted changes | Allow it with `--force` | confirmed (user, 2026-11-23) |
+| G7 | Four sequential tasks, two of them under an unlock (the layout switch and the new rules) | One unlock for everything | confirmed (user, 2026-11-23) |
+| G8 | Features can be disabled, enabled and pruned, with a `feature.json` manifest and a line-oriented feature list (requirement 4 and 9) | Delete-only removal | confirmed (user, 2026-11-23) |

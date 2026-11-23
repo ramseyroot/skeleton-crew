@@ -198,6 +198,16 @@ A short spike in a throwaway folder, results recorded in `progress.md` and in th
 4. Zod 4 passes R23's `safeParse` contract.
 5. The checker accepts `uses` in a manifest.
 
+### Results (task 1, 2026-11-23)
+
+| Check | Result |
+|---|---|
+| 1. Install with TypeScript 7 and pnpm 11 | Works. One peer warning: `tsconfck` (inside Storybook's Vite tooling) wants TypeScript 5, we have 7. No failure seen. pnpm blocked the `esbuild` build script, so `pnpm-workspace.yaml` was added with `allowBuilds: esbuild: false`. Storybook and Next.js ran without it |
+| 2. Storybook | `@storybook/nextjs-vite` 10.6.8 started and served one story: 353 ms for the manager and 388 ms for the preview, about 715 MB resident memory in total (all processes). It sends telemetry by default, so the config sets `core.disableTelemetry` for offline use |
+| 3. `next build` with `node:sqlite` | Build passes in 9.6 s, and `next start` served a page that read a row through `node:sqlite`. No fallback is needed. Next.js rewrites `tsconfig.json` (`jsx: react-jsx`), so the root file was set to that value now |
+| 4. zod 4 `safeParse` | Exists, as R23 expects |
+| 5. `uses` in a manifest | The checker accepted it: only R16 (catalog out of date) fired for the probe step |
+
 If 2 or 3 fail, the cut order from P10 applies: the shell shrinks first, then Storybook breadth.
 
 ## 10. Task outline

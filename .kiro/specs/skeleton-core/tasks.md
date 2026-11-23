@@ -15,9 +15,9 @@ Checkpoints stop for your review after tasks 1, 7, 9 and 11, and update `docs/ki
 
 All test files use `node:test`, are named `<name>.test.ts`, and run offline.
 
-- [ ] 1. Setup and verification spike
+- [x] 1. Setup and verification spike
   - Mode: sequential
-  - Writes: package.json, pnpm-lock.yaml, tsconfig.json, .gitignore, .kiro/specs/skeleton-core/design.md
+  - Writes: package.json, pnpm-lock.yaml, pnpm-workspace.yaml, tsconfig.json, .gitignore, .kiro/specs/skeleton-core/design.md
   - Add dependencies from design section 8 (`zod`, `next`, `react`, `react-dom`, `@types/react`, `@types/react-dom`, `storybook`, `@storybook/nextjs-vite`, `vite`).
   - Add scripts: `test` (`node --test "src/**/*.test.ts"`), `dev`, `build`, `storybook`, `build-storybook`.
   - `tsconfig.json`: add `jsx` and the `dom` lib for the shell and stories. `pnpm check` must still pass.

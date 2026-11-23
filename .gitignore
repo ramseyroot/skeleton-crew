@@ -4,3 +4,6 @@ node_modules/
 !.env.example
 .worktrees/
 !scripts/conformance/test/fixtures/**/.env*
+.data/
+.next/
+storybook-static/

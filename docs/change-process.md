@@ -156,7 +156,22 @@ To resume unfinished work:
 
 Rules R40 (progress consistent with tasks and git) and R41 (documents dated) check this.
 
-## 8. Limits
+## 8. Live test results
+
+Recorded in a Kiro CLI 3.5.0 session on 2026-11-23 (task 22 of the enforcement spec).
+
+| Behavior | Result |
+|---|---|
+| Protection hook on a write-tool call to a protected file (`.kiro/hooks/probe.txt`) | Blocked. The agent received the hook's message and the file was not written |
+| Protection hook on a shell command writing a protected file (`cp conformance.config.json conformance.config.json`) | Blocked before the command ran |
+| Stop hook with a violation (`console.log` in a temporary `src/live-test.ts`) | The agent was sent back with "attempt 1 of 3" and the R01 violation. This confirms the `reason` field name |
+| Stop hook after the fix | Passed; the agent could finish |
+| Hooks load in the session where the hook file is created | Yes, without restarting |
+| Sub-agent confined to a worktree, sub-agents and the Stop hook, task hook event fields | Not tested yet |
+
+Known cosmetic issue: the Stop hook's reason repeats the "Full report" line. The fix is in `scripts/conformance/hooks/stop.ts`, a protected file, so it waits for the user's unlock.
+
+## 9. Limits
 
 - The hooks guard against accidents. An agent determined to get around them could, for example by committing a plan change through the shell. The checks after the fact (R37, R17) and the commit history are the stronger safety net, and plan commits are listed in the report.
 - Duplicate steps with unrelated names (for example `pricing.quote` and `fare.estimate` doing the same job) are not caught mechanically. The plan comparison points out suspected cases, and the user decides.

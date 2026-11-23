@@ -68,3 +68,5 @@ Append-only. Format and resume procedure: `docs/change-process.md`, section 7.
 | 2026-11-23 17:53 | 20 | checkpoint | | | User chose A: checks.test stays null in the skeleton; apps set their own test runner. Hook enabling (task 21) still needs the user's yes |
 | 2026-11-23 17:56 | 21 | started | | | Write .kiro/hooks/enforcement.json (Stop, PreToolUse write and shell, UserPromptSubmit reset) |
 | 2026-11-23 17:56 | 21 | done | this | .kiro/hooks/enforcement.json (Stop, UserPromptSubmit reset, PreToolUse write, PreToolUse shell). Dry run: protected write blocked with exit 2, Stop passes | Task 22: live test session with the user |
+| 2026-11-23 17:56 | 22 | started | | | Live test session with the user: confirm hooks fire in Kiro, record event fields |
+| 2026-11-23 17:58 | 22 | blocked | | docs/change-process.md | Live results recorded: protection (write and shell) and Stop hook work; reason field confirmed. Remaining: sub-agent tests need the user present; a stop.ts message fix needs the user's unlock |

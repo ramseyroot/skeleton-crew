@@ -78,9 +78,9 @@ How to fill it in:
 
 The checks verify the plan against the catalog and against itself: a `reuse` that does not match, a `modify` that leaves out an affected strip, a shared new step built more than once or not first, and an unexplained near-duplicate are all errors.
 
-**Approval is a commit.** The user reviews the plan, sets `status: active`, and commits it. Only the committed version counts: an uncommitted edit to the plan grants nothing. Only the user changes a plan's status. When the work is finished, the plan is set to `done` and committed.
+**Approval is a commit.** The user reviews the plan, sets `status: active`, and commits it. Only the committed version counts: an uncommitted edit to the plan grants nothing. The user decides when a plan is approved. **Since 2026-11-23 the user has delegated the status change to the agent**: after the user has reviewed a plan and said to proceed, the agent sets `status: active` and commits only that file, in its own commit (`plan(<spec>): activate`), before any task starts. When the work is finished, the agent sets `done` and commits it the same way. The agent never activates a plan the user has not reviewed, and a scope change still needs the user's review before the plan is edited. The protected steering text (`core-rules.md`) still says the user commits the plan, and is left as it is until the user unlocks it.
 
-To change scope during the work, the agent proposes an edit to the plan, and the user reviews and commits it.
+To change scope during the work, the agent proposes an edit to the plan, and the user reviews it. The agent then commits it.
 
 ## 4. Tasks
 

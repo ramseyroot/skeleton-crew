@@ -62,3 +62,6 @@ Append-only. Format and resume procedure: `docs/change-process.md`, section 7.
 | 2026-11-23 17:45 | 18 | done | this | scripts/conformance/hooks/protect.ts, test/hooks-protect.test.ts (138 tests pass). Hook does not load the compiler; about 0.2 to 0.4s per call | Start task 19: steering files |
 | 2026-11-23 17:47 | 19 | started | | | Write steering files within size limits |
 | 2026-11-23 17:47 | 19 | done | this | .kiro/steering/core-rules.md, .kiro/steering/strips.md, .kiro/steering/ports-adapters.md, .kiro/steering/environments.md, seven steps-<class>.md files (368 lines total, all within limits; R31 passes) | Start task 20: self-check, then checkpoint |
+| 2026-11-23 17:47 | 20 | started | | | Run the full check on this repository and offline tests |
+| 2026-11-23 17:48 | 20 | done | this | pnpm check passes (conformance 0.3s, typecheck 0.3s); catalog regenerated with no diff; 138 tests pass with the network blocked (unshare -rn), 16s | Checkpoint: user reviews results before hooks are enabled |
+| 2026-11-23 17:48 | 20 | checkpoint | this | | Waiting for user: approve enabling hooks (task 21), and decide checks.test for this repo (protected config) |

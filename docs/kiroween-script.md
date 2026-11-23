@@ -116,3 +116,5 @@ Append at each checkpoint. Each entry: what happened, why it matters, and where 
 | 2026-11-23 17:32 | Checkpoint run found the console summary hid every violation when many rules failed; fixed | The process catching its own bug | task 14 notes in `tasks.md` |
 | 2026-11-23 17:39 | Builder worried about a slow dev cycle; check measured and sped up | Strict without being slow | task 15 notes, `progress.md` |
 | 2026-11-23 17:45 | Hook scripts built and tested (not yet switched on) | Enforcement ready | commits 453017a, f2e8eac |
+| 2026-11-23 17:48 | Steering written: one always-loaded file plus files that load per folder (each function class, strips with the live catalog, ports, environments) | The right rules reach the agent when it needs them | commit 3bc043e, `.kiro/steering/` |
+| 2026-11-23 17:48 | Self-check passes; 138 tests pass with the network switched off | Works offline on a low-spec PC | task 20 row in `progress.md` |

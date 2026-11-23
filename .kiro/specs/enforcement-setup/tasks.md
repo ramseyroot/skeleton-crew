@@ -150,7 +150,7 @@ Every task: append a `started` row to `progress.md` before writing files. On fin
   - Within the size limits (checked by R31). Each states which rules the check command enforces. `core-rules.md` includes the change process summary, the resume procedure, and points to `docs/change-process.md`.
   - _Requirements: 14.1 to 14.7, 21.2, 26.7_
 
-- [ ] 20. Self-check on this repository
+- [x] 20. Self-check on this repository
   - Mode: sequential
   - Writes: docs/generated/catalog.md, docs/generated/catalog.json
   - Run the full check command on this repository, including this spec's `tasks.md` and `change-plan.md`. Fix any finding in the task that introduced it.

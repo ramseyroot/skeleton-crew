@@ -22,3 +22,5 @@ Append-only. Format and resume procedure: `docs/change-process.md`, section 7.
 | 2026-11-23 16:54 | 3 | started | | | Write types, project loading, discovery, report, exceptions, CLI, empty registry |
 | 2026-11-23 16:58 | 3 | done | this | scripts/conformance/{types,project,discover,report,exceptions,cli}.ts, rules/index.ts, test/helpers.ts, test/report.test.ts (18 tests pass, typecheck ok) | Start task 4: rules doc and meta tests, then checkpoint |
 | 2026-11-23 16:58 | 4 | started | | | Write docs/conformance-rules.md, meta tests, fixture runner |
+| 2026-11-23 16:59 | 4 | done | this | docs/conformance-rules.md, scripts/conformance/test/meta.test.ts, scripts/conformance/test/rules.test.ts (24 tests pass, typecheck ok) | Checkpoint: user reviews output format |
+| 2026-11-23 16:59 | 4 | checkpoint | this | | Waiting for user review of the runner output. Then task 5: code pattern rules R01 to R04 |

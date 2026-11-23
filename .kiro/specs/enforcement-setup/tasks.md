@@ -39,7 +39,7 @@ Every task: append a `started` row to `progress.md` before writing files. On fin
   - Tests: ordering, cap, exit codes, `not-applicable`, exception matching, a rule that throws gives exit 2.
   - _Requirements: 1.1 to 1.9, 9.1, 9.2, 9.5, 10.5_
 
-- [ ] 4. Rules documentation and meta tests
+- [x] 4. Rules documentation and meta tests
   - Mode: sequential
   - Writes: docs/conformance-rules.md, scripts/conformance/test/meta.test.ts, scripts/conformance/test/rules.test.ts
   - Rules document with the entry format from the design and an intro.

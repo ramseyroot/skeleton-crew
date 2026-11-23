@@ -11,7 +11,7 @@ Tasks follow the change plan (CP1 to CP3). Tasks 4 and 5 run in parallel worktre
 
 Every task: append a `started` row to `progress.md` before writing files. On finish, tick the checkbox, append a `done` row, and commit the task's files with both, as `task(skeleton-core/<id>): <title>`. `progress.md` and `tasks.md` are implicitly in every task's `Writes:`. Every task passes `pnpm check` and `pnpm test` before its commit. (`pnpm test` runs the tests by hand until task 12 sets `checks.test`, see CP3.)
 
-Checkpoints stop for your review after tasks 1, 7, 9 and 11, and update `docs/kiroween-script.md` each time. After task 1 and task 11, the review includes a decision if a check fails (P10 cut order).
+Checkpoints stop for your review after tasks 1, 7, 9, 11 and 13, and update `docs/kiroween-script.md` each time. After task 1 and task 11, the review includes a decision if a check fails (P10 cut order).
 
 All test files use `node:test`, are named `<name>.test.ts`, and run offline.
 
@@ -101,11 +101,27 @@ All test files use `node:test`, are named `<name>.test.ts`, and run offline.
   - If `node:sqlite` cannot be bundled, use the fallback in design section 7 and record it.
   - _Requirements: 10.1 to 10.6_
 
-- [ ] 12. Final docs, tooling and gates
+- [ ] 12. Reporter and Metrics ports with adapters
   - Mode: sequential
-  - Writes: conformance.config.json, scripts/conformance/hooks/stop.ts, docs/provider-ports.md, docs/function-strips-plan.md, docs/environments.md, docs/README.md, docs/kiroween-script.md, docs/kiroween-submission.md, docs/generated/catalog.md, docs/generated/catalog.json
+  - Writes: src/ports/logger.ts, src/adapters/logger/contract.test.ts, src/ports/reporter.ts, src/ports/metrics.ts, src/adapters/reporter/**, src/adapters/metrics/**
+  - Needs the change plan committed `active` (edits two existing guarded files).
+  - `LogEntry.data` (kept by redaction), `shouldReport`, `cleanTags`, and the three adapters of each port with `errors.ts`, a contract suite each, and adapter tests. The `log` adapters write through the Logger port.
+  - _Requirements: 12.1, 12.2, 12.5, 12.6, 13.1, 13.2, 13.4, 13.5, 13.6_
+
+- [ ] 13. Wire reporting, metrics and the `dev` flag
+  - Mode: sequential
+  - Writes: src/lib/step.ts, src/lib/strip.ts, src/config/profiles.ts, src/config/registry.ts, src/config/compose.ts, src/config/profiles.test.ts, src/config/compose.test.ts, src/test-utils/ports.ts, tests/lib/step.test.ts, tests/lib/strip.test.ts, src/app/page.tsx
+  - `Ports` gets `reporter` and `metrics`. The step wrapper emits `step.duration_ms`. The runner reports final internal errors of the reported kinds and emits `strip.runs` and `strip.duration_ms`. Telemetry failures never change a result.
+  - Profiles: new adapter keys, gating rules, shipped `prod` uses `log`. `compose()` returns `dev`. The demo page footer shows it.
+  - Both strip test files must pass (they are the affected tests).
+  - _Requirements: 3.9, 12.3, 12.4, 13.3, 13.5, 14.1 to 14.5_
+
+- [ ] 14. Final docs, tooling, gates and the illustrated page
+  - Mode: sequential
+  - Writes: docs/today/**, conformance.config.json, scripts/conformance/hooks/stop.ts, docs/provider-ports.md, docs/function-strips-plan.md, docs/environments.md, docs/README.md, docs/kiroween-script.md, docs/kiroween-submission.md, docs/generated/catalog.md, docs/generated/catalog.json
   - Needs the user's `touch .conformance/unlock` first. Set `checks.test` (P9) and fix the duplicate "Full report" line in `stop.ts`.
   - Record the timestamp decision, planned adapters (PocketBase, Supabase, Workers KV, R2), `uses`, cache permissions, and the profiles in their docs. Update README status.
   - Run `pnpm check`, `pnpm test` with the network blocked (`unshare -rn`), and `pnpm conformance --write-catalog` with no diff.
   - Update `kiroween-script.md` (scenes 3 to 6 status, build log) and `kiroween-submission.md`.
+  - Build `docs/today/index.html`: one self-contained illustrated page (inline CSS and SVG, screenshots copied into `docs/today/media/`, no network needed) that explains what was built, with diagrams, the test and commit numbers, the screenshots, and what is still open. It states only what exists.
   - _Requirements: 11.1, 11.2, 11.4, 11.5_

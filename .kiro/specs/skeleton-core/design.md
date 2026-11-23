@@ -214,6 +214,43 @@ If 2 or 3 fail, the cut order from P10 applies: the shell shrinks first, then St
 
 The final list, with `Writes:` and modes, is `tasks.md`. In short: 1 setup and spike, 2 `Result` and cache envelope, 3 logger, clock and ID ports, 4 database port and 5 cache and storage ports (parallel), 6 step library, 7 strip library, 8 config, 9 example steps, strips and catalog, 10 components and stories, 11 Next.js shell, 12 final docs and `checks.test`.
 
+## 11a. Error reporter, metrics and the `dev` flag (added 2026-11-23)
+
+Implements requirements 12 to 14. The user confirmed that `APP_ENV` stays and that `dev` is derived from it. Everything else in this section is a proposal (D14 to D19 in the table below).
+
+**Ports.** Named `reporter` and `metrics`, one word each, because rule R25 matches a profile's adapter key to the adapter folder name.
+
+```ts
+// src/ports/reporter.ts
+export type ReportContext = { strip: string; stripId: string; env: string };
+export interface ErrorReporter { report(error: StepError, context: ReportContext): void }
+export function shouldReport(error: StepError): boolean   // audience "internal" and kind in unexpected | upstream | network
+
+// src/ports/metrics.ts
+export type MetricTags = { strip?: string; step?: string; outcome?: "ok" | "error"; kind?: ErrorKind };
+export interface Metrics {
+  increment(name: string, tags?: MetricTags): void;
+  timing(name: string, ms: number, tags?: MetricTags): void;
+}
+export function cleanTags(tags?: Record<string, unknown>): MetricTags   // keeps only strip, step, outcome, kind
+```
+
+Both are synchronous, return nothing and never throw, because telemetry must not fail a step. Adapters swallow their own failures. Adapters for each: `none` (drops), `memory` (keeps a list for tests), `log` (one Logger entry). Hosted adapters (Sentry or similar for the reporter, Cloudflare analytics or similar for metrics) are `planned`.
+
+**Log entries need structured facts.** Logger redaction drops free text (`message`) outside `local` and `dev`, so a metric value written as text would vanish in production. `LogEntry` gets an optional `data: Record<string, string | number | boolean>`. Redaction keeps `data`, because it holds only bounded facts such as a metric name, a value and tags, and never payloads. This edits `src/ports/logger.ts` (an existing guarded file), so it is listed in the change plan.
+
+**What is reported.** Once per run, at the end of `runStrip`, when the final error is `internal` and its kind is `unexpected`, `upstream` or `network` (`shouldReport`). A retry that succeeds, a `log-and-continue` and a `recover` are not reported. They are logged as before. `not_found`, `conflict`, `validation` and the other kinds are expected outcomes and are only logged.
+
+**Metrics emitted.** The runner emits `strip.runs` (count) and `strip.duration_ms` (timing) with tags `strip` and `outcome`, plus `kind` on failure. The step wrapper emits `step.duration_ms` with `step` and `outcome`. No other tag keys are accepted (`cleanTags`).
+
+**Ports type.** `Ports` in `lib/step.ts` gains `reporter` and `metrics`. Steps do not see them: only the wrapper and the runner use them, so a step cannot send arbitrary telemetry.
+
+**The `dev` flag.** `compose()` returns `dev: boolean` next to `profile`: `profile.env !== "prod"`. It is information for the app, for example the footer of the demo page. It does not choose any adapter, and nothing can set it. This is deliberate. A boolean that could point a development machine at production services would break the data-separation rule, so the profile stays the only thing that selects adapters, and the host and path guards stay as they are.
+
+**Gating** is in the profile schema, so a wrong profile does not start (and R23 catches it in `pnpm check`): in `local` and `dev`, `reporter` and `metrics` must be `none` or `memory`. In `prod` they must not be `none`. The shipped `prod` profile uses `log` for both until an app adds a hosted adapter.
+
+**Tests.** Contract suites for both ports against all three adapters. Runner tests: the five reporting cases (reported once, user error not reported, `log-and-continue` not reported, retry that succeeds not reported, reporter that throws does not change the result) and the metric names and tags. Config tests: each gating breach, and `dev` for the three profiles.
+
 ## 11. New defaults (D1 to D11 confirmed)
 
 | # | Proposal | Alternative | State |
@@ -231,3 +268,10 @@ The final list, with `Writes:` and modes, is `tasks.md`. In short: 1 setup and s
 | D11 | Storybook with default addons only | Add the accessibility addon | confirmed (user, 2026-11-23) |
 | D5b | Refines D5. `log-and-continue` is allowed on a step when its input is a valid input for the next step (or, for the last step, a valid output). Equal input and output types still qualify. D5's wording was too narrow for the `profile.view` example, where `cache.profile.read` takes `{userId}` and its output adds `cached` | Keep D5 as written (equal types only), and change the example | confirmed (user, 2026-11-23) |
 | D12 | `recover:<step>` names a step in a separate `fallbacks` list of the strip, which is not part of the chain. The design said "must be in `steps`", which would also run the fallback in the chain. The checker reads only `steps`, so fallbacks are budget-checked at load time by `defineStrip` but not by R13 | Fallbacks listed in `steps` and skipped in the chain | confirmed (user, 2026-11-23) |
+| D13 | `dev` is a boolean derived from `APP_ENV` (true for local and dev, false for prod), read-only, and selects no adapter | A setting that picks adapters | confirmed (user, 2026-11-23) |
+| D14 | Ports are named `reporter` and `metrics`, each with adapters `none`, `memory`, `log`. Hosted adapters are `planned` | Other adapter sets | proposed |
+| D15 | A strip run is reported when its final error is internal and of kind `unexpected`, `upstream` or `network`. Other kinds are only logged | Report every internal error | proposed |
+| D16 | Metrics emitted: `strip.runs`, `strip.duration_ms`, `step.duration_ms`. Tag keys limited to `strip`, `step`, `outcome`, `kind` | More metrics or free tags | proposed |
+| D17 | `LogEntry` gets an optional `data` field of small scalar facts, kept by redaction in production | Write metric values into `message` (dropped in prod) | proposed |
+| D18 | Gating is in the profile schema: `none` or `memory` outside prod, not `none` in prod | A runtime check only | proposed |
+| D19 | The shipped `prod` profile uses the `log` adapters for both ports | Leave prod without them until an app adds a hosted adapter | proposed |

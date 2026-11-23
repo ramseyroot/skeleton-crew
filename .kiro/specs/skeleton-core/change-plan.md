@@ -27,7 +27,14 @@ Strips were compared with each other. No step is used by both strips, so no shar
 
 ## Existing files to edit
 
-No file in the guarded folders (`src/steps`, `src/strips`, `src/ports`, `src/adapters`, `src/lib`) exists yet, so this spec edits none of them. It creates all of them.
+Added on 2026-11-23 (requirements 12 to 14, error reporter, metrics and the `dev` flag). Tasks 1 to 11 only created files in the guarded folders. Tasks 12 and 13 edit these existing guarded files, so this plan must be committed `active` before they start:
+
+| File | Task | Reason |
+|---|---|---|
+| src/ports/logger.ts | 12 | Add the optional `data` field to `LogEntry` and keep it in `redact` (design D17) |
+| src/adapters/logger/contract.test.ts | 12 | Add contract cases for `data` |
+| src/lib/step.ts | 13 | Add `reporter` and `metrics` to `Ports`, and emit `step.duration_ms` |
+| src/lib/strip.ts | 13 | Report final internal errors, emit `strip.runs` and `strip.duration_ms` |
 
 Existing files outside the guarded folders that tasks will edit (task numbers match `tasks.md`):
 
@@ -37,13 +44,17 @@ Existing files outside the guarded folders that tasks will edit (task numbers ma
 | pnpm-lock.yaml | 1 | Updated by pnpm |
 | tsconfig.json | 1 | Add `jsx`, `dom` types for the shell and stories (design section 1) |
 | .gitignore | 1 | Add `.data/`, `.next/`, `storybook-static/` |
-| conformance.config.json | 12 | Set `checks.test` (P9). Protected: the user must run `touch .conformance/unlock` first |
+| conformance.config.json | 14 | Set `checks.test` (P9). Protected: the user must run `touch .conformance/unlock` first |
 | docs/generated/catalog.md, docs/generated/catalog.json | 9 | Regenerated with `pnpm conformance --write-catalog` |
-| docs/provider-ports.md | 12 | Record the timestamp decision and planned adapters |
-| docs/function-strips-plan.md | 12 | Record the decisions on `uses` and cache permissions, and remove the timestamp item from "still open" |
-| docs/environments.md | 12 | Record the `local`, `dev` and `prod` choices made in the skeleton |
-| docs/README.md | 12 | Update status |
+| docs/provider-ports.md | 14 | Record the timestamp decision and planned adapters |
+| docs/function-strips-plan.md | 14 | Record the decisions on `uses` and cache permissions, and remove the timestamp item from "still open" |
+| docs/environments.md | 14 | Record the `local`, `dev` and `prod` choices made in the skeleton |
+| docs/README.md | 14 | Update status |
 | docs/kiroween-script.md | each checkpoint | Build log entries and scene status |
+| src/config/profiles.ts, registry.ts, compose.ts and their tests | 13 | New adapter keys, gating rules, the `dev` flag (not in a guarded folder) |
+| src/test-utils/ports.ts, tests/lib/step.test.ts, tests/lib/strip.test.ts | 13 | `Ports` has two more members |
+| src/app/page.tsx | 13 | Show the `dev` flag in the footer |
+| docs/today/** | 14 | The illustrated page about what was built (new files) |
 
 ## New files
 
@@ -51,19 +62,23 @@ Created by the tasks, listed in each task's `Writes:` line in `tasks.md`:
 
 - `src/lib/**`, `src/ports/**`, `src/adapters/**`, `src/config/**`
 - `src/steps/**`, `src/strips/**` (five steps, two strips, and their tests)
+- `src/ports/reporter.ts`, `src/ports/metrics.ts`, `src/adapters/reporter/**`, `src/adapters/metrics/**` (task 12)
 - `src/components/**`, `src/test-utils/**`, `src/app/**`
 - `.storybook/**`
 - `.kiro/specs/skeleton-core/tasks.md`, `.kiro/specs/skeleton-core/progress.md`
 
 ## Affected strip tests
 
-None. No existing strip is modified.
+No strip or step is modified. Tasks 12 and 13 change library code that every strip runs through, so both strip test files run as affected tests:
+
+- src/strips/profile.save.strip.test.ts
+- src/strips/profile.view.strip.test.ts
 
 ## Execution mode
 
 Final list in `tasks.md`:
 
-- **Sequential**: tasks that edit existing files (1, 9, 12), and tasks that depend on earlier code.
+- **Sequential**: tasks that edit existing files (1, 9, 12, 13, 14), and tasks that depend on earlier code. Tasks 12 and 13 are sequential because 12 edits `src/ports/logger.ts` and 13 edits `src/lib/step.ts` and `strip.ts`.
 - **Parallel, in worktrees, at most 2 at once**: tasks 4 (database port) and 5 (cache and storage ports). They only create new files in separate folders, and start after tasks 1 to 3 are committed, because they need `Result`, the cache envelope, and the logger, clock and ID ports.
 
 ## Decisions

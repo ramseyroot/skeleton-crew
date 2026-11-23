@@ -176,6 +176,44 @@ Every value marked **(proposed)** is a default shown for review. It is not a dec
 4. THE skeleton core SHALL keep `lib/`, `ports/` and `adapters/` free of app-specific code, so they can be separated into a package later.
 5. EACH task SHALL follow `docs/change-process.md`: a `started` row, one commit, and a `done` row in `progress.md`.
 
+### Requirement 12: Error reporter port
+
+**User Story:** As a developer, I want unexpected failures sent to an error-tracking service in production only, so that real problems are seen without development noise.
+
+#### Acceptance Criteria
+
+1. THE `ErrorReporter` port SHALL have a `report(error, context)` method that is synchronous, returns nothing, and never throws. The context holds the strip name, the stripId, and the environment name.
+2. THE port SHALL have three adapters: `none` (drops the report), `memory` (keeps reports for tests), and `log` (writes one entry through the Logger port). A hosted adapter (Sentry or similar) SHALL be recorded as `planned`.
+3. WHEN a strip run ends in an `internal` error of kind `unexpected`, `upstream`, or `network`, THEN the runner SHALL report it once. THE runner SHALL NOT report `user` errors, other kinds, errors handled by `log-and-continue` or `recover`, or errors fixed by a retry.
+4. A failure inside the reporter SHALL NOT change the strip's result.
+5. THE `log` adapter's entries SHALL pass through the Logger port's redaction, so `prod` drops message text.
+6. THE port SHALL have a contract suite that runs against all three adapters, and each adapter SHALL have an `errors.ts`.
+
+### Requirement 13: Metrics port
+
+**User Story:** As a developer, I want counts and timings per strip and step, so that I can see errors and slowness in production.
+
+#### Acceptance Criteria
+
+1. THE `Metrics` port SHALL have `increment(name, tags?)` and `timing(name, ms, tags?)`, both synchronous and never throwing.
+2. THE port SHALL have three adapters: `none`, `memory` (assertable), and `log` (one entry through the Logger port). A hosted adapter SHALL be recorded as `planned`.
+3. THE runner SHALL emit `strip.runs` with tags `strip` and `outcome`, and `strip.duration_ms` with the same tags. THE step wrapper SHALL emit `step.duration_ms` with tags `step` and `outcome`. WHEN a run fails, THEN the tag `kind` SHALL hold the error kind.
+4. THE port SHALL accept only the tag keys `strip`, `step`, `outcome` and `kind`, and SHALL drop any other key, so that metric cardinality stays bounded.
+5. A failure inside the metrics adapter SHALL NOT change a step's or strip's result.
+6. THE port SHALL have a contract suite that runs against all three adapters, and each adapter SHALL have an `errors.ts`.
+
+### Requirement 14: The dev flag and gating
+
+**User Story:** As a developer, I want development runs to send nothing to tracking services, and production runs to send everything, chosen by the profile, so that development noise stays out and no flag can point a development machine at production data.
+
+#### Acceptance Criteria
+
+1. THE composed runtime SHALL expose `dev: boolean`, derived from `APP_ENV`: true for `local` and `dev`, false for `prod`.
+2. IN the `local` and `dev` profiles, the `reporter` and `metrics` adapters SHALL be `none` or `memory`. IN `prod`, they SHALL NOT be `none`. Profile validation SHALL report a breach with the profile and port named.
+3. THE `dev` flag SHALL only be read, never set from outside, and SHALL NOT choose any adapter. Adapters SHALL come from the profile, and the startup guards for hosts and paths SHALL apply unchanged.
+4. Steps and strips SHALL NOT receive the `dev` flag.
+5. Logger redaction SHALL stay tied to the environment name as before.
+
 ---
 
 ## Defaults and their state (P1 to P10 confirmed)
@@ -192,3 +230,4 @@ Every value marked **(proposed)** is a default shown for review. It is not a dec
 | P8 | Storybook with the Vite-based Next.js framework, verified against TypeScript 7 first | Webpack-based | confirmed (user, 2026-11-23) |
 | P9 | `checks.test` is set to the new test command, which needs an unlock of `conformance.config.json` | Keep it `null` | confirmed (user, 2026-11-23) |
 | P10 | Cut order if time runs short: second adapters, then the Next.js shell reduced to one page and action, then Storybook breadth | | confirmed (user, 2026-11-23) |
+| P11 | Error reporter, metrics and the `dev` flag are added to this spec (requirements 12 to 14), as the user asked on 2026-11-23. The user confirmed that `APP_ENV` stays and that `dev` is derived from it | | confirmed (user, 2026-11-23) |

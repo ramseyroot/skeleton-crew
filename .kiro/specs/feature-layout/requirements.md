@@ -119,12 +119,12 @@ Values marked **(proposed)** are shown for review. They become decisions only wh
 
 | # | Proposal | Alternative | State |
 |---|---|---|---|
-| F1 | A feature folder holds `steps/<class>/`, `strips/`, domain, UI with stories, actions, tests, and an `index.ts` public surface | Fewer folders per feature | proposed |
-| F2 | Shared steps and shared domain types live in `src/shared/` | A `shared` feature | proposed |
-| F3 | The new layout only. `src/steps/` and `src/strips/` go away | Support both layouts for a while | proposed |
-| F4 | Importing another feature is an error | A warning | proposed |
-| F5 | A step in no strip is a warning | An error | proposed |
-| F6 | Route stubs are one-line re-exports in `src/app/` | Features own `src/app` routes directly | proposed |
-| F7 | `pnpm feature list`, `show` and `remove`, with `remove` printing a plan unless `--yes` is given | Only `list` and `show` | proposed |
-| F8 | A rule keeps the adapter registry and the adapter folders in step | Leave the registry unchecked | proposed |
+| F1 | A feature folder holds `steps/<class>/`, `strips/`, domain, UI with stories, actions, tests, and an `index.ts` public surface | Fewer folders per feature | confirmed (user, 2026-11-23) |
+| F2 | Shared steps and shared domain types live in `src/shared/` | A `shared` feature | confirmed (user, 2026-11-23) |
+| F3 | The new layout only. `src/steps/` and `src/strips/` go away | Support both layouts for a while | confirmed (user, 2026-11-23) |
+| F4 | Importing another feature is an error | A warning | confirmed (user, 2026-11-23) |
+| F5 | A step in no strip is a warning | An error | confirmed (user, 2026-11-23) |
+| F6 | Route stubs are one-line re-exports in `src/app/` | Features own `src/app` routes directly | confirmed (user, 2026-11-23) |
+| F7 | `pnpm feature list`, `show` and `remove`, with `remove` printing a plan unless `--yes` is given | Only `list` and `show` | confirmed (user, 2026-11-23) |
+| F8 | A rule keeps the adapter registry and the adapter folders in step | Leave the registry unchecked | confirmed (user, 2026-11-23) |
 | F9 | The platform parts (auth, API keys, authorization, plans, metering, rate limits, payments) are a separate spec after this one, since both apps share all of them | Build them first | confirmed (user, 2026-11-23) |

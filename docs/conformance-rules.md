@@ -374,7 +374,7 @@ Each rule section has this shape, and the meta tests check that every label is p
 ## R36 parallel-new-files-only
 
 - **Severity:** error
-- **Catches:** an unfinished task not marked `Mode: sequential` whose `Writes:` list includes a file that exists at git `HEAD` (or a folder glob covering one).
+- **Catches:** an unfinished task not marked `Mode: sequential` whose `Writes:` list includes a file that existed when the task list was last committed (or a folder glob covering one). Files the task has created since then, in its worktree or after merging, do not count.
 - **Why:** parallel work only creates new files. Edits to existing code run one at a time, so two agents never change the same code.
 - **Failing example:** a parallel task writing `src/steps/db/a.ts`, which already exists.
 - **Passing example:** the same task marked `Mode: sequential`.

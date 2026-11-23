@@ -124,9 +124,10 @@ Every task: append a `started` row to `progress.md` before writing files. On fin
   - Runs conformance, typecheck, configured tests, and affected strip tests from active plans. Prints `not configured` where a check is missing, and treats missing affected-test configuration as a failure.
   - _Requirements: 11.1 to 11.4, 17.4, 17.5_
 
-- [ ] 16. Worktree command
+- [x] 16. Worktree command
   - Mode: sequential
-  - Writes: scripts/conformance/worktree.ts, scripts/conformance/test/worktree.test.ts, package.json
+  - Writes: scripts/conformance/worktree.ts, scripts/conformance/test/worktree.test.ts, package.json, scripts/conformance/rules/R36-parallel-new-files-only.ts, docs/conformance-rules.md
+  - R36 (changed during the work): it judged "existing" against HEAD, so a task's own new files failed it inside its worktree and after merging. It now uses the commit that last changed the task list.
   - `create`, `verify`, `merge`, `remove`, `list`, per the design, with the parallel limit and task-order merging.
   - Tests in temporary git repositories: out-of-list file fails verify, merge conflict aborts cleanly, failed post-merge check restores the previous commit, remove refuses unmerged work.
   - _Requirements: 23.2 to 23.9_

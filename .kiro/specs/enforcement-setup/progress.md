@@ -54,3 +54,5 @@ Append-only. Format and resume procedure: `docs/change-process.md`, section 7.
 | 2026-11-23 17:35 | 15 | started | | | Write check command (conformance, typecheck, tests, affected strip tests) and tests |
 | 2026-11-23 17:38 | 15 | started | | | Plan deviation: speed work added to task 15 Writes (files.ts split, git cache, tsc without pnpm). Measured: conformance about 0.9s, tsc 0.3s, pnpm start-up adds about 1s |
 | 2026-11-23 17:39 | 15 | done | this | scripts/conformance/check.ts, test/check.test.ts, package.json, scripts/conformance/files.ts (split from project.ts), git.ts (per-run cache), conformance.config.json (tsc without pnpm) (123 tests pass). Full check on this repo: about 1.2s | Start task 16: worktree command |
+| 2026-11-23 17:39 | 16 | started | | | Write worktree command (create, verify, merge, remove, list) and tests |
+| 2026-11-23 17:42 | 16 | done | this | scripts/conformance/worktree.ts, test/worktree.test.ts, package.json (worktree script), rules/R36 (existing means at the last task-list commit), docs/conformance-rules.md (127 tests pass) | Start task 17: Stop hook script |

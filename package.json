@@ -11,7 +11,8 @@
     "conformance": "node scripts/conformance/cli.ts",
     "check": "node scripts/conformance/check.ts",
     "test:conformance": "node --test \"scripts/conformance/test/*.test.ts\"",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "worktree": "node scripts/conformance/worktree.ts"
   },
   "devDependencies": {
     "@types/node": "^26.6.6",

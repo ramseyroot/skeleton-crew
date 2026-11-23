@@ -1,0 +1,39 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Run checks before finishing",
+      "description": "Runs pnpm check when the agent stops. Sends it back with the list while anything fails, at most 3 times in a row, then tells it to ask the user.",
+      "trigger": "Stop",
+      "action": { "type": "command", "command": "node scripts/conformance/hooks/stop.ts" },
+      "timeout": 300,
+      "enabled": true
+    },
+    {
+      "name": "Reset check attempts on a new message",
+      "description": "Each new user message gives the agent a fresh set of attempts.",
+      "trigger": "UserPromptSubmit",
+      "action": { "type": "command", "command": "node scripts/conformance/hooks/stop.ts --reset" },
+      "timeout": 10,
+      "enabled": true
+    },
+    {
+      "name": "Protect enforcement files and planned code",
+      "description": "Blocks agent writes to protected files, to existing guarded files the committed change plan does not list, and outside a worktree task's file list.",
+      "trigger": "PreToolUse",
+      "matcher": "write",
+      "action": { "type": "command", "command": "node scripts/conformance/hooks/protect.ts" },
+      "timeout": 10,
+      "enabled": true
+    },
+    {
+      "name": "Protect enforcement files and planned code (shell)",
+      "description": "The same protection for shell commands that write files. Pattern-based: a guard against accidents, not a security boundary.",
+      "trigger": "PreToolUse",
+      "matcher": "shell",
+      "action": { "type": "command", "command": "node scripts/conformance/hooks/protect.ts --shell" },
+      "timeout": 10,
+      "enabled": true
+    }
+  ]
+}

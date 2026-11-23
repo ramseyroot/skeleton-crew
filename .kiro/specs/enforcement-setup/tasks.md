@@ -158,10 +158,11 @@ Every task: append a `started` row to `progress.md` before writing files. On fin
   - **Checkpoint: user reviews results before hooks are enabled.**
   - _Requirements: 1.1, 10.3_
 
-- [ ] 21. Enable hooks
+- [x] 21. Enable hooks
   - Mode: sequential
   - Writes: .kiro/hooks/enforcement.json
   - Stop hook, protection hook for `write`, protection hook for `shell`, as in the design. After this task, protected files need the unlock file.
+  - Added during the work: a `UserPromptSubmit` hook running `stop.ts --reset`, so each new user message gives fresh attempts (built in task 17).
   - _Requirements: 12.1, 12.3, 12.6_
 
 - [ ] 22. Live test session with the user

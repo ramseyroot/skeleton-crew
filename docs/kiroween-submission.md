@@ -20,7 +20,7 @@ The submission must show both what was built and how it was built with Kiro. Thi
 | Criterion | What shows it | Status |
 |---|---|---|
 | Impact | The problem, in the builder's words: agents skip requirements after a few functions, errors pass as output, steps get shaped to one provider, parallel agents overwrite shared code, dev and prod data mix. The audience: developers building paid APIs and apps with AI agents. `docs/README.md` section 6 maps each problem to its fix | Written |
-| Kiro use | Specs (requirements, design, change plan, tasks), steering loaded by file pattern, a Stop hook that sends the agent back until checks pass, a PreToolUse hook that blocks unplanned edits, worktrees per parallel sub-agent | Specs written. Conformance script in progress. Steering and hooks not built yet |
+| Kiro use | Specs (requirements, design, change plan, tasks), steering loaded by file pattern, a Stop hook that sends the agent back until checks pass, a PreToolUse hook that blocks unplanned edits, worktrees per parallel sub-agent | Specs written. Checker (41 rules), check command, worktree command, and both hook scripts built and tested. Steering not written, hooks not switched on |
 | AI development strategy | Requirements are enforced by checks, not remembered. Every default is shown before it is applied. Change plans with impact lists, approval by commit, shared code changed one task at a time, parallel agents limited to new files. A progress log lets any agent resume | Designed and documented. Partly enforced |
 | Design (polish) | A working template: core library, ports with two adapters each, one example strip end to end, Storybook stories, offline local mode, two apps started from the template | Not started beyond the enforcement tooling |
 | Innovation | The enforcement layer itself: an agent's own guardrails that read the project's manifests, catalog, plans, and git history, and stop it from finishing or editing out of plan | Being built |
@@ -37,9 +37,11 @@ These already exist and can be shown in the video and write-up:
 
 Keep these honest: deviations and mistakes stay in the record. They show the process working.
 
+## Script
+
+The write-up and video script are drafted in `kiroween-script.md` and updated at every checkpoint, with a build log of moments worth showing.
+
 ## Still to plan
 
 - Scope that fits the deadline: which parts of the skeleton and which app slices are needed for an end-to-end demo.
-- Demo script and video outline.
-- The write-up (Devpost text): problem, what it does, how it was built with Kiro, challenges, what is next.
 - Devpost rules check: required repository visibility, license, video length, and whether two apps are required.

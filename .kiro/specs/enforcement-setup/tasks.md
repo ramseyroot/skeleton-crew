@@ -54,7 +54,7 @@ Every task: append a `started` row to `progress.md` before writing files. On fin
   - `rules/_ast.ts` (added during the work): shared parsing and import helpers for rules, so `types.ts` and `cli.ts` stay unchanged.
   - _Requirements: 2.1 to 2.5_
 
-- [ ] 6. Naming and step rules (R05 to R11)
+- [x] 6. Naming and step rules (R05 to R11)
   - Mode: sequential
   - Writes: scripts/conformance/rules/R05-step-name-format.ts, scripts/conformance/rules/R06-strip-name-format.ts, scripts/conformance/rules/R07-unique-names.ts, scripts/conformance/rules/R08-near-duplicate-names.ts, scripts/conformance/rules/R09-step-must-be-defined.ts, scripts/conformance/rules/R10-step-manifest-complete.ts, scripts/conformance/rules/R11-manifest-static.ts, scripts/conformance/rules/index.ts, docs/conformance-rules.md, scripts/conformance/test/fixtures/R05/**, scripts/conformance/test/fixtures/R06/**, scripts/conformance/test/fixtures/R07/**, scripts/conformance/test/fixtures/R08/**, scripts/conformance/test/fixtures/R09/**, scripts/conformance/test/fixtures/R10/**, scripts/conformance/test/fixtures/R11/**
   - The near-duplicate normalizer is a shared function, reused by R39 in task 13.

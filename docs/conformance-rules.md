@@ -76,3 +76,67 @@ Each rule section has this shape, and the meta tests check that every label is p
 - **Passing example:** `ctx.ports.users.findById(id)` in the step, and the SQL in `src/adapters/database/d1/users.ts`.
 - **Fix:** add or use a named repository method and move the query into the adapter.
 - **Limits:** pattern-based. Queries built from many string pieces, or query-builder calls, are not detected. Ordinary sentences are ignored only when they do not have a statement shape.
+
+## R05 step-name-format
+
+- **Severity:** error
+- **Catches:** a step whose literal name does not match `<class>.<domain>.<verb>`, whose class is not in the configured `classes`, whose name starts with a different class than its `class` field, or whose file is not in `src/steps/<class>/`.
+- **Why:** structured names keep similar steps apart and make the catalog searchable. The folder matches the class so class-specific steering loads for the right files.
+- **Failing example:** `defineStep({ name: "user.find", class: "db" })`, or `name: "cache.user.find"` with `class: "db"`.
+- **Passing example:** `defineStep({ name: "db.user.findByEmail", class: "db" })` in `src/steps/db/`.
+- **Fix:** rename the step or move its file. If renaming an existing step, update the strips that use it (they are listed in the catalog).
+
+## R06 strip-name-format
+
+- **Severity:** error
+- **Catches:** a strip whose literal name does not match `<domain>.<verb>`.
+- **Why:** consistent names make strips easy to find in logs, the catalog, and change plans.
+- **Failing example:** `defineStrip({ name: "Profile.save" })` or `name: "profile"`.
+- **Passing example:** `defineStrip({ name: "profile.save" })`.
+- **Fix:** rename the strip to lowercase-start `<domain>.<verb>`.
+
+## R07 unique-names
+
+- **Severity:** error
+- **Catches:** two steps, or two strips, with the same name. Every location is reported.
+- **Why:** names identify steps in logs, routing tables, and the catalog. A duplicate makes them ambiguous.
+- **Failing example:** `db.user.find` defined in both `src/steps/db/a.ts` and `src/steps/db/b.ts`.
+- **Passing example:** one definition per name.
+- **Fix:** reuse the existing step if it matches exactly, or give the new one a distinct name.
+
+## R08 near-duplicate-names
+
+- **Severity:** warning
+- **Catches:** names that become equal after splitting on dots and camelCase, lowercasing, and removing the verbs in `nearDuplicateVerbs` (get, fetch, load, read, find, retrieve, lookup, query).
+- **Why:** `db.user.getByEmail` next to `db.user.findByEmail` usually means a step was rebuilt instead of reused.
+- **Failing example:** `db.user.findByEmail` and `db.user.getByEmail`.
+- **Passing example:** `db.user.findByEmail` and `db.user.findById`.
+- **Fix:** reuse the existing step, or rename one so the difference is in the name. If both must exist, record an exception with the reason.
+- **Limits:** heuristic. Steps doing the same job under unrelated names are not detected.
+
+## R09 step-must-be-defined
+
+- **Severity:** error
+- **Catches:** in steps files (not tests), an exported value that is not created with `defineStep()`: plain constants, functions, classes, default exports, and `export { x }` of such values. Type exports and re-exports from other files are allowed.
+- **Why:** a step that skips `defineStep()` has no manifest, so its permissions and contract cannot be checked or listed in the catalog.
+- **Failing example:** `export function helper() { ... }` in `src/steps/db/user.ts`.
+- **Passing example:** `export const findUser = defineStep({ ... })`, with helpers kept unexported or moved to `src/lib/`.
+- **Fix:** wrap the step in `defineStep()`, or move non-step helpers out of the steps folder.
+
+## R10 step-manifest-complete
+
+- **Severity:** error
+- **Catches:** a `defineStep()` call missing any of `name`, `class`, `input`, `output`, `permissions`, `errors`, or a `permissions` object missing `reads`, `writes`, or `storage`.
+- **Why:** reuse decisions compare inputs, outputs, and permissions. A missing field makes the comparison impossible.
+- **Failing example:** `defineStep({ name: "db.a.one", class: "db", input: In })`.
+- **Passing example:** all six fields, with `permissions: { reads: ["users"], writes: [], storage: [] }`.
+- **Fix:** add the missing fields. Use empty lists for permissions the step does not need.
+
+## R11 manifest-static
+
+- **Severity:** error
+- **Catches:** manifest fields that must be literals but are not: for steps `name`, `class`, `permissions.*`, `errors`. For strips `name`, `budget.*`, `invalidates`, and `routing` keys and values. `input` and `output` may be any expression.
+- **Why:** the script reads manifests without running code. A value held in a variable cannot be checked.
+- **Failing example:** `const NAME = "db.a.one"; defineStep({ name: NAME, ... })`.
+- **Passing example:** `defineStep({ name: "db.a.one", ... })`.
+- **Fix:** write the value inline as a string or a list of strings.

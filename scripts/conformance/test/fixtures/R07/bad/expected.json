@@ -1,0 +1,18 @@
+[
+  {
+    "file": "src/steps/db/a.ts",
+    "line": 1
+  },
+  {
+    "file": "src/steps/db/b.ts",
+    "line": 1
+  },
+  {
+    "file": "src/strips/x.strip.ts",
+    "line": 1
+  },
+  {
+    "file": "src/strips/y.strip.ts",
+    "line": 1
+  }
+]

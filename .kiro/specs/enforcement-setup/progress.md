@@ -27,3 +27,5 @@ Append-only. Format and resume procedure: `docs/change-process.md`, section 7.
 | 2026-11-23 17:03 | 4 | checkpoint | | | User reviewed sample output in .conformance/sample/. Confirmed: exceptions only in the full report. Continue with tasks 5 to 14 |
 | 2026-11-23 17:03 | 5 | started | | | Plan deviation: added rules/_ast.ts to task 5 Writes (shared rule helpers). Write R01 to R04 with fixtures and docs |
 | 2026-11-23 17:05 | 5 | done | this | rules/_ast.ts, rules/R01 to R04, rules/index.ts, docs/conformance-rules.md, fixtures/R01 to R04 (31 tests pass) | Start task 6: naming and step rules |
+| 2026-11-23 17:05 | 6 | started | | | Write R05 to R11 with fixtures and docs |
+| 2026-11-23 17:08 | 6 | done | this | rules/R05 to R11, rules/index.ts, docs/conformance-rules.md, fixtures/R05 to R11 (46 tests pass) | Start task 7: strip rules |

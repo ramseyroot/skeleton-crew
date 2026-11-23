@@ -6,5 +6,12 @@ import { R01 } from "./R01-no-console.ts";
 import { R02 } from "./R02-no-error-as-value.ts";
 import { R03 } from "./R03-provider-import-boundary.ts";
 import { R04 } from "./R04-no-raw-queries.ts";
+import { R05 } from "./R05-step-name-format.ts";
+import { R06 } from "./R06-strip-name-format.ts";
+import { R07 } from "./R07-unique-names.ts";
+import { R08 } from "./R08-near-duplicate-names.ts";
+import { R09 } from "./R09-step-must-be-defined.ts";
+import { R10 } from "./R10-step-manifest-complete.ts";
+import { R11 } from "./R11-manifest-static.ts";
 
-export const rules: Rule[] = [R01, R02, R03, R04];
+export const rules: Rule[] = [R01, R02, R03, R04, R05, R06, R07, R08, R09, R10, R11];

@@ -86,7 +86,7 @@ All test files use `node:test`, are named `<name>.test.ts`, and run offline.
   - `pnpm conformance --write-catalog`, then commit the result.
   - _Requirements: 8.1 to 8.6, 11.2_
 
-- [ ] 10. Components, fixtures and stories
+- [x] 10. Components, fixtures and stories
   - Mode: sequential
   - Writes: src/test-utils/fixtures.ts, src/components/view-state.ts, src/components/Toast/**, src/components/ProfileForm/**, .storybook/**
   - `okResult`, `errResult`, a `ViewState` type, `Toast` and `ProfileForm` client components with `Result`-shaped props, one story per end state, Toast stories for user error, internal error with reference, and a long message.

@@ -14,10 +14,12 @@
     "typecheck": "tsc --noEmit",
     "worktree": "node scripts/conformance/worktree.ts",
     "test": "node --test \"src/**/*.test.ts\" \"tests/**/*.test.ts\"",
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "NEXT_TELEMETRY_DISABLED=1 APP_ENV=local next dev",
+    "build": "NEXT_TELEMETRY_DISABLED=1 next build",
     "storybook": "storybook dev -p 6006 --no-open",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "start": "NEXT_TELEMETRY_DISABLED=1 next start",
+    "start:local": "NEXT_TELEMETRY_DISABLED=1 APP_ENV=local next start"
   },
   "devDependencies": {
     "@storybook/nextjs-vite": "^10.6.8",

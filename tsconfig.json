@@ -1,10 +1,16 @@
 {
   "compilerOptions": {
     "target": "es2024",
-    "lib": ["es2024", "dom", "dom.iterable"],
+    "lib": [
+      "es2024",
+      "dom",
+      "dom.iterable"
+    ],
     "module": "nodenext",
     "moduleResolution": "nodenext",
-    "types": ["node"],
+    "types": [
+      "node"
+    ],
     "strict": true,
     "jsx": "react-jsx",
     "noEmit": true,
@@ -12,8 +18,29 @@
     "erasableSyntaxOnly": true,
     "verbatimModuleSyntax": true,
     "noUncheckedIndexedAccess": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "allowJs": true,
+    "incremental": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
   },
-  "include": ["scripts/**/*.ts", "src/**/*.ts", "src/**/*.tsx", "tests/**/*.ts", ".storybook/**/*.ts"],
-  "exclude": ["node_modules", ".worktrees", "scripts/conformance/test/fixtures/**"]
+  "include": [
+    "scripts/**/*.ts",
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "tests/**/*.ts",
+    ".storybook/**/*.ts",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    ".worktrees",
+    "scripts/conformance/test/fixtures/**"
+  ]
 }

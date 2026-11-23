@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { displayText, viewStateOf } from "../../src/components/view-state.ts";
+import { displayText, toPublicResult, viewStateOf } from "../../src/components/view-state.ts";
 import { errResult, okResult } from "../../src/test-utils/fixtures.ts";
 
 test("a successful result is ready, or empty when the caller says so", () => {
@@ -32,4 +32,12 @@ test("fixtures build the same shapes the runner returns", () => {
   const bad = errResult("not_found", "internal", { stripId: "s-2" });
   assert.equal(bad.ok === false && bad.error.stripId, "s-2");
   assert.equal(bad.ok === false && bad.error.kind, "not_found");
+});
+
+test("the public result carries no StepError, so internal text cannot reach the browser", () => {
+  const internal = toPublicResult(errResult("unexpected", "internal", { stripId: "s-9" }));
+  assert.deepEqual(internal, { ok: false, display: { type: "generic", reference: "s-9" }, stripId: "s-9" });
+  assert.equal(JSON.stringify(internal).includes("fixture"), false);
+  assert.equal("error" in internal, false);
+  assert.deepEqual(toPublicResult(okResult(5, "s-1")), { ok: true, value: 5, stripId: "s-1" });
 });

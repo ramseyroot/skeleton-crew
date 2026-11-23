@@ -93,9 +93,9 @@ All test files use `node:test`, are named `<name>.test.ts`, and run offline.
   - Verify Storybook starts without any network call or database, and record start time and memory in `progress.md`.
   - _Requirements: 9.1 to 9.6_
 
-- [ ] 11. Next.js shell
+- [x] 11. Next.js shell
   - Mode: sequential
-  - Writes: src/app/**, next.config.ts
+  - Writes: src/app/**, next.config.ts, src/components/view-state.ts, src/components/ProfileForm/ProfileForm.tsx, tests/lib/view-state.test.ts, package.json, tsconfig.json
   - Server page running `profile.view`, a Server Action running `profile.save` that returns a plain `StripResult`, seed of one demo user for `local`, toast for user errors and reference code for internal errors.
   - Verify `APP_ENV=local pnpm build` once, and that the page starts offline (`unshare -rn`).
   - If `node:sqlite` cannot be bundled, use the fallback in design section 7 and record it.

@@ -1,15 +1,14 @@
 "use client";
 
 import type { Profile } from "../../domain/profile.ts";
-import type { StripResult } from "../../lib/strip.ts";
 import { Toast } from "../Toast/Toast.tsx";
-import type { ViewState } from "../view-state.ts";
+import type { PublicResult, ViewState } from "../view-state.ts";
 
 export type ProfileFormProps = {
   /** The profile to show: from the profile.view strip. */
   profile: ViewState<Profile>;
   /** The last result of profile.save, if the form was submitted. */
-  saved?: StripResult<Profile> | null;
+  saved?: PublicResult<Profile> | null;
   /** True while a save is running. */
   pending?: boolean;
   /** The form action. The shell passes a Server Action. A story passes a no-op. */

@@ -46,7 +46,12 @@ test("typecheck needs a tsconfig.json; every check runs even after a failure", (
 test("affected strip tests from an active committed plan run, and fail when testFiles is not configured", () => {
   const plan = `---\nstatus: active\ncreated: 2999-12-31\nupdated: 2999-12-31\n---\n\n## Affected strip tests\n\n- src/features/demo/strips/a.strip.test.ts\n`;
   const p = makeProject(
-    { ".kiro/specs/demo/change-plan.md": plan, "src/features/demo/strips/a.strip.test.ts": "export {};\n" },
+    {
+      ".kiro/specs/demo/change-plan.md": plan,
+      "src/features/demo/strips/a.strip.test.ts": "export {};\n",
+      "src/features/demo/index.ts": "export const demoFeature = 1;\n",
+      "src/features/demo/feature.json": JSON.stringify({ name: "demo", module: "demoFeature", routes: [] }),
+    },
     withChecks({ typecheck: null, test: null, testFiles: null }),
   );
   const g = (...a: string[]) => spawnSync("git", ["-c", "user.name=t", "-c", "user.email=t@t", ...a], { cwd: p.dir, encoding: "utf8" });

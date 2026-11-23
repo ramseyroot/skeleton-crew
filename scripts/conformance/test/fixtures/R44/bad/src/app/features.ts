@@ -1,3 +1,7 @@
-import { accounts } from "../features/accounts/index.ts";
-import { ghost } from "../features/ghost/index.ts";
-export const features = [accounts, ghost];
+import { accountsFeature } from "../features/accounts/index.ts";
+import { ghostFeature } from "../features/ghost/index.ts";
+
+export const features = [
+  accountsFeature,
+  ghostFeature,
+];

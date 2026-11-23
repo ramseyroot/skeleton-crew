@@ -11,7 +11,7 @@ Built with Kiro for the Kiroween 2026 hackathon (Skeleton Crew category). It is 
 - A provider (database, cache, storage, logging, error tracking, metrics) sits behind a port. Swapping one means one adapter folder and one setting. Steps and strips never change.
 - A generated catalog lists every step and strip and who uses it, so you can see what removing something touches before you do it.
 
-**2. Good code, not prototype code.** Every step declares its input, output and permissions. Errors are values (`Result`), never strings that look like data. Every port has a shared contract test suite that all its adapters must pass. Forty-four rules are checked by one command, and Kiro hooks stop an AI agent from finishing, or editing code its plan did not cover, until the checks pass.
+**2. Good code, not prototype code.** Every step declares its input, output and permissions. Errors are values (`Result`), never strings that look like data. Every port has a shared contract test suite that all its adapters must pass. Forty-five rules are checked by one command, and Kiro hooks stop an AI agent from finishing, or editing code its plan did not cover, until the checks pass.
 
 **3. The parts prototypes skip.** Observability (every log line carries a strip reference, payloads are redacted in production, an error reporter and metrics with per-step timings), validated config that stops the app at startup on a bad setting, development data kept apart from production data, an offline local mode, and real tests.
 

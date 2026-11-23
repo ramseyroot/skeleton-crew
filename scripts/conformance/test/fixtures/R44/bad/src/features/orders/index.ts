@@ -1,1 +1,1 @@
-export const orders = 1;
+export const ordersFeature = 1;

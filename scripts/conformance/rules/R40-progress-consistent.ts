@@ -1,6 +1,6 @@
 import { dirname } from "node:path";
 import { commitExists } from "../git.ts";
-import { parseProgress, pathExists, pathsInCell } from "../progress.ts";
+import { parseProgress } from "../progress.ts";
 import { walk } from "../project.ts";
 import { parseTasks } from "../tasks.ts";
 import { violation, type Rule, type Violation } from "../types.ts";
@@ -38,8 +38,8 @@ export const R40: Rule = {
         if (r.commit !== "this" && (r.commit === "" || !commitExists(ctx.root, r.commit))) {
           problems.push(`commit "${r.commit || "(empty)"}" does not exist`);
         }
-        const missing = pathsInCell(ctx.root, r.files).filter((p) => !pathExists(ctx.root, p));
-        if (missing.length > 0) problems.push(`listed files do not exist: ${missing.join(", ")}`);
+        // The files a row lists are not checked: progress is append-only, and a later move, disable or prune of a
+        // feature legitimately removes files that an old row names. Git history holds what each task wrote.
         if (problems.length > 0) out.push(violation(R40, progressFile, r.line, `done row for task ${r.task}: ${problems.join("; ")}`));
       }
 

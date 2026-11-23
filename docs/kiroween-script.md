@@ -27,7 +27,7 @@ Skeleton Crew is a template for building apps as "strips": a feature is a chain 
 
 On top of that is an enforcement layer built on Kiro:
 
-- A conformance checker with 44 rules reads the project's code, manifests, catalog, change plans, task lists, and git history, and lists every violation, not just the first.
+- A conformance checker with 45 rules reads the project's code, manifests, catalog, change plans, task lists, and git history, and lists every violation, not just the first.
 - A Stop hook runs the checks when the agent tries to finish and sends it back with the list while anything fails. After three attempts it tells the agent to stop and ask me, so it never loops forever.
 - A protection hook blocks the agent from editing the rules that judge it, and from editing existing shared code that the approved change plan does not list.
 - Change plans list which steps are reused, created, or modified, and who else depends on them, before any code is written. A plan counts as approved only once I commit it.

@@ -1,1 +1,1 @@
-export const accounts = 1;
+export const accountsFeature = 1;

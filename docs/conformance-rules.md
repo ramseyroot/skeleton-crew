@@ -402,12 +402,12 @@ Each rule section has this shape, and the meta tests check that every label is p
 ## R40 progress-consistent
 
 - **Severity:** error
-- **Catches:** in each spec with a `tasks.md`: no `progress.md`; a ticked task with no `done` row; a `done` row whose commit does not exist (`this` means the commit that adds the row, and is accepted); a `done` row naming a file that does not exist; or a task `started` and never marked `done` or `blocked` while a later task started.
+- **Catches:** in each spec with a `tasks.md`: no `progress.md`; a ticked task with no `done` row; a `done` row whose commit does not exist (`this` means the commit that adds the row, and is accepted); or a task `started` and never marked `done` or `blocked` while a later task started.
 - **Why:** an agent asked to continue unfinished work reads `progress.md` and `git log` to find where it stopped. A log that disagrees with the tasks or the repository sends it to the wrong place.
 - **Failing example:** task 2 ticked in `tasks.md`, with no row saying it was done.
 - **Passing example:** a `started` row, then a `done` row with `this`, committed together with the task's files.
 - **Fix:** add the missing row, or untick the task. Mark abandoned work `blocked` with the reason.
-- **Limits:** in the Files cell, only tokens with a slash whose first folder exists in the repository are checked, so short prose is allowed.
+- **Limits:** the files a row lists are not checked. Progress is append-only, and a later move, disable or prune of a feature legitimately removes files that an old row names. Git history shows what each task wrote.
 
 ## R41 docs-dated
 
@@ -441,9 +441,19 @@ Each rule section has this shape, and the meta tests check that every label is p
 ## R44 registry-matches-folders
 
 - **Severity:** error
-- **Catches:** in `src/config/registry.ts`, an adapter folder (`src/adapters/<port>/<provider>/`) that the registry does not import, and an import of an adapter folder that does not exist. In `src/app/features.ts`, a feature folder that is not listed, and a listed feature without an `index.ts`.
-- **Why:** the registry and the feature list are the one place a provider or a feature is switched on. A folder that is not listed is dead, and a listing without a folder fails at startup, often only in the environment that uses it.
-- **Failing example:** `src/adapters/cache/kv/` exists and `registry.ts` has no line for it.
-- **Passing example:** every adapter folder and every feature folder has exactly one import in its list.
-- **Fix:** add the missing line, or delete the folder or the stale line. Profiles name adapters separately (R25).
-- **Limits:** only imports are read. A folder imported but never used in the registry's table passes.
+- **Catches:** in `src/config/registry.ts`, an adapter folder (`src/adapters/<port>/<provider>/`) that the registry does not import, and an import of an adapter folder that does not exist. In `src/app/features.ts`, a listed feature with no `index.ts`, and a feature that is half enabled: listed while some of its route stubs are missing, or not listed while some of its route stubs exist. A feature that is fully disabled (not listed, no stubs) is fine.
+- **Why:** the registry and the feature list are the one place a provider or a feature is switched on. A provider folder that is not imported is dead. A listing without a folder fails at startup. A half-enabled feature has a route with no data, or data with no route.
+- **Failing example:** `src/adapters/cache/kv/` exists and `registry.ts` has no line for it. Or `accountsFeature` is listed but `src/app/accounts/page.tsx` is gone.
+- **Passing example:** every adapter folder imported once, and each feature either listed with all its stubs or neither.
+- **Fix:** add the missing line, or delete the folder or the stale line. For a feature, `pnpm feature enable <name> --yes` or `pnpm feature disable <name> --yes`. Profiles name adapters separately (R25).
+- **Limits:** only imports are read. A folder imported but never used in the registry's table passes. A feature without a manifest is skipped here and reported by R45.
+
+## R45 feature-manifest
+
+- **Severity:** error
+- **Catches:** a folder in `src/features/` without a valid `feature.json`: missing, not JSON, `name` different from the folder, `module` not an identifier, `routes` not a list of `{ stub, content }`, a route stub outside `src/app/`, or an `index.ts` that does not export the name given as `module`.
+- **Why:** `pnpm feature enable` and `disable` rebuild a feature's wiring from its manifest alone. A wrong manifest makes switching a feature back on fail, or wire the wrong thing.
+- **Failing example:** `src/features/shop/feature.json` with `"name": "other"`.
+- **Passing example:** `{ "name": "shop", "module": "shopFeature", "routes": [{ "stub": "src/app/shop/page.tsx", "content": "..." }] }` and `index.ts` exporting `shopFeature`.
+- **Fix:** correct the manifest, or export the module from `index.ts`.
+- **Limits:** the export check is a text match on `export const|let|function <module>` and `export { <module> }`.

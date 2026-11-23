@@ -32,14 +32,14 @@ Core ideas (how those goals are met):
 | Item | State |
 |---|---|
 | Design documents (below) | Written, draft |
-| Enforcement setup (`.kiro/specs/enforcement-setup/`) | Done: 27 requirements, 41 rules at the time (44 now), 23 tasks, 138 tests passing offline |
+| Enforcement setup (`.kiro/specs/enforcement-setup/`) | Done: 27 requirements, 41 rules at the time (45 now), 23 tasks, 138 tests passing offline |
 | Conformance checker (`scripts/conformance/`) | Built. `pnpm conformance` |
 | Check command | Built. `pnpm check` (conformance, typecheck, all tests, affected strip tests), about 25 s here because it runs the tests |
 | Worktree command | Built. `pnpm worktree create/verify/merge/remove/list <task>` |
 | Hooks (`.kiro/hooks/enforcement.json`) | On: Stop (runs the check), prompt submit (resets attempts), and protection for writes and shell commands. Tested live, including a sub-agent |
 | Steering (`.kiro/steering/`) | Written: `core-rules.md` always loaded, the rest by folder |
 | Coverage checker (`scripts/check-coverage.mjs`) | Built |
-| Feature layout (`.kiro/specs/feature-layout/`) | Built: `src/features/<name>/` folders, `src/shared/`, rules R42 (features do not import each other), R43 (step used by no strip), R44 (registry and feature list match folders), and `pnpm feature list/show/disable/enable/prune` with a `feature.json` manifest per feature. Tried once on a copy: disable, prune and the checks after each |
+| Feature layout (`.kiro/specs/feature-layout/`) | Built: `src/features/<name>/` folders, `src/shared/`, rules R42 (features do not import each other), R43 (step used by no strip), R44 (registry and feature list match folders, no half-enabled feature), R45 (valid manifests), and `pnpm feature list/show/disable/enable/prune` with a `feature.json` manifest per feature. Tried once on a copy: disable, prune and the checks after each |
 | Skeleton core (`.kiro/specs/skeleton-core/`) | Built: `Result`, `defineStep`, `defineStrip`, eight ports (Logger, Clock, IdGenerator, Database, Cache, ObjectStorage, Reporter, Metrics) with two or three adapters each and contract suites, profiles with startup guards, the `dev` flag, one example feature (`profile.save`, `profile.view`) tested on both databases with the cache on and off, Storybook stories, and a Next.js page that runs offline |
 | Illustrated summary of the build | `docs/today/index.html` (open it in a browser). Regenerate with `node docs/today/build.mjs` |
 | Real adapters (PocketBase, Supabase, Workers KV, R2, hosted error tracking and metrics) | Planned, per app. None is built |
@@ -115,8 +115,8 @@ Platform decisions:
 
 Raised on 2026-11-23, not decided:
 
-- **Feature layout: done 2026-11-23** (`.kiro/specs/feature-layout/`). Features live in `src/features/<name>/`, with `pnpm feature list|show|disable|enable|prune`. Open follow-ups: pulling a feature from the upstream template at a chosen version (`pnpm feature add <name> --from <repo@tag>`, planned, not built), and a rule change to R40 (see below).
-- **R40 and moved or deleted files.** R40 checks that every file named in an old progress row still exists, so any move or `prune` breaks old rows (progress is append-only). Proposed: drop that one check and keep the others. Needs an unlock.
+- **Feature layout: done 2026-11-23** (`.kiro/specs/feature-layout/`). Features live in `src/features/<name>/`, with `pnpm feature list|show|disable|enable|prune`. Open follow-ups: pulling a feature from the upstream template at a chosen version (`pnpm feature add <name> --from <repo@tag>`, planned, not built), (planned, not built).
+- **R40 and moved or deleted files: fixed 2026-11-23.** R40 no longer checks that files named in old progress rows still exist.
 - **Observability still missing** from the checklist (items 20 to 26): passing the strip reference on outgoing HTTP calls, a health endpoint, an audit log, alerting, a status page, and hosted adapters for error tracking and metrics.
 - **Paid-API parts the apps need** (auth, API keys, plans, rate limits, payments). Decided 2026-11-23: both apps share all of them, so all belong in the skeleton, as a separate spec (`platform-parts`) after the feature layout.
 

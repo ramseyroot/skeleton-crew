@@ -1,0 +1,6 @@
+[
+  { "file": "src/features/a/feature.json", "line": 0 },
+  { "file": "src/features/b/feature.json", "line": 0 },
+  { "file": "src/features/c/feature.json", "line": 0 },
+  { "file": "src/features/d/feature.json", "line": 0 }
+]

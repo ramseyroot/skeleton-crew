@@ -300,13 +300,13 @@ ${bar("Guardrail tests", n.scriptTestLines, maxLines, "#7dd3fc")}
 
 <section><h2>Where things stand</h2>
 <table><thead><tr><th>Part</th><th>State</th></tr></thead><tbody>
-<tr><td>Guardrails: 44 rules, check command, worktree command, hooks, steering</td><td><span class="tag done">built, hooks on</span></td></tr>
+<tr><td>Guardrails: 45 rules, check command, worktree command, hooks, steering</td><td><span class="tag done">built, hooks on</span></td></tr>
 <tr><td>Skeleton core: Result, steps, strips, six ports with two adapters each, profiles</td><td><span class="tag done">built</span></td></tr>
 <tr><td>Example feature, Storybook stories, Next.js page running offline</td><td><span class="tag done">built</span></td></tr>
 <tr><td>Error reporter, metrics, gating, and a read-only <code>dev</code> flag derived from APP_ENV</td><td><span class="tag done">built</span> (hosted adapters planned)</td></tr>
 <tr><td>Test command inside <code>pnpm check</code>, Stop-hook message fix</td><td><span class="tag done">done</span></td></tr>
 <tr><td>Real adapters: PocketBase, Supabase, Workers KV, R2, hosted error and metrics services</td><td><span class="tag plan">planned</span></td></tr>
-<tr><td>Feature layout: one folder per feature, disable, enable and prune, rules R42 to R44</td><td><span class="tag done">built</span> (manifest rule R45 and two rule fixes wait for an unlock)</td></tr>
+<tr><td>Feature layout: one folder per feature, disable, enable and prune, rules R42 to R45</td><td><span class="tag done">built</span></td></tr>
 <tr><td>Auth, API keys, plans, metering, rate limits, payments (shared by both apps)</td><td><span class="tag plan">next spec, not started</span></td></tr>
 <tr><td>Zidolia and MiniCargo apps</td><td><span class="tag plan">not started</span></td></tr>
 <tr><td>Clicking Save in a real browser</td><td><span class="tag todo">not verified</span> (the action is tested in Node)</td></tr>

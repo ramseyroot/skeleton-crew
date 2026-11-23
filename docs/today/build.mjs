@@ -189,7 +189,7 @@ code{background:#eef2ff;border-radius:4px;padding:1px 5px;font-size:.92em}footer
 <p class="lead">A feature is a strip: a chain of small steps. Every step returns a Result, so a failure is never mistaken for a value. Steps never touch a database or cache directly. They use ports, and a profile decides which adapter sits behind each port.</p>
 <div class="diagram"><svg viewBox="0 0 1000 400" role="img" aria-label="Layers of the skeleton">
 <defs><marker id="a2" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 z" fill="#475569"/></marker></defs>
-<rect x="20" y="15" width="620" height="62" rx="10" fill="#ede9fe" stroke="#7c3aed"/><text x="330" y="42" text-anchor="middle" font-weight="700">Page and form</text><text x="330" y="63" text-anchor="middle" font-size="13" fill="#475569">Next.js page and Storybook stories. Components get Result-shaped props, never a strip.</text>
+<rect x="20" y="15" width="620" height="62" rx="10" fill="#ede9fe" stroke="#7c3aed"/><text x="330" y="42" text-anchor="middle" font-weight="700">Feature folder: src/features/profile/ (page and form)</text><text x="330" y="63" text-anchor="middle" font-size="13" fill="#475569">Next.js page and Storybook stories. Components get Result-shaped props, never a strip.</text>
 <line x1="330" y1="77" x2="330" y2="100" stroke="#475569" stroke-width="2" marker-end="url(#a2)"/>
 <rect x="20" y="102" width="620" height="62" rx="10" fill="#e0f2fe" stroke="#0ea5e9"/><text x="330" y="129" text-anchor="middle" font-weight="700">Server Action</text><text x="330" y="150" text-anchor="middle" font-size="13" fill="#475569">Runs the strip. Returns only the message and a reference code, never the error object.</text>
 <line x1="330" y1="164" x2="330" y2="187" stroke="#475569" stroke-width="2" marker-end="url(#a2)"/>
@@ -233,6 +233,19 @@ code{background:#eef2ff;border-radius:4px;padding:1px 5px;font-size:.92em}footer
 <rect x="662" y="237" width="318" height="62" rx="10" fill="#fff7ed" stroke="#d97706"/><text x="821" y="262" text-anchor="middle" font-weight="700" font-size="13">Generic message and reference code</text><text x="821" y="282" text-anchor="middle" font-size="12" fill="#92400e">unknown user, database down: no internal text shown</text>
 <text x="537" y="85" text-anchor="middle" font-size="12" fill="#475569">network failure: retried twice</text>
 <path d="M590 118 C 600 95, 480 95, 490 118" fill="none" stroke="#475569" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#a3)"/>
+</svg></div></section>
+
+<section><h2>Features come and go, and come back</h2>
+<p class="lead">A feature is one folder with a small manifest. Switching it off removes only its route and its line in the feature list, so the code stays tested and can be switched on again. Deleting it for good is a separate step that only works on a disabled feature. Every command shows its plan first and refuses to run with uncommitted changes, so git can undo it.</p>
+<div class="diagram"><svg viewBox="0 0 1000 250" role="img" aria-label="Feature states: enabled, disabled, pruned">
+<defs><marker id="a5" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 z" fill="#475569"/></marker></defs>
+<rect x="30" y="80" width="230" height="100" rx="14" fill="#dcfce7" stroke="#16a34a"/><text x="145" y="112" text-anchor="middle" font-weight="700">enabled</text><text x="145" y="136" text-anchor="middle" font-size="12" fill="#166534">route stub exists</text><text x="145" y="154" text-anchor="middle" font-size="12" fill="#166534">listed in src/app/features.ts</text>
+<rect x="385" y="80" width="230" height="100" rx="14" fill="#fef3c7" stroke="#d97706"/><text x="500" y="112" text-anchor="middle" font-weight="700">disabled</text><text x="500" y="136" text-anchor="middle" font-size="12" fill="#92400e">folder stays, still tested</text><text x="500" y="154" text-anchor="middle" font-size="12" fill="#92400e">no route, not listed, no code shipped</text>
+<rect x="740" y="80" width="230" height="100" rx="14" fill="#fee2e2" stroke="#dc2626"/><text x="855" y="112" text-anchor="middle" font-weight="700">pruned</text><text x="855" y="136" text-anchor="middle" font-size="12" fill="#7f1d1d">folder deleted</text><text x="855" y="154" text-anchor="middle" font-size="12" fill="#7f1d1d">git can still bring it back</text>
+<line x1="262" y1="110" x2="383" y2="110" stroke="#475569" stroke-width="2" marker-end="url(#a5)"/><text x="322" y="100" text-anchor="middle" font-size="12">disable</text>
+<line x1="383" y1="152" x2="262" y2="152" stroke="#475569" stroke-width="2" marker-end="url(#a5)"/><text x="322" y="172" text-anchor="middle" font-size="12">enable</text>
+<line x1="617" y1="130" x2="738" y2="130" stroke="#475569" stroke-width="2" marker-end="url(#a5)"/><text x="678" y="120" text-anchor="middle" font-size="12">prune</text>
+<text x="500" y="222" text-anchor="middle" font-size="13" fill="#475569">Features cannot import each other (rule R42), so a switch-off cannot break another feature.</text>
 </svg></div></section>
 
 <section><h2>Development sends nothing, production sends everything</h2>
@@ -287,12 +300,14 @@ ${bar("Guardrail tests", n.scriptTestLines, maxLines, "#7dd3fc")}
 
 <section><h2>Where things stand</h2>
 <table><thead><tr><th>Part</th><th>State</th></tr></thead><tbody>
-<tr><td>Guardrails: 41 rules, check command, worktree command, hooks, steering</td><td><span class="tag done">built, hooks on</span></td></tr>
+<tr><td>Guardrails: 44 rules, check command, worktree command, hooks, steering</td><td><span class="tag done">built, hooks on</span></td></tr>
 <tr><td>Skeleton core: Result, steps, strips, six ports with two adapters each, profiles</td><td><span class="tag done">built</span></td></tr>
 <tr><td>Example feature, Storybook stories, Next.js page running offline</td><td><span class="tag done">built</span></td></tr>
 <tr><td>Error reporter, metrics, gating, and a read-only <code>dev</code> flag derived from APP_ENV</td><td><span class="tag done">built</span> (hosted adapters planned)</td></tr>
 <tr><td>Test command inside <code>pnpm check</code>, Stop-hook message fix</td><td><span class="tag done">done</span></td></tr>
 <tr><td>Real adapters: PocketBase, Supabase, Workers KV, R2, hosted error and metrics services</td><td><span class="tag plan">planned</span></td></tr>
+<tr><td>Feature layout: one folder per feature, disable, enable and prune, rules R42 to R44</td><td><span class="tag done">built</span> (manifest rule R45 and two rule fixes wait for an unlock)</td></tr>
+<tr><td>Auth, API keys, plans, metering, rate limits, payments (shared by both apps)</td><td><span class="tag plan">next spec, not started</span></td></tr>
 <tr><td>Zidolia and MiniCargo apps</td><td><span class="tag plan">not started</span></td></tr>
 <tr><td>Clicking Save in a real browser</td><td><span class="tag todo">not verified</span> (the action is tested in Node)</td></tr>
 </tbody></table></section>

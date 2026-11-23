@@ -1,3 +1,8 @@
+---
+created: 2026-11-23
+updated: 2026-11-23
+---
+
 # Function and Strip Plan (Draft v0.2)
 
 Status: draft. No code yet. Stack assumed: Next.js, TypeScript, Storybook for UI preview. Hosting target for the web and API: Cloudflare Workers through the OpenNext adapter. Databases and background work are chosen per app and may run elsewhere (for example PocketBase with SQLite, or a separate program for scraping).

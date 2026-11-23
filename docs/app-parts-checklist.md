@@ -1,3 +1,8 @@
+---
+created: 2026-11-23
+updated: 2026-11-23
+---
+
 # App Parts Checklist (Draft v0.2)
 
 Scope: paid and freemium APIs with a companion website, server-centered, with occasional mobile apps. Includes optional parts for data-ingestion products and marketplace or logistics apps.

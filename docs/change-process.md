@@ -1,3 +1,8 @@
+---
+created: 2026-11-23
+updated: 2026-11-23
+---
+
 # Change Process (Draft v0.2)
 
 How every change to this skeleton, and to apps built from it, is planned and carried out, including work split across sub-agents. The enforcement that backs it is specified in `.kiro/specs/enforcement-setup/`.
@@ -132,7 +137,26 @@ Rules:
 | Affected strip tests | Every check | A `modify` that breaks a strip using the step |
 | Stop hook | When the agent tries to finish | Any of the above still failing |
 
-## 7. Limits
+## 7. Progress and resuming
+
+Each spec keeps `progress.md`, an append-only table: date and time (UTC), task, state (`started`, `done`, `blocked`, `checkpoint`), commit, files written, and next step.
+
+- Before a task writes any file, append a `started` row.
+- When it finishes, tick its checkbox in `tasks.md`, append a `done` row, and commit everything in one commit named `task(<spec>/<id>): <title>`. The `done` row's commit cell says `this`, meaning the commit that added the row.
+- When it cannot continue, append a `blocked` row with the reason and the decision needed.
+- Every document in `docs/` and in spec folders has `created` and `updated` dates in its front matter.
+
+To resume unfinished work:
+
+1. Read the last rows of the active spec's `progress.md`.
+2. Run `git log --oneline -10` and `git status`.
+3. Last row `done`: continue with its next step.
+4. Last row `started`, or uncommitted changes: that task is unfinished. Compare the changed files with its `Writes:` list and finish it.
+5. Last row `blocked`: report the decision needed and wait for the user.
+
+Rules R40 (progress consistent with tasks and git) and R41 (documents dated) check this.
+
+## 8. Limits
 
 - The hooks guard against accidents. An agent determined to get around them could, for example by committing a plan change through the shell. The checks after the fact (R37, R17) and the commit history are the stronger safety net, and plan commits are listed in the report.
 - Duplicate steps with unrelated names (for example `pricing.quote` and `fare.estimate` doing the same job) are not caught mechanically. The plan comparison points out suspected cases, and the user decides.

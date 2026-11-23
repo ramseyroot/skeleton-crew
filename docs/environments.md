@@ -1,3 +1,8 @@
+---
+created: 2026-11-23
+updated: 2026-11-23
+---
+
 # Environments and Data Separation (Draft v0.1)
 
 Status: draft. Applies to the skeleton and to every app created from it. Companion to `function-strips-plan.md` and `provider-ports.md`.

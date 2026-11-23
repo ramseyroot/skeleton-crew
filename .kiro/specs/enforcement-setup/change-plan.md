@@ -1,5 +1,7 @@
 ---
-status: draft
+status: active
+created: 2026-11-23
+updated: 2026-11-23
 ---
 
 # Change Plan: Enforcement Setup
@@ -24,8 +26,8 @@ Existing files outside the guarded folders that tasks will edit:
 |---|---|---|
 | .gitignore | 1 | Confirm entries for `node_modules/`, `.conformance/`, `.worktrees/` (already present; edited only if pnpm adds needs) |
 | .kiro/specs/enforcement-setup/design.md | 1 | Record the result of the Node type-stripping check (decision D2) |
-| docs/change-process.md | 21 | Record the results of the sub-agent and hook tests |
-| docs/README.md | 22 | Update status |
+| docs/change-process.md | 22 | Record the results of the sub-agent and hook tests |
+| docs/README.md | 23 | Update status |
 
 ## New files
 
@@ -38,6 +40,7 @@ Created by the tasks, listed in each task's `Writes:` line in `tasks.md`:
 - `docs/generated/catalog.md`, `docs/generated/catalog.json`
 - `.kiro/steering/*.md`
 - `.kiro/hooks/enforcement.json`
+- `.kiro/specs/enforcement-setup/progress.md`
 
 ## Affected strip tests
 
@@ -54,7 +57,8 @@ All tasks are `sequential` and run by the main agent, one at a time:
 
 | ID | Topic | Decision | Status | Reason |
 |---|---|---|---|---|
-| CP1 | Execution | All tasks sequential, main agent only | proposed | Parallel tooling does not exist until this spec is done, and rule tasks share the registry and rules doc |
-| CP2 | Network | Task 1 installs `typescript` and `@types/node` with pnpm, which needs network once. Everything after runs offline | proposed | The only dependencies of the design |
-| CP3 | Checkpoints | Stop for user review after tasks 4, 13, and 19, and before enabling hooks (task 20) | proposed | Review the runner's shape early, the rule set when complete, and the self-check before hooks start blocking |
-| CP4 | `Writes:` globs | A `Writes:` entry may be a file path or a folder ending in `/**` (used for fixture folders) | proposed | Fixtures are many small files. The design is updated in task 1 to say so |
+| CP1 | Execution | All tasks sequential, main agent only | confirmed | Parallel tooling does not exist until this spec is done, and rule tasks share the registry and rules doc |
+| CP2 | Network | Task 1 installs `typescript` and `@types/node` with pnpm, which needs network once. Everything after runs offline | confirmed | The only dependencies of the design |
+| CP3 | Checkpoints | Stop for user review after tasks 4, 14, and 20, and before enabling hooks (task 21) | confirmed | Review the runner's shape early, the rule set when complete, and the self-check before hooks start blocking |
+| CP4 | `Writes:` globs | A `Writes:` entry may be a file path or a folder ending in `/**` (used for fixture folders) | confirmed | Fixtures are many small files. The design is updated in task 1 to say so |
+| CP5 | Progress and dates | Progress log per spec, one commit per task, dated documents (added after review, requirements 26 and 27) | confirmed | User request: a resumed agent must know what was done and where it stopped |

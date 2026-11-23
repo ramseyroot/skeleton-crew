@@ -1,8 +1,15 @@
+---
+created: 2026-11-23
+updated: 2026-11-23
+---
+
 # Implementation Plan: Enforcement Setup
 
 All tasks are sequential and run by the main agent (change plan, CP1). Each task lists the files it writes and the requirements it covers. Each rule task includes its bad and good fixtures, its entry in `docs/conformance-rules.md`, and its registry entry, so the meta tests stay green after every task.
 
-Checkpoints (CP3) stop for user review after tasks 4, 13, and 19.
+Checkpoints (CP3) stop for user review after tasks 4, 14, and 20.
+
+Every task: append a `started` row to `progress.md` before writing files. On finish, tick the checkbox, append a `done` row, and commit the task's files with both, as `task(enforcement-setup/<id>): <title>`. `progress.md` and `tasks.md` are implicitly in every task's `Writes:`.
 
 - [ ] 1. Project setup and runtime check
   - Mode: sequential
@@ -94,41 +101,47 @@ Checkpoints (CP3) stop for user review after tasks 4, 13, and 19.
   - Mode: sequential
   - Writes: scripts/conformance/tasks.ts, scripts/conformance/rules/R34-tasks-write-declared.ts, scripts/conformance/rules/R35-tasks-write-disjoint.ts, scripts/conformance/rules/R36-parallel-new-files-only.ts, scripts/conformance/rules/R38-plan-shared-new-once.ts, scripts/conformance/rules/R39-plan-no-near-duplicates.ts, scripts/conformance/rules/index.ts, docs/conformance-rules.md, scripts/conformance/test/fixtures/R34/**, scripts/conformance/test/fixtures/R35/**, scripts/conformance/test/fixtures/R36/**, scripts/conformance/test/fixtures/R38/**, scripts/conformance/test/fixtures/R39/**, scripts/conformance/test/tasks.test.ts
   - Parse incomplete tasks, `Mode:` and `Writes:` lines, including `/**` folder entries (CP4).
-  - **Checkpoint: user reviews the full rule set and a run over the fixtures.**
   - _Requirements: 17.1, 17.2, 18.1 to 18.4, 22.1 to 22.3_
 
-- [ ] 14. Check command
+- [ ] 14. Progress and date rules (R40, R41)
+  - Mode: sequential
+  - Writes: scripts/conformance/progress.ts, scripts/conformance/rules/R40-progress-consistent.ts, scripts/conformance/rules/R41-docs-dated.ts, scripts/conformance/rules/index.ts, docs/conformance-rules.md, scripts/conformance/test/fixtures/R40/**, scripts/conformance/test/fixtures/R41/**, scripts/conformance/test/progress.test.ts
+  - Parse `progress.md`, resolve `this` commits, check against `tasks.md` and git.
+  - **Checkpoint: user reviews the full rule set and a run over the fixtures.**
+  - _Requirements: 26.6, 27.1 to 27.4_
+
+- [ ] 15. Check command
   - Mode: sequential
   - Writes: scripts/conformance/check.ts, scripts/conformance/test/check.test.ts, package.json
   - Runs conformance, typecheck, configured tests, and affected strip tests from active plans. Prints `not configured` where a check is missing, and treats missing affected-test configuration as a failure.
   - _Requirements: 11.1 to 11.4, 17.4, 17.5_
 
-- [ ] 15. Worktree command
+- [ ] 16. Worktree command
   - Mode: sequential
   - Writes: scripts/conformance/worktree.ts, scripts/conformance/test/worktree.test.ts, package.json
   - `create`, `verify`, `merge`, `remove`, `list`, per the design, with the parallel limit and task-order merging.
   - Tests in temporary git repositories: out-of-list file fails verify, merge conflict aborts cleanly, failed post-merge check restores the previous commit, remove refuses unmerged work.
   - _Requirements: 23.2 to 23.9_
 
-- [ ] 16. Stop hook script
+- [ ] 17. Stop hook script
   - Mode: sequential
   - Writes: scripts/conformance/hooks/stop.ts, scripts/conformance/test/hooks-stop.test.ts
   - Unchanged-tree skip, check command run, block decision with capped reason, loop counter (block, block, final block, allow), reset on pass, crash log.
   - _Requirements: 12.1, 12.2, 13.1 to 13.4_
 
-- [ ] 17. Protection hook script
+- [ ] 18. Protection hook script
   - Mode: sequential
   - Writes: scripts/conformance/hooks/protect.ts, scripts/conformance/test/hooks-protect.test.ts
   - Protected files with unlock expiry, guarded existing files against active committed plans, worktree path handling and task file lists, main-tree block while worktrees are open, shell command patterns.
   - _Requirements: 12.3 to 12.5, 19.1 to 19.5, 24.1 to 24.3_
 
-- [ ] 18. Steering files
+- [ ] 19. Steering files
   - Mode: sequential
   - Writes: .kiro/steering/core-rules.md, .kiro/steering/steps-pure.md, .kiro/steering/steps-api.md, .kiro/steering/steps-db.md, .kiro/steering/steps-cache.md, .kiro/steering/steps-storage.md, .kiro/steering/steps-ui.md, .kiro/steering/steps-scrape.md, .kiro/steering/strips.md, .kiro/steering/ports-adapters.md, .kiro/steering/environments.md
-  - Within the size limits (checked by R31). Each states which rules the check command enforces. `core-rules.md` includes the change process summary and points to `docs/change-process.md`.
-  - _Requirements: 14.1 to 14.7, 21.2_
+  - Within the size limits (checked by R31). Each states which rules the check command enforces. `core-rules.md` includes the change process summary, the resume procedure, and points to `docs/change-process.md`.
+  - _Requirements: 14.1 to 14.7, 21.2, 26.7_
 
-- [ ] 19. Self-check on this repository
+- [ ] 20. Self-check on this repository
   - Mode: sequential
   - Writes: docs/generated/catalog.md, docs/generated/catalog.json
   - Run the full check command on this repository, including this spec's `tasks.md` and `change-plan.md`. Fix any finding in the task that introduced it.
@@ -136,13 +149,13 @@ Checkpoints (CP3) stop for user review after tasks 4, 13, and 19.
   - **Checkpoint: user reviews results before hooks are enabled.**
   - _Requirements: 1.1, 10.3_
 
-- [ ] 20. Enable hooks
+- [ ] 21. Enable hooks
   - Mode: sequential
   - Writes: .kiro/hooks/enforcement.json
   - Stop hook, protection hook for `write`, protection hook for `shell`, as in the design. After this task, protected files need the unlock file.
   - _Requirements: 12.1, 12.3, 12.6_
 
-- [ ] 21. Live test session with the user
+- [ ] 22. Live test session with the user
   - Mode: sequential
   - Writes: docs/change-process.md
   - In a Kiro CLI session: trigger a violation and confirm the agent is sent back with the list, confirm a protected write is blocked, confirm the unlock works and expires.
@@ -151,8 +164,8 @@ Checkpoints (CP3) stop for user review after tasks 4, 13, and 19.
   - Write the results into `docs/change-process.md`. Adjust the hooks if the reason field name differs (with the unlock file).
   - _Requirements: 25.1 to 25.3_
 
-- [ ] 22. Update status
+- [ ] 23. Update status
   - Mode: sequential
   - Writes: docs/README.md
-  - Mark the enforcement setup done, list how to run the checks and how to unlock.
+  - Mark the enforcement setup done, list how to run the checks, how to unlock, and how to resume unfinished work.
   - _Requirements: 12.6_

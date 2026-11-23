@@ -1,3 +1,8 @@
+---
+created: 2026-11-23
+updated: 2026-11-23
+---
+
 # Design Document: Enforcement Setup
 
 ## Overview
@@ -327,6 +332,41 @@ The reset after a failed post-merge check undoes only the merge commit this comm
 
 This gives per-agent enforcement at write time without knowing which agent is writing, because the folder identifies the task.
 
+### Progress log and resuming
+
+`progress.md` in each spec folder, append-only:
+
+```markdown
+---
+created: 2026-11-23
+updated: 2026-11-23
+---
+
+# Progress: enforcement-setup
+
+| When (UTC) | Task | State | Commit | Files | Next |
+|---|---|---|---|---|---|
+| 2026-11-23 16:50 | plan | done | 12dacc7 | requirements.md, design.md, change-plan.md, tasks.md | Start task 1 |
+| 2026-11-24 09:10 | 1 | started | | | Create package.json |
+| 2026-11-24 09:40 | 1 | done | a1b2c3d | package.json, pnpm-lock.yaml, tsconfig.json | Start task 2 |
+```
+
+- One commit per finished task, containing the task's files, the ticked checkbox, and the `done` row, with the message `task(<spec>/<id>): <title>`. The `done` row cannot hold its own commit ID, so its Commit cell is written as `this`. The rule resolves `this` to the commit that added the row (`git log` on the file).
+- `started` rows are committed with the first work-in-progress commit, or left uncommitted. Either way, uncommitted changes plus a `started` row as the last entry mean that task is unfinished.
+
+**Resume procedure** (in steering and `docs/change-process.md`):
+
+1. Read the last rows of `progress.md` in the active spec.
+2. Run `git log --oneline -10` and `git status`.
+3. If the last row is `done`, continue with its Next.
+4. If the last row is `started` or there are uncommitted changes, that task is unfinished. Compare the changed files with its `Writes:` list, then finish it.
+5. If the last row is `blocked`, report the blocking decision to the user and wait.
+
+| ID | Name | Sev | Detection |
+|---|---|---|---|
+| R40 | progress-consistent | error | Ticked task with no `done` row. `done` row whose commit does not exist or whose files do not exist. A `started` task with no later `done` or `blocked` row while a later task has started |
+| R41 | docs-dated | error | A document in `docs/` (not `docs/generated/`) or a spec folder with no `created` or `updated` front matter, or whose `updated` is earlier than its last commit date |
+
 ### Exceptions
 
 `conformance.exceptions.json`:
@@ -498,6 +538,8 @@ The script follows the skeleton's own rule: its failures are never reported as s
 | 23 | worktree.ts |
 | 24 | protect.ts worktree behavior |
 | 25 | Manual test session task, results in change-process.md |
+| 26 | progress.md format, commit convention, resume procedure, R40 |
+| 27 | Front matter dates, R41 |
 
 ## Changes from the requirements
 

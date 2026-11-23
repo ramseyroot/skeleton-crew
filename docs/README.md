@@ -1,3 +1,8 @@
+---
+created: 2026-11-23
+updated: 2026-11-23
+---
+
 # Skeleton Crew: Docs Index and Status
 
 Last updated at the end of the first design session. Read this file first.
@@ -23,13 +28,17 @@ Core ideas:
 | Design documents (below) | Written, draft |
 | `scripts/check-coverage.mjs` | Built and tested. Checks a filled-in app coverage file. |
 | `.kiro/specs/enforcement-setup/requirements.md` and `design.md` | Approved (25 requirements, 39 rules) |
-| `.kiro/specs/enforcement-setup/change-plan.md` and `tasks.md` | Written, awaiting review (22 tasks) |
+| `.kiro/specs/enforcement-setup/` | Approved and active: 27 requirements, 41 rules, 23 tasks. No task started. Progress in `progress.md` |
 | Git repository | Created, branch `main` |
 | `.kiro` steering, hooks, custom agent | Not created (specified in the enforcement-setup spec) |
 | Conformance script (checks the code rules) | Not created, designed in plan section 15 |
 | Skeleton code (`Result`, `defineStep`, `defineStrip`, ports, adapters) | Not created |
 | Storybook setup | Not created |
 | Any app | Not started, and out of scope for the skeleton work |
+
+## Resuming work
+
+To continue where work stopped, read the last rows of the active spec's `progress.md` (currently `.kiro/specs/enforcement-setup/progress.md`), then `git log --oneline -10` and `git status`. The full procedure is in `change-process.md`, section 7.
 
 ## 3. Documents
 
@@ -65,6 +74,7 @@ Skeleton decisions:
 15. pnpm is the package manager.
 16. Apps are planned in four stages (brief, architecture, domain model, feature map) before feature specs. No fixed question bank: questions are written per stage for each app.
 17. Every default is shown to the user as `proposed` before it is applied. Only `confirmed` or `changed` decisions are used by later stages.
+18. Every spec keeps a dated, append-only `progress.md`. Each task ends in one commit named `task(<spec>/<id>): ...`. Every document has `created` and `updated` dates.
 
 Platform decisions:
 

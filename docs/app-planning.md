@@ -1,3 +1,8 @@
+---
+created: 2026-11-23
+updated: 2026-11-23
+---
+
 # App Planning Process (Draft v0.1)
 
 How an app built from this skeleton is planned, before any feature spec. Feature work after planning follows `change-process.md`.

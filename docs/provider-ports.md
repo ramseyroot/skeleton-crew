@@ -1,3 +1,8 @@
+---
+created: 2026-11-23
+updated: 2026-11-23
+---
+
 # Provider Ports (Draft v0.1)
 
 Status: draft. Companion to `function-strips-plan.md` (section 11 has the rules). This file lists the ports, the decisions each port must fix, and the adapters planned.

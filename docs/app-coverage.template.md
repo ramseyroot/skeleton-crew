@@ -1,3 +1,8 @@
+---
+created: 2026-11-23
+updated: 2026-11-23
+---
+
 # App Coverage: <app name>
 
 Copy this file per app (for example `docs/coverage/<app>.md`) and fill in the Status and Reference columns.

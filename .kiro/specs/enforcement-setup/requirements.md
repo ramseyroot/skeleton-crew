@@ -1,3 +1,8 @@
+---
+created: 2026-11-23
+updated: 2026-11-23
+---
+
 # Requirements Document: Enforcement Setup
 
 ## Introduction
@@ -327,6 +332,31 @@ Type compatibility between consecutive steps is checked by the compiler, not by 
 1. BEFORE the parallel phase is used for real work, a test session SHALL confirm and record: whether a sub-agent can be confined to a worktree folder, whether sub-agents trigger the Stop hook, which fields the Stop and task hooks receive, and the name of the Stop hook's reason field.
 2. THE results SHALL be written to `docs/change-process.md`.
 3. WHEN a sub-agent cannot be confined to its worktree, THEN the process SHALL still hold, because writes outside the worktree are blocked by Requirement 24.3 and caught by rule `change-in-plan`.
+
+### Requirement 26: Progress is recorded so unfinished work can be resumed
+
+**User Story:** As a developer, I want every spec to record what was done, when, in which commit, and what comes next, so that an agent asked to continue an unfinished plan knows exactly where it stopped.
+
+#### Acceptance Criteria
+
+1. EACH spec folder SHALL contain `progress.md`, an append-only log.
+2. EACH log entry SHALL have a date and time (UTC), the task ID, a state (`started`, `done`, `blocked`, `checkpoint`), the commit ID when there is one, the files written, and the next step.
+3. WHEN a task starts, THEN a `started` entry SHALL be appended before any file is written.
+4. WHEN a task finishes, THEN its checkbox in `tasks.md` SHALL be ticked, a `done` entry SHALL be appended, and both SHALL be committed together with the task's files, in one commit whose message starts with `task(<spec>/<id>):`.
+5. WHEN a task cannot continue, THEN a `blocked` entry SHALL record why and what decision is needed.
+6. WHEN a ticked task has no `done` entry, a `done` entry names a commit that does not exist, a `done` entry lists a file that does not exist, or a task has a `started` entry and neither a later `done` nor `blocked` entry while another task has started after it, THEN the conformance script SHALL report an error for rule `progress-consistent`.
+7. THE `always` steering file and `docs/change-process.md` SHALL describe the resume procedure: read the last `progress.md` entries, compare with `git log` and `git status`, and continue from the recorded next step, treating uncommitted changes as the unfinished task.
+
+### Requirement 27: Planning and spec documents are dated
+
+**User Story:** As a developer, I want every planning and spec document to say when it was created and last changed, so that I and the agent can tell current documents from stale ones.
+
+#### Acceptance Criteria
+
+1. EACH document in `docs/` (except `docs/generated/`) and each spec document SHALL start with front matter containing `created` and `updated` dates (YYYY-MM-DD).
+2. WHEN a committed document's `updated` date is earlier than the date of the last commit that changed it, THEN the conformance script SHALL report an error for rule `docs-dated`.
+3. WHEN a document has no `created` or `updated` field, THEN the conformance script SHALL report an error for rule `docs-dated`.
+4. Steering files are excluded, since their front matter is reserved for inclusion settings.
 
 ---
 

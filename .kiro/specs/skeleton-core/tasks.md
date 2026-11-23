@@ -26,7 +26,7 @@ All test files use `node:test`, are named `<name>.test.ts`, and run offline.
   - If a check fails, mark the task `blocked` with the options (P10 cut order) and ask.
   - _Requirements: 9.6, 11.3_
 
-- [ ] 2. Result and cache envelope
+- [x] 2. Result and cache envelope
   - Mode: sequential
   - Writes: src/lib/result.ts, src/lib/result.test.ts, src/lib/cache-envelope.ts, src/lib/cache-envelope.test.ts
   - `Result`, `StepError` (discriminated on `audience`), `ErrorKind`, `ok`, `err`, `typedError`, `fromThrown`.

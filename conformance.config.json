@@ -1,0 +1,46 @@
+{
+  "sourceRoots": ["src"],
+  "folders": {
+    "steps": "src/steps",
+    "strips": "src/strips",
+    "ports": "src/ports",
+    "adapters": "src/adapters",
+    "loggerAdapter": "src/adapters/logger",
+    "config": "src/config",
+    "coverage": "docs/coverage"
+  },
+  "classes": ["pure", "api", "db", "cache", "storage", "ui", "scrape"],
+  "providerPackages": [
+    "pocketbase",
+    "@supabase/*",
+    "pg",
+    "postgres",
+    "drizzle-orm",
+    "kysely",
+    "@prisma/client",
+    "stripe",
+    "paystack*"
+  ],
+  "nearDuplicateVerbs": ["get", "fetch", "load", "read", "find", "retrieve", "lookup", "query"],
+  "prodSecretNames": [],
+  "destructiveScripts": {
+    "globs": ["scripts/db/seed*", "scripts/db/reset*", "scripts/db/migrate-down*"],
+    "guardCall": "assertNotProd"
+  },
+  "output": { "maxChars": 3000, "maxPerRule": 5, "reportDir": ".conformance" },
+  "checks": { "typecheck": "pnpm exec tsc --noEmit", "test": null, "testFiles": null },
+  "stopHook": { "maxConsecutiveBlocks": 3, "skipIfUnchanged": true },
+  "steering": { "alwaysMaxLines": 60, "otherMaxLines": 80 },
+  "worktrees": { "folder": ".worktrees", "maxParallel": 2 },
+  "guardedFolders": ["src/steps", "src/strips", "src/ports", "src/adapters", "src/lib"],
+  "specsFolder": ".kiro/specs",
+  "protected": [
+    "conformance.config.json",
+    "conformance.exceptions.json",
+    "scripts/conformance/rules/**",
+    "scripts/conformance/hooks/**",
+    ".kiro/hooks/**",
+    ".kiro/steering/**",
+    ".conformance/unlock"
+  ]
+}

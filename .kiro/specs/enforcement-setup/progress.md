@@ -17,3 +17,5 @@ Append-only. Format and resume procedure: `docs/change-process.md`, section 7.
 | 2026-11-23 16:50 | 1 | blocked | | package.json, pnpm-lock.yaml (uncommitted) | Node 24 runs .ts directly with no flag or warning (D2 confirmed). Blocked: typescript 7.0.2 (latest) has no stable compiler API, which design D1 needs. User decides between options A, B, C |
 | 2026-11-23 16:51 | 1 | started | | | Resumed: user chose option A (TS 7 for typecheck, TS 6 aliased for the script API) |
 | 2026-11-23 16:52 | 1 | done | this | package.json, pnpm-lock.yaml, tsconfig.json, design.md (D1 revision, D2 result, Writes glob note) | Start task 2: configuration loading |
+| 2026-11-23 16:52 | 2 | started | | | Write config file and loader with validation |
+| 2026-11-23 16:53 | 2 | done | this | conformance.config.json, conformance.exceptions.json, scripts/conformance/config.ts, scripts/conformance/test/config.test.ts (7 tests pass, typecheck ok) | Start task 3: runner, discovery, report, exceptions |

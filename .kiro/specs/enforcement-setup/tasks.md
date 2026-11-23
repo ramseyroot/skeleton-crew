@@ -20,7 +20,7 @@ Every task: append a `started` row to `progress.md` before writing files. On fin
   - Add the `Writes:` glob note (CP4) to the design.
   - _Requirements: 10.3, 23.1_
 
-- [ ] 2. Configuration loading
+- [x] 2. Configuration loading
   - Mode: sequential
   - Writes: conformance.config.json, conformance.exceptions.json, scripts/conformance/config.ts, scripts/conformance/test/config.test.ts
   - Write the config file from design D4, and an empty exceptions list.

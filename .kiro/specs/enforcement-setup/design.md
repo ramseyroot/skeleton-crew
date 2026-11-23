@@ -307,7 +307,7 @@ Behavior of `protect.ts`:
 3. If a protected path is targeted and `.conformance/unlock` does not exist or is older than 30 minutes, write a message to STDERR and exit 2. The message names the file and tells the agent to ask the user.
 4. Otherwise exit 0.
 
-Unlocking for a deliberate change: the user runs `touch .conformance/unlock` in their own terminal. The unlock file is itself protected, so the agent cannot create it through its tools. It expires after 30 minutes.
+Unlocking for a deliberate change (confirmed by the user): the user runs `touch .conformance/unlock` in their own terminal. The unlock file is itself protected, so the agent cannot create it through its tools. It expires after 30 minutes.
 
 Known limits, stated in the rules doc and README:
 

@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "steps": [
+    {
+      "name": "db.user.find",
+      "class": "db",
+      "file": "src/steps/db/user.find.ts",
+      "input": "UserId",
+      "output": "User",
+      "permissions": {
+        "reads": [
+          "users"
+        ],
+        "writes": [],
+        "storage": []
+      },
+      "errors": [
+        "network"
+      ],
+      "usedBy": []
+    }
+  ],
+  "strips": []
+}

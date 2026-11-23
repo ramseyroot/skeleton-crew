@@ -176,3 +176,22 @@ Each rule section has this shape, and the meta tests check that every label is p
 - **Failing example:** `routing: { "db.user.delete": { ... } }` in a strip without that step.
 - **Passing example:** routing keys that match the strip's step names.
 - **Fix:** correct or remove the entry.
+
+## R16 catalog-current
+
+- **Severity:** error
+- **Catches:** `docs/generated/catalog.json` or `catalog.md` missing, or different from what the current code generates. Not applicable until a steps folder exists.
+- **Why:** the catalog is what people and agents read before creating or reusing a step. A stale catalog leads to duplicates and wrong reuse.
+- **Failing example:** a new step added without regenerating the catalog.
+- **Passing example:** the catalog regenerated and committed together with the step.
+- **Fix:** run `pnpm conformance --write-catalog` and commit both files. Never edit them by hand.
+
+## R17 no-widening
+
+- **Severity:** error
+- **Catches:** a step whose permissions gained an entry, or whose `input` or `output` source text changed, compared with `docs/generated/catalog.json` at git `HEAD`. Removing permissions is allowed. New steps are not compared.
+- **Why:** strips that already use the step rely on its contract. Widening it silently changes every one of them.
+- **Failing example:** `db.user.find` changing from `writes: []` to `writes: ["users"]`.
+- **Passing example:** a new step `db.user.save` with the write permission, leaving `db.user.find` as it was.
+- **Fix:** create a new narrow step. If the change is really needed, list it as `modify` in the change plan and record an exception that the user approves.
+- **Limits:** input and output are compared as source text, so renaming a schema variable also counts as a change. Until a catalog is committed, there is nothing to compare against.

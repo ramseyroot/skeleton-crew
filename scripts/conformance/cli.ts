@@ -1,10 +1,11 @@
 // Conformance script entry point.
-// Usage: node scripts/conformance/cli.ts [--files a.ts,b.ts] [--strict] [--json] [--root <dir>]
+// Usage: node scripts/conformance/cli.ts [--files a.ts,b.ts] [--strict] [--json] [--write-catalog] [--root <dir>]
 
 import { join, resolve } from "node:path";
 import { existsSync } from "node:fs";
 import { ConfigError, loadConfig, type Config } from "./config.ts";
 import { createProgram, isDir, isGitRepo, listSourceFiles, readRel } from "./project.ts";
+import { buildCatalog, writeCatalog } from "./catalog.ts";
 import { discoverAdapters, discoverDefinitions, discoverPorts } from "./discover.ts";
 import { applyExceptions, loadExceptions } from "./exceptions.ts";
 import { exitCode, formatConsole, sortViolations, writeReportFiles, type Report } from "./report.ts";
@@ -17,6 +18,8 @@ export type RunOptions = {
   strict?: boolean;
   rules?: Rule[];
   writeReport?: boolean;
+  /** Regenerate docs/generated/catalog.* before checking. */
+  writeCatalog?: boolean;
 };
 
 export type RunResult = { report: Report; exitCode: 0 | 1 | 2; output: string; config: Config | null };
@@ -77,6 +80,8 @@ export function runConformance(opts: RunOptions): RunResult {
     read: (f) => readRel(root, f),
   };
 
+  if (opts.writeCatalog && scriptErrors.length === 0) writeCatalog(root, buildCatalog(ctx));
+
   const all = [...(opts.rules ?? registry)].sort((a, b) => a.id.localeCompare(b.id));
   const notApplicable: Report["notApplicable"] = [];
   const runnable = (r: Rule): boolean => {
@@ -132,12 +137,13 @@ export function runConformance(opts: RunOptions): RunResult {
   return { report, exitCode: exitCode(report, strict), output, config };
 }
 
-function parseArgs(argv: string[]): { files: string[] | null; strict: boolean; json: boolean; root: string } {
-  const out = { files: null as string[] | null, strict: false, json: false, root: process.cwd() };
+function parseArgs(argv: string[]): { files: string[] | null; strict: boolean; json: boolean; writeCatalog: boolean; root: string } {
+  const out = { files: null as string[] | null, strict: false, json: false, writeCatalog: false, root: process.cwd() };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i] as string;
     if (a === "--strict") out.strict = true;
     else if (a === "--json") out.json = true;
+    else if (a === "--write-catalog") out.writeCatalog = true;
     else if (a === "--files") out.files = (argv[++i] ?? "").split(",").filter(Boolean);
     else if (a.startsWith("--files=")) out.files = a.slice(8).split(",").filter(Boolean);
     else if (a === "--root") out.root = argv[++i] ?? out.root;
@@ -154,7 +160,7 @@ if (import.meta.main) {
     process.stderr.write(`conformance: ${e instanceof Error ? e.message : String(e)}\n`);
     process.exit(2);
   }
-  const result = runConformance({ root: args.root, files: args.files, strict: args.strict });
+  const result = runConformance({ root: args.root, files: args.files, strict: args.strict, writeCatalog: args.writeCatalog });
   process.stdout.write(
     (args.json ? JSON.stringify({ exitCode: result.exitCode, ...result.report }, null, 2) : result.output) + "\n",
   );

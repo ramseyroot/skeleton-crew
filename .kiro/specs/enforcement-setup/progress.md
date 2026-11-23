@@ -31,3 +31,6 @@ Append-only. Format and resume procedure: `docs/change-process.md`, section 7.
 | 2026-11-23 17:08 | 6 | done | this | rules/R05 to R11, rules/index.ts, docs/conformance-rules.md, fixtures/R05 to R11 (46 tests pass) | Start task 7: strip rules |
 | 2026-11-23 17:08 | 7 | started | | | Write R12 to R15 with fixtures and docs |
 | 2026-11-23 17:10 | 7 | done | this | rules/R12 to R15, rules/index.ts, docs/conformance-rules.md, fixtures/R12 to R15 (54 tests pass). Decided: storage budget globs use * for one level and ** for any depth | Start task 8: catalog and no-widening |
+| 2026-11-23 17:10 | 8 | started | | | Write catalog generator, git helpers, R16, R17, --write-catalog |
+| 2026-11-23 17:10 | 8 | started | | | Plan deviation: added test/rules.test.ts to task 8 Writes, for git-based fixtures |
+| 2026-11-23 17:13 | 8 | done | this | catalog.ts, git.ts, rules/R16, R17, rules/index.ts, cli.ts (--write-catalog), docs/conformance-rules.md, docs/generated/catalog.*, fixtures/R16, R17 (git-base), test/catalog.test.ts, test/rules.test.ts (61 tests pass). R16 is not applicable until a steps folder exists | Start task 9: port and adapter rules |

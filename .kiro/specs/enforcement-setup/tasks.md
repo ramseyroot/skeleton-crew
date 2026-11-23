@@ -66,12 +66,13 @@ Every task: append a `started` row to `progress.md` before writing files. On fin
   - Resolve each strip's step identifiers to their `defineStep()` declarations through the type checker.
   - _Requirements: 4.1 to 4.4_
 
-- [ ] 8. Catalog and no-widening (R16, R17)
+- [x] 8. Catalog and no-widening (R16, R17)
   - Mode: sequential
-  - Writes: scripts/conformance/catalog.ts, scripts/conformance/git.ts, scripts/conformance/rules/R16-catalog-current.ts, scripts/conformance/rules/R17-no-widening.ts, scripts/conformance/rules/index.ts, scripts/conformance/cli.ts, docs/conformance-rules.md, docs/generated/catalog.md, docs/generated/catalog.json, scripts/conformance/test/fixtures/R16/**, scripts/conformance/test/fixtures/R17/**, scripts/conformance/test/catalog.test.ts
+  - Writes: scripts/conformance/catalog.ts, scripts/conformance/git.ts, scripts/conformance/rules/R16-catalog-current.ts, scripts/conformance/rules/R17-no-widening.ts, scripts/conformance/rules/index.ts, scripts/conformance/cli.ts, docs/conformance-rules.md, docs/generated/catalog.md, docs/generated/catalog.json, scripts/conformance/test/fixtures/R16/**, scripts/conformance/test/fixtures/R17/**, scripts/conformance/test/catalog.test.ts, scripts/conformance/test/rules.test.ts
   - Generate `catalog.md` (lines of at most 120 characters) and `catalog.json`, in stable order. Add `--write-catalog`.
   - Git helpers: read a file at `HEAD`, list files at `HEAD`, tree fingerprint. R17 fixtures create a temporary git repository.
   - Generate the (empty) catalog for this repository.
+  - `rules.test.ts` (added during the work): fixtures may hold a `git-base/` folder, committed first, so rules that compare with git `HEAD` can be tested.
   - _Requirements: 5.1 to 5.6_
 
 - [ ] 9. Port and adapter rules (R18 to R22)

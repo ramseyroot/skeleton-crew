@@ -17,5 +17,7 @@ import { R12 } from "./R12-strip-routing-complete.ts";
 import { R13 } from "./R13-strip-budget.ts";
 import { R14 } from "./R14-strip-invalidates.ts";
 import { R15 } from "./R15-strip-routing-unknown-step.ts";
+import { R16 } from "./R16-catalog-current.ts";
+import { R17 } from "./R17-no-widening.ts";
 
-export const rules: Rule[] = [R01, R02, R03, R04, R05, R06, R07, R08, R09, R10, R11, R12, R13, R14, R15];
+export const rules: Rule[] = [R01, R02, R03, R04, R05, R06, R07, R08, R09, R10, R11, R12, R13, R14, R15, R16, R17];

@@ -56,7 +56,7 @@ All test files use `node:test`, are named `<name>.test.ts`, and run offline.
   - Storage contract cases: `get` missing gives `null`, `delete` missing succeeds, `list` with cursor, `fs` rejects keys that escape its root.
   - _Requirements: 7.1 to 7.3, 7.6 to 7.9, 7.11, 6.2_
 
-- [ ] 6. Step library
+- [x] 6. Step library
   - Mode: sequential
   - Writes: src/lib/step.ts, src/lib/step.test.ts
   - `defineStep`, the wrapper, `ctx` built from `uses` and narrowed by permissions (design section 3, D2 and D3), entry and exit logging.

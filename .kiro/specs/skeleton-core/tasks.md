@@ -63,7 +63,7 @@ All test files use `node:test`, are named `<name>.test.ts`, and run offline.
   - Tests: input and output schema failures give `validation`, a throw gives `unexpected`, a typed error keeps its kind, a `Result` passes through, a write outside the permissions gives `forbidden`, `writes: []` gives no write method (type test), logging entries match the shape.
   - _Requirements: 2.1 to 2.8_
 
-- [ ] 7. Strip library
+- [x] 7. Strip library
   - Mode: sequential
   - Writes: src/lib/strip.ts, src/lib/strip.test.ts
   - `defineStrip`, type chain check, load-time checks (D4), runner, routing actions (D5), invalidation with placeholders (D6), `StripResult` and `Display`.

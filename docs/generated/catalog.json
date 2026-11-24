@@ -46,6 +46,148 @@
       ]
     },
     {
+      "name": "db.accounts.create",
+      "class": "db",
+      "feature": "accounts",
+      "file": "src/features/accounts/steps/db/accounts.create.ts",
+      "input": "CredentialsSchema",
+      "output": "AccountSchema",
+      "permissions": {
+        "reads": [],
+        "writes": [
+          "accounts"
+        ],
+        "storage": []
+      },
+      "errors": [
+        "conflict",
+        "network",
+        "unexpected"
+      ],
+      "usedBy": [
+        "accounts.signup"
+      ]
+    },
+    {
+      "name": "db.accounts.createSession",
+      "class": "db",
+      "feature": "accounts",
+      "file": "src/features/accounts/steps/db/accounts.createSession.ts",
+      "input": "z.object({ accountId: z.string().min(1) })",
+      "output": "SessionSchema",
+      "permissions": {
+        "reads": [
+          "accounts"
+        ],
+        "writes": [
+          "sessions"
+        ],
+        "storage": []
+      },
+      "errors": [
+        "network",
+        "not_found",
+        "unexpected"
+      ],
+      "usedBy": [
+        "accounts.start"
+      ]
+    },
+    {
+      "name": "db.accounts.endSession",
+      "class": "db",
+      "feature": "accounts",
+      "file": "src/features/accounts/steps/db/accounts.endSession.ts",
+      "input": "z.object({ token: z.string() })",
+      "output": "z.object({ ended: z.literal(true) })",
+      "permissions": {
+        "reads": [],
+        "writes": [
+          "sessions"
+        ],
+        "storage": []
+      },
+      "errors": [
+        "network",
+        "unexpected"
+      ],
+      "usedBy": [
+        "accounts.logout"
+      ]
+    },
+    {
+      "name": "db.accounts.get",
+      "class": "db",
+      "feature": "accounts",
+      "file": "src/features/accounts/steps/db/accounts.get.ts",
+      "input": "z.object({ accountId: z.string().min(1) })",
+      "output": "AccountSchema",
+      "permissions": {
+        "reads": [
+          "accounts"
+        ],
+        "writes": [],
+        "storage": []
+      },
+      "errors": [
+        "network",
+        "not_found",
+        "unexpected"
+      ],
+      "usedBy": [
+        "accounts.me"
+      ]
+    },
+    {
+      "name": "db.accounts.verifyPassword",
+      "class": "db",
+      "feature": "accounts",
+      "file": "src/features/accounts/steps/db/accounts.verifyPassword.ts",
+      "input": "CredentialsSchema",
+      "output": "AccountSchema",
+      "permissions": {
+        "reads": [
+          "accounts"
+        ],
+        "writes": [],
+        "storage": []
+      },
+      "errors": [
+        "network",
+        "unauthorized",
+        "unexpected"
+      ],
+      "usedBy": [
+        "accounts.login"
+      ]
+    },
+    {
+      "name": "db.accounts.verifySession",
+      "class": "db",
+      "feature": "accounts",
+      "file": "src/features/accounts/steps/db/accounts.verifySession.ts",
+      "input": "z.object({ token: z.string() })",
+      "output": "AccountSchema",
+      "permissions": {
+        "reads": [
+          "accounts",
+          "sessions"
+        ],
+        "writes": [
+          "sessions"
+        ],
+        "storage": []
+      },
+      "errors": [
+        "network",
+        "unauthorized",
+        "unexpected"
+      ],
+      "usedBy": [
+        "accounts.whoami"
+      ]
+    },
+    {
       "name": "db.user.findProfile",
       "class": "db",
       "feature": "profile",
@@ -93,6 +235,44 @@
       ]
     },
     {
+      "name": "pure.accounts.parseLogin",
+      "class": "pure",
+      "feature": "accounts",
+      "file": "src/features/accounts/steps/pure/accounts.parseLogin.ts",
+      "input": "z.object({ email: z.string(), password: z.string() })",
+      "output": "CredentialsSchema",
+      "permissions": {
+        "reads": [],
+        "writes": [],
+        "storage": []
+      },
+      "errors": [
+        "validation"
+      ],
+      "usedBy": [
+        "accounts.login"
+      ]
+    },
+    {
+      "name": "pure.accounts.parseSignup",
+      "class": "pure",
+      "feature": "accounts",
+      "file": "src/features/accounts/steps/pure/accounts.parseSignup.ts",
+      "input": "z.object({ email: z.string(), password: z.string() })",
+      "output": "CredentialsSchema",
+      "permissions": {
+        "reads": [],
+        "writes": [],
+        "storage": []
+      },
+      "errors": [
+        "validation"
+      ],
+      "usedBy": [
+        "accounts.signup"
+      ]
+    },
+    {
       "name": "pure.profile.parseForm",
       "class": "pure",
       "feature": "profile",
@@ -113,6 +293,103 @@
     }
   ],
   "strips": [
+    {
+      "name": "accounts.login",
+      "feature": "accounts",
+      "file": "src/features/accounts/strips/accounts.login.strip.ts",
+      "steps": [
+        "pure.accounts.parseLogin",
+        "db.accounts.verifyPassword"
+      ],
+      "budget": {
+        "reads": [
+          "accounts"
+        ],
+        "writes": [],
+        "storage": []
+      }
+    },
+    {
+      "name": "accounts.logout",
+      "feature": "accounts",
+      "file": "src/features/accounts/strips/accounts.logout.strip.ts",
+      "steps": [
+        "db.accounts.endSession"
+      ],
+      "budget": {
+        "reads": [],
+        "writes": [
+          "sessions"
+        ],
+        "storage": []
+      }
+    },
+    {
+      "name": "accounts.me",
+      "feature": "accounts",
+      "file": "src/features/accounts/strips/accounts.me.strip.ts",
+      "steps": [
+        "db.accounts.get"
+      ],
+      "budget": {
+        "reads": [
+          "accounts"
+        ],
+        "writes": [],
+        "storage": []
+      }
+    },
+    {
+      "name": "accounts.signup",
+      "feature": "accounts",
+      "file": "src/features/accounts/strips/accounts.signup.strip.ts",
+      "steps": [
+        "pure.accounts.parseSignup",
+        "db.accounts.create"
+      ],
+      "budget": {
+        "reads": [],
+        "writes": [
+          "accounts"
+        ],
+        "storage": []
+      }
+    },
+    {
+      "name": "accounts.start",
+      "feature": "accounts",
+      "file": "src/features/accounts/strips/accounts.start.strip.ts",
+      "steps": [
+        "db.accounts.createSession"
+      ],
+      "budget": {
+        "reads": [
+          "accounts"
+        ],
+        "writes": [
+          "sessions"
+        ],
+        "storage": []
+      }
+    },
+    {
+      "name": "accounts.whoami",
+      "feature": "accounts",
+      "file": "src/features/accounts/strips/accounts.whoami.strip.ts",
+      "steps": [
+        "db.accounts.verifySession"
+      ],
+      "budget": {
+        "reads": [
+          "accounts",
+          "sessions"
+        ],
+        "writes": [
+          "sessions"
+        ],
+        "storage": []
+      }
+    },
     {
       "name": "profile.save",
       "feature": "profile",

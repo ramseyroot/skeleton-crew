@@ -5,9 +5,11 @@
 import { assertDistinctCollections } from "../lib/feature.ts";
 import type { FeatureModule } from "../lib/feature.ts";
 import { profileFeature } from "../features/profile/index.ts";
+import { accountsFeature } from "../features/accounts/index.ts";
 
 export const features: readonly FeatureModule[] = [
   profileFeature,
+  accountsFeature,
 ];
 
 assertDistinctCollections(features);

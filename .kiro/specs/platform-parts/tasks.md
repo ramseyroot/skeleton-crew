@@ -43,7 +43,7 @@ If time runs short, cut in the order the builder confirmed (A13): the pages beyo
   - Run `pnpm check`, the offline test run and the build. Report to the builder. No code.
   - _Requirements: 12.1, 12.2_
 
-- [ ] 7. Feature `accounts`
+- [x] 7. Feature `accounts`
   - Mode: sequential
   - Writes: src/features/accounts/**, src/app/features.ts
   - Steps, strips and tests as in design 5.1, the `me.get` endpoint definition, log in and sign up pages with stories, Server Actions that set the session cookie, `feature.json`, seed of one demo account.

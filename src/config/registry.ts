@@ -9,6 +9,10 @@ import { createNoneMetrics } from "../adapters/metrics/none/index.ts";
 import { createLogReporter } from "../adapters/reporter/log/index.ts";
 import { createMemoryReporter } from "../adapters/reporter/memory/index.ts";
 import { createNoneReporter } from "../adapters/reporter/none/index.ts";
+import { createLocalAuth } from "../adapters/auth/local/index.ts";
+import { createMemoryAuth } from "../adapters/auth/memory/index.ts";
+import { createDatabaseLimiter } from "../adapters/limiter/database/index.ts";
+import { createMemoryLimiter } from "../adapters/limiter/memory/index.ts";
 import { createMemoryCache } from "../adapters/cache/memory/index.ts";
 import { createNullCache } from "../adapters/cache/null/index.ts";
 import { createFixedClock } from "../adapters/clock/fixed/index.ts";
@@ -21,10 +25,12 @@ import { createConsoleLogger } from "../adapters/logger/console/index.ts";
 import { createMemoryLogger } from "../adapters/logger/memory/index.ts";
 import { createFsStorage } from "../adapters/storage/fs/index.ts";
 import { createMemoryStorage } from "../adapters/storage/memory/index.ts";
+import type { Auth } from "../ports/auth.ts";
 import type { Cache } from "../ports/cache.ts";
 import type { Clock } from "../ports/clock.ts";
 import type { Database } from "../ports/database.ts";
 import type { IdGenerator } from "../ports/ids.ts";
+import type { RateLimiter } from "../ports/limiter.ts";
 import type { Logger } from "../ports/logger.ts";
 import type { Metrics } from "../ports/metrics.ts";
 import type { ErrorReporter } from "../ports/reporter.ts";
@@ -54,6 +60,8 @@ export type Registry = {
   storage: Record<string, Entry<ObjectStorage, Record<never, never>>>;
   reporter: Record<string, Entry<ErrorReporter, { logger: Logger }>>;
   metrics: Record<string, Entry<Metrics, { logger: Logger }>>;
+  auth: Record<string, Entry<Auth, { database: Database; clock: Clock; ids: IdGenerator }>>;
+  limiter: Record<string, Entry<RateLimiter, { database: Database; clock: Clock }>>;
 };
 
 const OFFLINE: readonly string[] = [];
@@ -104,5 +112,13 @@ export const registry: Registry = {
     none: { hosts: OFFLINE, create: () => createNoneMetrics() },
     memory: { hosts: OFFLINE, create: () => createMemoryMetrics() },
     log: { hosts: OFFLINE, create: (_s, d) => createLogMetrics({ logger: d.logger }) },
+  },
+  auth: {
+    local: { hosts: OFFLINE, create: (_s, d) => createLocalAuth({ database: d.database, clock: d.clock, ids: d.ids }) },
+    memory: { hosts: OFFLINE, create: (_s, d) => createMemoryAuth({ clock: d.clock, ids: d.ids }) },
+  },
+  limiter: {
+    memory: { hosts: OFFLINE, create: (_s, d) => createMemoryLimiter({ clock: d.clock }) },
+    database: { hosts: OFFLINE, create: (_s, d) => createDatabaseLimiter({ database: d.database, clock: d.clock }) },
   },
 };

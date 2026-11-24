@@ -60,6 +60,7 @@ Existing files in the guarded folders:
 | src/lib/step.ts | 1, 5 | Task 1: optional `sensitive` flag. Task 5: `Ports` gets `auth`, `payments`, `limiter`, and `PortName` gets `auth` and `payments` |
 | src/lib/strip.ts | 1 | Optional `sensitive` flag: no payload in logs or reports |
 | src/features/profile/** | none | The example feature is not edited |
+| src/features/accounts/domain.ts | 8 | One line: the session cookie name is imported from `src/shared/session.ts` instead of defined here, so the accounts feature and the keys page read one constant and no feature imports another (R42). Added during task 8 under the delegation, one existing file of this spec |
 
 Existing files outside the guarded folders:
 

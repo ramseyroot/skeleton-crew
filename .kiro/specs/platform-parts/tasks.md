@@ -61,7 +61,7 @@ If time runs short, cut in the order the builder confirmed (A13): the pages beyo
   - Plans seed, steps, strips, billing page, fake checkout page, webhook handling with idempotency, `feature.json`.
   - _Requirements: 5.1 to 5.4, 8.4, 9.1 to 9.4, 11.1, 11.2_
 
-- [ ] 10. Feature `usage`
+- [x] 10. Feature `usage`
   - Mode: sequential
   - Writes: src/features/usage/**, src/app/features.ts
   - Counters, month summary, usage page with stories, `feature.json`.

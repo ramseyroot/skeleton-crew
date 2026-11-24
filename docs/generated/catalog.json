@@ -557,6 +557,53 @@
       ]
     },
     {
+      "name": "db.usage.increment",
+      "class": "db",
+      "feature": "usage",
+      "file": "src/features/usage/steps/db/usage.increment.ts",
+      "input": "RecordRequestSchema",
+      "output": "z.object({ counterKey: z.string(), total: z.number().int() })",
+      "permissions": {
+        "reads": [
+          "usage_counters"
+        ],
+        "writes": [
+          "usage_counters"
+        ],
+        "storage": []
+      },
+      "errors": [
+        "network",
+        "unexpected"
+      ],
+      "usedBy": [
+        "usage.record"
+      ]
+    },
+    {
+      "name": "db.usage.listMonth",
+      "class": "db",
+      "feature": "usage",
+      "file": "src/features/usage/steps/db/usage.listMonth.ts",
+      "input": "z.object({ principal: PrincipalSchema })",
+      "output": "MonthRowsSchema",
+      "permissions": {
+        "reads": [
+          "usage_counters"
+        ],
+        "writes": [],
+        "storage": []
+      },
+      "errors": [
+        "network",
+        "unauthorized",
+        "unexpected"
+      ],
+      "usedBy": [
+        "usage.month"
+      ]
+    },
+    {
       "name": "db.user.findProfile",
       "class": "db",
       "feature": "profile",
@@ -715,6 +762,23 @@
       ],
       "usedBy": [
         "profile.save"
+      ]
+    },
+    {
+      "name": "pure.usage.summarize",
+      "class": "pure",
+      "feature": "usage",
+      "file": "src/features/usage/steps/pure/usage.summarize.ts",
+      "input": "MonthRowsSchema",
+      "output": "UsageMonthSchema",
+      "permissions": {
+        "reads": [],
+        "writes": [],
+        "storage": []
+      },
+      "errors": [],
+      "usedBy": [
+        "usage.month"
       ]
     }
   ],
@@ -1022,6 +1086,39 @@
         ],
         "writes": [
           "cache:profile"
+        ],
+        "storage": []
+      }
+    },
+    {
+      "name": "usage.month",
+      "feature": "usage",
+      "file": "src/features/usage/strips/usage.month.strip.ts",
+      "steps": [
+        "db.usage.listMonth",
+        "pure.usage.summarize"
+      ],
+      "budget": {
+        "reads": [
+          "usage_counters"
+        ],
+        "writes": [],
+        "storage": []
+      }
+    },
+    {
+      "name": "usage.record",
+      "feature": "usage",
+      "file": "src/features/usage/strips/usage.record.strip.ts",
+      "steps": [
+        "db.usage.increment"
+      ],
+      "budget": {
+        "reads": [
+          "usage_counters"
+        ],
+        "writes": [
+          "usage_counters"
         ],
         "storage": []
       }

@@ -8,12 +8,14 @@ import { profileFeature } from "../features/profile/index.ts";
 import { accountsFeature } from "../features/accounts/index.ts";
 import { apiKeysFeature } from "../features/api-keys/index.ts";
 import { billingFeature } from "../features/billing/index.ts";
+import { usageFeature } from "../features/usage/index.ts";
 
 export const features: readonly FeatureModule[] = [
   profileFeature,
   accountsFeature,
   apiKeysFeature,
   billingFeature,
+  usageFeature,
 ];
 
 assertDistinctCollections(features);

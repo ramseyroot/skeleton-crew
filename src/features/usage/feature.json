@@ -1,0 +1,10 @@
+{
+  "name": "usage",
+  "module": "usageFeature",
+  "routes": [
+    {
+      "stub": "src/app/usage/page.tsx",
+      "content": "// Route stub: the page lives in its feature. Delete this file when the feature is removed.\nimport { UsagePage } from \"../../features/usage/page.tsx\";\nimport { currentPrincipal } from \"../session.ts\";\n\nexport default async function Page() {\n  return UsagePage({ principal: await currentPrincipal() });\n}"
+    }
+  ]
+}

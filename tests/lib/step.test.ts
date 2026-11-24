@@ -447,3 +447,37 @@ test("steps cannot reach the reporter or the metrics port", async () => {
   });
   assert.deepEqual(await step.execute({ name: "x" }, run(ports)), ok({ keys: "clock,ids,log,stripId" }));
 });
+
+test("a sensitive step logs no input, no output and no error text, in any environment", async () => {
+  for (const env of ["local", "dev", "prod"]) {
+    const { ports, logger, reporter } = await makePorts(env);
+    const step = defineStep({
+      name: "db.accounts.create",
+      class: "db",
+      input: z.object({ email: z.string(), password: z.string() }),
+      output: z.object({ token: z.string() }),
+      permissions: NONE,
+      errors: ["conflict"],
+      sensitive: true,
+      run: (i, ctx) =>
+        i.email === "taken@example.com"
+          ? err(makeError("conflict", "db.accounts.create", ctx.stripId, `password ${i.password} rejected`, { cause: new Error(i.password) }))
+          : { token: `tok-${i.password}` },
+    });
+    await step.execute({ email: "a@b.c", password: "hunter2-hunter2" }, run(ports));
+    await step.execute({ email: "taken@example.com", password: "hunter2-hunter2" }, run(ports));
+    const everything = JSON.stringify([logger.entries, reporter.reports.map((r) => r.context)]);
+    assert.equal(everything.includes("hunter2"), false, `${env}: ${everything}`);
+    assert.equal(everything.includes("a@b.c"), false);
+    const end = logger.entries.filter((e) => e.phase === "end");
+    assert.equal(end.length, 2);
+    assert.equal(end[1]?.error?.kind, "conflict");
+    assert.equal(end[1]?.error?.message, undefined);
+    assert.equal(step.manifest.sensitive, true);
+  }
+});
+
+test("a step is not sensitive unless it says so", () => {
+  const step = defineStep({ name: "pure.name.plain", class: "pure", input: Name, output: Len, permissions: NONE, errors: [], run: (i) => ({ length: i.name.length }) });
+  assert.equal(step.manifest.sensitive, false);
+});

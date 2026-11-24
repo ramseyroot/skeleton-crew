@@ -102,6 +102,8 @@ export type StepManifest = {
   permissions: Permissions;
   errors: readonly ErrorKind[];
   uses: readonly PortName[];
+  /** True when the step handles secrets (passwords, tokens, keys): nothing it receives or returns is logged. */
+  sensitive: boolean;
 };
 
 export type Step<I, O, N extends string = string> = {
@@ -136,6 +138,11 @@ export type StepDefinition<
   /** The ports this step needs. Defaults to none. */
   uses?: U;
   /**
+   * Set to true for a step that handles passwords, tokens or keys. Its input, its output and its error text are
+   * then never logged, in any environment. Only names, timing and the error kind are.
+   */
+  sensitive?: boolean;
+  /**
    * The function. It returns a value, or a `Result` when it has expected failures.
    * An output that is itself shaped like a Result (`{ ok, value | error }`) is not supported.
    */
@@ -159,6 +166,7 @@ export function defineStep<
     permissions: def.permissions,
     errors: def.errors,
     uses: def.uses ?? [],
+    sensitive: def.sensitive === true,
   };
   const declared = new Set<ErrorKind>([...def.errors, "validation", "unexpected"]);
 
@@ -177,7 +185,7 @@ export function defineStep<
           // A logger must never fail a step.
         }
       };
-      safeLog({ ...base, phase: "start", input });
+      safeLog({ ...base, phase: "start", ...(manifest.sensitive ? {} : { input }) });
 
       const finish = (result: Result<z.output<Out>>): Result<z.output<Out>> => {
         const ms = Math.round(performance.now() - started);
@@ -191,7 +199,7 @@ export function defineStep<
           // Telemetry never fails a step.
         }
         if (result.ok) {
-          safeLog({ ...base, phase: "end", ok: true, ms, output: result.value });
+          safeLog({ ...base, phase: "end", ok: true, ms, ...(manifest.sensitive ? {} : { output: result.value }) });
         } else {
           const e = result.error;
           safeLog({
@@ -199,7 +207,7 @@ export function defineStep<
             phase: "end",
             ok: false,
             ms,
-            error: { kind: e.kind, audience: e.audience, message: e.message },
+            error: { kind: e.kind, audience: e.audience, ...(manifest.sensitive ? {} : { message: e.message }) },
           });
           if (!declared.has(e.kind)) {
             safeLog({ ...base, phase: "debug", message: `step returned error kind "${e.kind}" that its manifest does not declare` });

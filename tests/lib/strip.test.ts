@@ -430,3 +430,35 @@ test("a run emits strip.runs and strip.duration_ms with the strip, the outcome a
   ]);
   assert.equal(metrics.points.some((p) => p.name === "step.duration_ms" && p.tags.step === "db.t.rename"), true);
 });
+
+// ---- sensitive strips -----------------------------------------------------------
+
+test("a strip with a sensitive step is sensitive, and nothing of its input or error text is logged or reported", async () => {
+  const secretStep = defineStep({
+    name: "api.t.secret",
+    class: "api",
+    input: Form,
+    output: Form,
+    permissions: NONE,
+    errors: ["network"],
+    sensitive: true,
+    run: (i, ctx) => err(makeError("unexpected", "api.t.secret", ctx.stripId, `failed for ${i.name}`)),
+  });
+  for (const env of ["local", "prod"]) {
+    const { ports, logger, reporter } = await makePorts();
+    const p = { ...ports, env };
+    const strip = defineStrip({ ...base, invalidates: [], steps: [secretStep], routing: { "*": "abort" } });
+    assert.equal(strip.sensitive, true);
+    const r = await runStrip(strip, p, { userId: "u1", name: "hunter2-hunter2" });
+    assert.equal(r.ok, false);
+    const everything = JSON.stringify([logger.entries, reporter.reports.map((x) => [x.error.message, x.context])]);
+    assert.equal(everything.includes("hunter2"), false, everything);
+    assert.equal(reporter.reports.length, 1);
+    assert.equal(reporter.reports[0]?.error.kind, "unexpected");
+  }
+});
+
+test("a strip without a sensitive step is not sensitive, and can be marked so", () => {
+  assert.equal(defineStrip({ ...base, steps: [parse, rename], routing: { "*": "abort" } }).sensitive, false);
+  assert.equal(defineStrip({ ...base, sensitive: true, steps: [parse, rename], routing: { "*": "abort" } }).sensitive, true);
+});

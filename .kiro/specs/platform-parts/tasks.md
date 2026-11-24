@@ -1,6 +1,6 @@
 ---
 created: 2026-11-23
-updated: 2026-11-23
+updated: 2026-11-24
 ---
 
 # Implementation Plan: Platform Parts
@@ -9,7 +9,7 @@ Tasks 2 and 3 run in parallel worktrees (`pnpm worktree create <id> --spec platf
 
 If time runs short, cut in the order the builder confirmed (A13): the pages beyond the keys portal, the `database` rate limiter, the real Paystack adapter.
 
-- [ ] 1. Principal, authorization helpers, the API pipeline and the `sensitive` flag
+- [x] 1. Principal, authorization helpers, the API pipeline and the `sensitive` flag
   - Mode: sequential
   - Writes: src/lib/principal.ts, src/lib/authz.ts, src/lib/authz.test.ts, src/lib/http.ts, tests/lib/http.test.ts, src/lib/step.ts, src/lib/strip.ts, tests/lib/step.test.ts, tests/lib/strip.test.ts
   - `Principal`, the three authz helpers, `statusOf`, `errorBody`, rate limit headers, `createApiHandler` with fake dependencies in its tests. `sensitive` on `defineStep` and `defineStrip`: no input, output or message in logs or reports for them.

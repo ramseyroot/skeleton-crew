@@ -79,6 +79,8 @@ export type StripDefinition<N extends string, S extends readonly AnyStep[], F ex
   steps: S;
   /** Steps that run only through a `recover:<name>` route. They are not part of the chain. */
   fallbacks?: F;
+  /** True when the strip handles secrets. Its input and the text of its errors are then never logged or reported. A strip that contains a sensitive step is sensitive too. */
+  sensitive?: boolean;
   /** Cache keys a write makes stale. `{name}` is replaced from the strip input. Write `[]` when nothing is affected. */
   invalidates: readonly string[];
   routing: Routing<S, Names<F>>;
@@ -96,6 +98,7 @@ export type Strip<I, O, N extends string = string> = {
   readonly steps: readonly AnyStep[];
   readonly fallbacks: readonly AnyStep[];
   readonly invalidates: readonly string[];
+  readonly sensitive: boolean;
   readonly routing: Readonly<Record<string, unknown>>;
   /** Phantom fields for the types of input and output. Never read. */
   readonly __types?: { input: I; output: O };
@@ -179,7 +182,15 @@ export function defineStrip<
     }
   }
 
-  return { name, budget: def.budget, steps, fallbacks, invalidates: def.invalidates, routing };
+  return {
+    name,
+    budget: def.budget,
+    steps,
+    fallbacks,
+    invalidates: def.invalidates,
+    sensitive: def.sensitive === true || [...steps, ...fallbacks].some((s) => s.manifest.sensitive),
+    routing,
+  };
 }
 
 /** A write to data (not to the cache) makes cached copies stale. */
@@ -228,6 +239,11 @@ function resolvePlaceholders(template: string, input: unknown): { key: string } 
   return missing === null ? { key } : { missing };
 }
 
+/** A copy of the error with its text replaced and no cause, for strips that handle secrets. */
+function withholdText(error: StepError): StepError {
+  return { ...error, message: "(text withheld: sensitive strip)" } as StepError;
+}
+
 export async function runStrip<I, O, N extends string>(
   strip: Strip<I, O, N>,
   ports: Ports,
@@ -252,7 +268,14 @@ export async function runStrip<I, O, N extends string>(
   const finish = (result: StripResult<O>): StripResult<O> => {
     const ms = Math.round(performance.now() - started);
     if (result.ok) log({ phase: "end", ok: true, ms });
-    else log({ phase: "end", ok: false, ms, error: { kind: result.error.kind, audience: result.error.audience, message: result.error.message } });
+    else {
+      log({
+        phase: "end",
+        ok: false,
+        ms,
+        error: { kind: result.error.kind, audience: result.error.audience, ...(strip.sensitive ? {} : { message: result.error.message }) },
+      });
+    }
     // Telemetry is sent last and can never change the result.
     try {
       const tags = result.ok ? { strip: strip.name, outcome: "ok" as const } : { strip: strip.name, outcome: "error" as const, kind: result.error.kind };
@@ -262,7 +285,10 @@ export async function runStrip<I, O, N extends string>(
       // ignored
     }
     try {
-      if (!result.ok && shouldReport(result.error)) ports.reporter.report(result.error, { strip: strip.name, stripId, env: ports.env });
+      if (!result.ok && shouldReport(result.error)) {
+        const reported = strip.sensitive ? withholdText(result.error) : result.error;
+        ports.reporter.report(reported, { strip: strip.name, stripId, env: ports.env });
+      }
     } catch {
       // ignored
     }
@@ -270,7 +296,7 @@ export async function runStrip<I, O, N extends string>(
   };
   const abort = (error: StepError): StripResult<O> => finish({ ok: false, error, display: displayFor(error, stripId), stripId });
 
-  log({ phase: "start", input });
+  log({ phase: "start", ...(strip.sensitive ? {} : { input }) });
 
   try {
     let value: unknown = input;

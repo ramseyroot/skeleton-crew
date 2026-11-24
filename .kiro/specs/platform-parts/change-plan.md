@@ -62,9 +62,14 @@ Existing files in the guarded folders:
 | src/features/profile/** | none | The example feature is not edited |
 | src/features/accounts/domain.ts | 8 | One line: the session cookie name is imported from `src/shared/session.ts` instead of defined here, so the accounts feature and the keys page read one constant and no feature imports another (R42). Added during task 8 under the delegation, one existing file of this spec |
 | src/lib/feature.ts | 11 | Task 11 decision, see progress.md: a feature module may carry optional `api` parts (who a session or key belongs to, limits, monthly use, recording). `src/app/api.ts` reads them from the `features` list, so it imports no feature and `pnpm feature disable <name>` still leaves the checks green (requirement 1.3). The type is optional, so no existing feature changes behavior |
-| src/features/accounts/feature.ts, src/features/api-keys/feature.ts, src/features/billing/feature.ts, src/features/usage/feature.ts | 11 | Each adds its `api` parts, built from its own strips |
-| src/features/accounts/index.ts, src/features/billing/index.ts | 11 | Export the `me.get` endpoint and the webhook handler for the route stubs |
-| src/features/accounts/feature.json, src/features/billing/feature.json | 11 | List the new route stubs (`/api/v1/me` and `/api/webhooks/payments`) so disable removes them |
+| src/features/accounts/feature.ts | 11 | Adds its `api` parts, built from its own strips |
+| src/features/api-keys/feature.ts | 11 | Adds its `api` parts, built from its own strips |
+| src/features/billing/feature.ts | 11 | Adds its `api` parts, built from its own strips |
+| src/features/usage/feature.ts | 11 | Adds its `api` parts, built from its own strips |
+| src/features/accounts/index.ts | 11 | Exports what its route stubs need (the `me.get` endpoint) |
+| src/features/billing/index.ts | 11 | Exports what its route stubs need (the webhook handler) |
+| src/features/accounts/feature.json | 11 | Lists the new route stub `/api/v1/me`, so disable removes it |
+| src/features/billing/feature.json | 11 | Lists the new route stub `/api/webhooks/payments`, so disable removes it |
 
 Existing files outside the guarded folders:
 

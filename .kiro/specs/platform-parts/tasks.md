@@ -49,7 +49,7 @@ If time runs short, cut in the order the builder confirmed (A13): the pages beyo
   - Steps, strips and tests as in design 5.1, the `me.get` endpoint definition, log in and sign up pages with stories, Server Actions that set the session cookie, `feature.json`, seed of one demo account.
   - _Requirements: 1.1 to 1.3, 2.1 to 2.7, 4.3, 11.1, 11.2_
 
-- [ ] 8. Feature `api-keys`
+- [x] 8. Feature `api-keys`
   - Mode: sequential
   - Writes: src/features/api-keys/**, src/app/features.ts
   - Steps, strips, `keygen.ts` helper, the keys page with stories, `feature.json`. A test feeds a known key through every strip and checks the logger, reporter and metrics hold no trace of it.

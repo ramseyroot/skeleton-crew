@@ -18,7 +18,7 @@ export const SessionSchema = z.object({ token: z.string(), expiresAt: z.string()
 /** The collections the local Auth adapter keeps through the Database port. */
 export const collections: CollectionDef[] = AUTH_COLLECTIONS;
 
-export const SESSION_COOKIE = "sk_session";
+export { SESSION_COOKIE } from "../../shared/session.ts";
 
 /** The demo account added outside prod. Its password is public on purpose: it only exists in local and dev data. */
 export const DEMO_ACCOUNT = { email: "demo@example.com", password: "demo-password-123" } as const;

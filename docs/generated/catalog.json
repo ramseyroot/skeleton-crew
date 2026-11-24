@@ -188,6 +188,155 @@
       ]
     },
     {
+      "name": "db.keys.create",
+      "class": "db",
+      "feature": "api-keys",
+      "file": "src/features/api-keys/steps/db/keys.create.ts",
+      "input": "CheckedCreateSchema",
+      "output": "CreatedKeySchema",
+      "permissions": {
+        "reads": [],
+        "writes": [
+          "api_keys"
+        ],
+        "storage": []
+      },
+      "errors": [
+        "conflict",
+        "network",
+        "unauthorized",
+        "unexpected"
+      ],
+      "usedBy": [
+        "keys.create"
+      ]
+    },
+    {
+      "name": "db.keys.list",
+      "class": "db",
+      "feature": "api-keys",
+      "file": "src/features/api-keys/steps/db/keys.list.ts",
+      "input": "z.object({ principal: PrincipalSchema })",
+      "output": "z.object({ keys: z.array(KeyRowSchema) })",
+      "permissions": {
+        "reads": [
+          "api_keys"
+        ],
+        "writes": [],
+        "storage": []
+      },
+      "errors": [
+        "network",
+        "unauthorized",
+        "unexpected"
+      ],
+      "usedBy": [
+        "keys.list"
+      ]
+    },
+    {
+      "name": "db.keys.revoke",
+      "class": "db",
+      "feature": "api-keys",
+      "file": "src/features/api-keys/steps/db/keys.revoke.ts",
+      "input": "z.object({ principal: PrincipalSchema, keyId: z.string().min(1) })",
+      "output": "z.object({ id: z.string(), revokedAt: z.string() })",
+      "permissions": {
+        "reads": [
+          "api_keys"
+        ],
+        "writes": [
+          "api_keys"
+        ],
+        "storage": []
+      },
+      "errors": [
+        "forbidden",
+        "network",
+        "not_found",
+        "unauthorized",
+        "unexpected"
+      ],
+      "usedBy": [
+        "keys.revoke"
+      ]
+    },
+    {
+      "name": "db.keys.rotate",
+      "class": "db",
+      "feature": "api-keys",
+      "file": "src/features/api-keys/steps/db/keys.rotate.ts",
+      "input": "z.object({ principal: PrincipalSchema, keyId: z.string().min(1) })",
+      "output": "CreatedKeySchema.extend({ replacedId: z.string() })",
+      "permissions": {
+        "reads": [
+          "api_keys"
+        ],
+        "writes": [
+          "api_keys"
+        ],
+        "storage": []
+      },
+      "errors": [
+        "conflict",
+        "forbidden",
+        "network",
+        "not_found",
+        "unauthorized",
+        "unexpected"
+      ],
+      "usedBy": [
+        "keys.rotate"
+      ]
+    },
+    {
+      "name": "db.keys.touch",
+      "class": "db",
+      "feature": "api-keys",
+      "file": "src/features/api-keys/steps/db/keys.touch.ts",
+      "input": "VerifiedKeySchema",
+      "output": "VerifiedKeySchema",
+      "permissions": {
+        "reads": [],
+        "writes": [
+          "api_keys"
+        ],
+        "storage": []
+      },
+      "errors": [
+        "network",
+        "not_found",
+        "unexpected"
+      ],
+      "usedBy": [
+        "keys.verify"
+      ]
+    },
+    {
+      "name": "db.keys.verify",
+      "class": "db",
+      "feature": "api-keys",
+      "file": "src/features/api-keys/steps/db/keys.verify.ts",
+      "input": "z.object({ key: z.string() })",
+      "output": "VerifiedKeySchema",
+      "permissions": {
+        "reads": [
+          "accounts",
+          "api_keys"
+        ],
+        "writes": [],
+        "storage": []
+      },
+      "errors": [
+        "network",
+        "unauthorized",
+        "unexpected"
+      ],
+      "usedBy": [
+        "keys.verify"
+      ]
+    },
+    {
       "name": "db.user.findProfile",
       "class": "db",
       "feature": "profile",
@@ -270,6 +419,26 @@
       ],
       "usedBy": [
         "accounts.signup"
+      ]
+    },
+    {
+      "name": "pure.keys.parseCreate",
+      "class": "pure",
+      "feature": "api-keys",
+      "file": "src/features/api-keys/steps/pure/keys.parseCreate.ts",
+      "input": "CreateRequestSchema",
+      "output": "CheckedCreateSchema",
+      "permissions": {
+        "reads": [],
+        "writes": [],
+        "storage": []
+      },
+      "errors": [
+        "unauthorized",
+        "validation"
+      ],
+      "usedBy": [
+        "keys.create"
       ]
     },
     {
@@ -386,6 +555,90 @@
         ],
         "writes": [
           "sessions"
+        ],
+        "storage": []
+      }
+    },
+    {
+      "name": "keys.create",
+      "feature": "api-keys",
+      "file": "src/features/api-keys/strips/keys.create.strip.ts",
+      "steps": [
+        "pure.keys.parseCreate",
+        "db.keys.create"
+      ],
+      "budget": {
+        "reads": [],
+        "writes": [
+          "api_keys"
+        ],
+        "storage": []
+      }
+    },
+    {
+      "name": "keys.list",
+      "feature": "api-keys",
+      "file": "src/features/api-keys/strips/keys.list.strip.ts",
+      "steps": [
+        "db.keys.list"
+      ],
+      "budget": {
+        "reads": [
+          "api_keys"
+        ],
+        "writes": [],
+        "storage": []
+      }
+    },
+    {
+      "name": "keys.revoke",
+      "feature": "api-keys",
+      "file": "src/features/api-keys/strips/keys.revoke.strip.ts",
+      "steps": [
+        "db.keys.revoke"
+      ],
+      "budget": {
+        "reads": [
+          "api_keys"
+        ],
+        "writes": [
+          "api_keys"
+        ],
+        "storage": []
+      }
+    },
+    {
+      "name": "keys.rotate",
+      "feature": "api-keys",
+      "file": "src/features/api-keys/strips/keys.rotate.strip.ts",
+      "steps": [
+        "db.keys.rotate"
+      ],
+      "budget": {
+        "reads": [
+          "api_keys"
+        ],
+        "writes": [
+          "api_keys"
+        ],
+        "storage": []
+      }
+    },
+    {
+      "name": "keys.verify",
+      "feature": "api-keys",
+      "file": "src/features/api-keys/strips/keys.verify.strip.ts",
+      "steps": [
+        "db.keys.verify",
+        "db.keys.touch"
+      ],
+      "budget": {
+        "reads": [
+          "accounts",
+          "api_keys"
+        ],
+        "writes": [
+          "api_keys"
         ],
         "storage": []
       }

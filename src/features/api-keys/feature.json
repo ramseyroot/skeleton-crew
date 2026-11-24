@@ -1,0 +1,10 @@
+{
+  "name": "api-keys",
+  "module": "apiKeysFeature",
+  "routes": [
+    {
+      "stub": "src/app/keys/page.tsx",
+      "content": "// Route stub: the page lives in its feature. Delete this file when the feature is removed.\nimport { KeysPage } from \"../../features/api-keys/page.tsx\";\nimport { currentPrincipal } from \"../session.ts\";\n\nexport default async function Page() {\n  return KeysPage({ principal: await currentPrincipal() });\n}"
+    }
+  ]
+}

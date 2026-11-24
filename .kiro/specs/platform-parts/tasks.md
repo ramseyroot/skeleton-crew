@@ -15,12 +15,12 @@ If time runs short, cut in the order the builder confirmed (A13): the pages beyo
   - `Principal`, the three authz helpers, `statusOf`, `errorBody`, rate limit headers, `createApiHandler` with fake dependencies in its tests. `sensitive` on `defineStep` and `defineStrip`: no input, output or message in logs or reports for them.
   - _Requirements: 4.1, 10.1 to 10.5, 12.3_
 
-- [ ] 2. RateLimiter port with memory and database adapters
+- [x] 2. RateLimiter port with memory and database adapters
   - Writes: src/ports/limiter.ts, src/adapters/limiter/**
   - Port, two adapters, contract suite with the concurrency test, `errors.ts`, the `rate_windows` collection definition in the adapter folder.
   - _Requirements: 6.1, 6.2, 6.6_
 
-- [ ] 3. Auth port with local and memory adapters
+- [x] 3. Auth port with local and memory adapters
   - Writes: src/ports/auth.ts, src/adapters/auth/**
   - Port, `AUTH_COLLECTIONS`, the password policy helper, two adapters, contract suite (timing-similar failures, sessions, expiry), `errors.ts`.
   - _Requirements: 2.1 to 2.7_

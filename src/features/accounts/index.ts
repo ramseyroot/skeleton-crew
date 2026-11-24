@@ -10,3 +10,4 @@ export { me } from "./strips/accounts.me.strip.ts";
 export { signup } from "./strips/accounts.signup.strip.ts";
 export { start } from "./strips/accounts.start.strip.ts";
 export { whoami } from "./strips/accounts.whoami.strip.ts";
+export { meEndpoint } from "./endpoint.ts";

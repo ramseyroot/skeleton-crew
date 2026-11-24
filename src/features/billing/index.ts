@@ -8,3 +8,4 @@ export { checkout } from "./strips/billing.checkout.strip.ts";
 export { entitlement } from "./strips/billing.entitlement.strip.ts";
 export { plan } from "./strips/billing.plan.strip.ts";
 export { webhook } from "./strips/billing.webhook.strip.ts";
+export { handleWebhook } from "./webhook.ts";

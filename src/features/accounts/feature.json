@@ -9,6 +9,10 @@
     {
       "stub": "src/app/signup/page.tsx",
       "content": "// Route stub: the page lives in its feature. Delete this file when the feature is removed.\nexport { SignupPage as default } from \"../../features/accounts/page.tsx\";"
+    },
+    {
+      "stub": "src/app/api/v1/me/route.ts",
+      "content": "// Route stub: the route lives in its feature. Delete this file when the feature is removed.\nimport { meEndpoint } from \"../../../../features/accounts/index.ts\";\nimport { handleApi } from \"../../../api.ts\";\n\nexport const GET = (request: Request) => handleApi(request, meEndpoint);"
     }
   ]
 }

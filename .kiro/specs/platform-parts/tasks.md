@@ -67,7 +67,7 @@ If time runs short, cut in the order the builder confirmed (A13): the pages beyo
   - Counters, month summary, usage page with stories, `feature.json`.
   - _Requirements: 7.1 to 7.4, 11.1, 11.2_
 
-- [ ] 11. App composition, routes and end-to-end tests
+- [x] 11. App composition, routes and end-to-end tests
   - Mode: sequential
   - Writes: src/app/api.ts, src/app/api/**, src/app/login/**, src/app/signup/**, src/app/keys/**, src/app/billing/**, src/app/usage/**, tests/e2e/**, src/app/runtime.ts
   - `src/app/api.ts` builds the pipeline dependencies from the four features. Routes and route stubs (listed in each manifest). End-to-end tests through `Request` and `Response` for every case in design section 8. `pnpm feature disable` for each new feature leaves `pnpm check` green, tried on a clone.

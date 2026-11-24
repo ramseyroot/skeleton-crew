@@ -9,6 +9,10 @@
     {
       "stub": "src/app/billing/fake-checkout/page.tsx",
       "content": "// Route stub: the page lives in its feature. Delete this file when the feature is removed.\nexport { FakeCheckoutPage as default } from \"../../../features/billing/page.tsx\";"
+    },
+    {
+      "stub": "src/app/api/webhooks/payments/route.ts",
+      "content": "// Route stub: the route lives in its feature. Delete this file when the feature is removed.\nimport { handleWebhook } from \"../../../../features/billing/index.ts\";\nimport { getRuntime } from \"../../../runtime.ts\";\n\nexport async function POST(request: Request) {\n  return handleWebhook(request, (await getRuntime()).ports);\n}"
     }
   ]
 }

@@ -1,6 +1,8 @@
 import { defineFeature } from "../../lib/feature.ts";
 import { err, ok } from "../../lib/result.ts";
+import { runStrip } from "../../lib/strip.ts";
 import { DEMO_ACCOUNT, collections } from "./domain.ts";
+import { whoami } from "./strips/accounts.whoami.strip.ts";
 
 /**
  * What the accounts feature tells the app: the collections the local Auth adapter needs, and one demo account.
@@ -9,6 +11,12 @@ import { DEMO_ACCOUNT, collections } from "./domain.ts";
 export const accountsFeature = defineFeature({
   name: "accounts",
   collections,
+  api: {
+    sessionPrincipal: async (token, ports) => {
+      const who = await runStrip(whoami, ports, { token });
+      return who.ok ? ok({ kind: "user" as const, accountId: who.value.id, role: who.value.role }) : err(who.error);
+    },
+  },
   seed: async (ports) => {
     const created = await ports.auth.createAccount({ email: DEMO_ACCOUNT.email, password: DEMO_ACCOUNT.password });
     if (created.ok || created.error.kind === "conflict") return ok(undefined);

@@ -1,0 +1,14 @@
+{
+  "name": "billing",
+  "module": "billingFeature",
+  "routes": [
+    {
+      "stub": "src/app/billing/page.tsx",
+      "content": "// Route stub: the page lives in its feature. Delete this file when the feature is removed.\nimport { BillingPage } from \"../../features/billing/page.tsx\";\nimport { currentPrincipal } from \"../session.ts\";\n\nexport default async function Page() {\n  return BillingPage({ principal: await currentPrincipal() });\n}"
+    },
+    {
+      "stub": "src/app/billing/fake-checkout/page.tsx",
+      "content": "// Route stub: the page lives in its feature. Delete this file when the feature is removed.\nexport { FakeCheckoutPage as default } from \"../../../features/billing/page.tsx\";"
+    }
+  ]
+}

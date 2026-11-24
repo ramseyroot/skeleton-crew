@@ -2,6 +2,77 @@
   "version": 1,
   "steps": [
     {
+      "name": "api.billing.cancelSubscription",
+      "class": "api",
+      "feature": "billing",
+      "file": "src/features/billing/steps/api/billing.cancelSubscription.ts",
+      "input": "CancelTargetSchema",
+      "output": "CancelTargetSchema",
+      "permissions": {
+        "reads": [],
+        "writes": [],
+        "storage": []
+      },
+      "errors": [
+        "forbidden",
+        "network",
+        "not_found",
+        "unexpected",
+        "upstream"
+      ],
+      "usedBy": [
+        "billing.cancel"
+      ]
+    },
+    {
+      "name": "api.billing.createCheckout",
+      "class": "api",
+      "feature": "billing",
+      "file": "src/features/billing/steps/api/billing.createCheckout.ts",
+      "input": "CheckoutPlanSchema",
+      "output": "CheckoutSchema",
+      "permissions": {
+        "reads": [
+          "accounts"
+        ],
+        "writes": [],
+        "storage": []
+      },
+      "errors": [
+        "forbidden",
+        "network",
+        "not_found",
+        "unexpected",
+        "upstream",
+        "validation"
+      ],
+      "usedBy": [
+        "billing.checkout"
+      ]
+    },
+    {
+      "name": "api.billing.parseWebhook",
+      "class": "api",
+      "feature": "billing",
+      "file": "src/features/billing/steps/api/billing.parseWebhook.ts",
+      "input": "WebhookInputSchema",
+      "output": "PaymentEventSchema",
+      "permissions": {
+        "reads": [],
+        "writes": [],
+        "storage": []
+      },
+      "errors": [
+        "network",
+        "unauthorized",
+        "unexpected",
+        "validation"
+      ],
+      "usedBy": [
+        "billing.webhook"
+      ]
+    },
+    {
       "name": "cache.profile.read",
       "class": "cache",
       "feature": "profile",
@@ -185,6 +256,155 @@
       ],
       "usedBy": [
         "accounts.whoami"
+      ]
+    },
+    {
+      "name": "db.billing.currentPlan",
+      "class": "db",
+      "feature": "billing",
+      "file": "src/features/billing/steps/db/billing.currentPlan.ts",
+      "input": "z.object({ principal: PrincipalSchema })",
+      "output": "CurrentPlanSchema",
+      "permissions": {
+        "reads": [
+          "plans",
+          "subscriptions"
+        ],
+        "writes": [],
+        "storage": []
+      },
+      "errors": [
+        "network",
+        "not_found",
+        "unauthorized",
+        "unexpected"
+      ],
+      "usedBy": [
+        "billing.plan"
+      ]
+    },
+    {
+      "name": "db.billing.findPlan",
+      "class": "db",
+      "feature": "billing",
+      "file": "src/features/billing/steps/db/billing.findPlan.ts",
+      "input": "CheckedCheckoutSchema",
+      "output": "CheckoutPlanSchema",
+      "permissions": {
+        "reads": [
+          "plans"
+        ],
+        "writes": [],
+        "storage": []
+      },
+      "errors": [
+        "network",
+        "not_found",
+        "unauthorized",
+        "unexpected",
+        "validation"
+      ],
+      "usedBy": [
+        "billing.checkout"
+      ]
+    },
+    {
+      "name": "db.billing.findSubscription",
+      "class": "db",
+      "feature": "billing",
+      "file": "src/features/billing/steps/db/billing.findSubscription.ts",
+      "input": "z.object({ principal: PrincipalSchema })",
+      "output": "CancelTargetSchema",
+      "permissions": {
+        "reads": [
+          "subscriptions"
+        ],
+        "writes": [],
+        "storage": []
+      },
+      "errors": [
+        "network",
+        "not_found",
+        "unauthorized",
+        "unexpected"
+      ],
+      "usedBy": [
+        "billing.cancel"
+      ]
+    },
+    {
+      "name": "db.billing.markCancelled",
+      "class": "db",
+      "feature": "billing",
+      "file": "src/features/billing/steps/db/billing.markCancelled.ts",
+      "input": "CancelTargetSchema",
+      "output": "z.object({ accountId: z.string(), status: z.literal(\"cancelled\") })",
+      "permissions": {
+        "reads": [
+          "subscriptions"
+        ],
+        "writes": [
+          "subscriptions"
+        ],
+        "storage": []
+      },
+      "errors": [
+        "network",
+        "not_found",
+        "unexpected"
+      ],
+      "usedBy": [
+        "billing.cancel"
+      ]
+    },
+    {
+      "name": "db.billing.recordEvent",
+      "class": "db",
+      "feature": "billing",
+      "file": "src/features/billing/steps/db/billing.recordEvent.ts",
+      "input": "PaymentEventSchema",
+      "output": "RecordedEventSchema",
+      "permissions": {
+        "reads": [
+          "payment_events"
+        ],
+        "writes": [
+          "payment_events"
+        ],
+        "storage": []
+      },
+      "errors": [
+        "network",
+        "unexpected"
+      ],
+      "usedBy": [
+        "billing.webhook"
+      ]
+    },
+    {
+      "name": "db.billing.setPlan",
+      "class": "db",
+      "feature": "billing",
+      "file": "src/features/billing/steps/db/billing.setPlan.ts",
+      "input": "RecordedEventSchema",
+      "output": "AppliedSchema",
+      "permissions": {
+        "reads": [
+          "plans",
+          "subscriptions"
+        ],
+        "writes": [
+          "payment_events",
+          "subscriptions"
+        ],
+        "storage": []
+      },
+      "errors": [
+        "network",
+        "unexpected"
+      ],
+      "usedBy": [
+        "billing.webhook"
       ]
     },
     {
@@ -422,6 +642,43 @@
       ]
     },
     {
+      "name": "pure.billing.parseCheckout",
+      "class": "pure",
+      "feature": "billing",
+      "file": "src/features/billing/steps/pure/billing.parseCheckout.ts",
+      "input": "CheckoutRequestSchema",
+      "output": "CheckedCheckoutSchema",
+      "permissions": {
+        "reads": [],
+        "writes": [],
+        "storage": []
+      },
+      "errors": [
+        "unauthorized",
+        "validation"
+      ],
+      "usedBy": [
+        "billing.checkout"
+      ]
+    },
+    {
+      "name": "pure.billing.planAllows",
+      "class": "pure",
+      "feature": "billing",
+      "file": "src/features/billing/steps/pure/billing.planAllows.ts",
+      "input": "z.object({ features: z.array(z.string()), feature: z.string() })",
+      "output": "z.object({ allowed: z.boolean() })",
+      "permissions": {
+        "reads": [],
+        "writes": [],
+        "storage": []
+      },
+      "errors": [],
+      "usedBy": [
+        "billing.entitlement"
+      ]
+    },
+    {
       "name": "pure.keys.parseCreate",
       "class": "pure",
       "feature": "api-keys",
@@ -555,6 +812,94 @@
         ],
         "writes": [
           "sessions"
+        ],
+        "storage": []
+      }
+    },
+    {
+      "name": "billing.cancel",
+      "feature": "billing",
+      "file": "src/features/billing/strips/billing.cancel.strip.ts",
+      "steps": [
+        "db.billing.findSubscription",
+        "api.billing.cancelSubscription",
+        "db.billing.markCancelled"
+      ],
+      "budget": {
+        "reads": [
+          "subscriptions"
+        ],
+        "writes": [
+          "subscriptions"
+        ],
+        "storage": []
+      }
+    },
+    {
+      "name": "billing.checkout",
+      "feature": "billing",
+      "file": "src/features/billing/strips/billing.checkout.strip.ts",
+      "steps": [
+        "pure.billing.parseCheckout",
+        "db.billing.findPlan",
+        "api.billing.createCheckout"
+      ],
+      "budget": {
+        "reads": [
+          "accounts",
+          "plans"
+        ],
+        "writes": [],
+        "storage": []
+      }
+    },
+    {
+      "name": "billing.entitlement",
+      "feature": "billing",
+      "file": "src/features/billing/strips/billing.entitlement.strip.ts",
+      "steps": [
+        "pure.billing.planAllows"
+      ],
+      "budget": {
+        "reads": [],
+        "writes": [],
+        "storage": []
+      }
+    },
+    {
+      "name": "billing.plan",
+      "feature": "billing",
+      "file": "src/features/billing/strips/billing.plan.strip.ts",
+      "steps": [
+        "db.billing.currentPlan"
+      ],
+      "budget": {
+        "reads": [
+          "plans",
+          "subscriptions"
+        ],
+        "writes": [],
+        "storage": []
+      }
+    },
+    {
+      "name": "billing.webhook",
+      "feature": "billing",
+      "file": "src/features/billing/strips/billing.webhook.strip.ts",
+      "steps": [
+        "api.billing.parseWebhook",
+        "db.billing.recordEvent",
+        "db.billing.setPlan"
+      ],
+      "budget": {
+        "reads": [
+          "payment_events",
+          "plans",
+          "subscriptions"
+        ],
+        "writes": [
+          "payment_events",
+          "subscriptions"
         ],
         "storage": []
       }

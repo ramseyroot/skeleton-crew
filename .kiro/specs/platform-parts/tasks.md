@@ -55,7 +55,7 @@ If time runs short, cut in the order the builder confirmed (A13): the pages beyo
   - Steps, strips, `keygen.ts` helper, the keys page with stories, `feature.json`. A test feeds a known key through every strip and checks the logger, reporter and metrics hold no trace of it.
   - _Requirements: 3.1 to 3.5, 11.1 to 11.3_
 
-- [ ] 9. Feature `billing`
+- [x] 9. Feature `billing`
   - Mode: sequential
   - Writes: src/features/billing/**, src/app/features.ts
   - Plans seed, steps, strips, billing page, fake checkout page, webhook handling with idempotency, `feature.json`.

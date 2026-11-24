@@ -13,6 +13,9 @@ import { createLocalAuth } from "../adapters/auth/local/index.ts";
 import { createMemoryAuth } from "../adapters/auth/memory/index.ts";
 import { createDatabaseLimiter } from "../adapters/limiter/database/index.ts";
 import { createMemoryLimiter } from "../adapters/limiter/memory/index.ts";
+import { createFakePayments } from "../adapters/payments/fake/index.ts";
+import { createNonePayments } from "../adapters/payments/none/index.ts";
+import { createPaystackPayments } from "../adapters/payments/paystack/index.ts";
 import { createMemoryCache } from "../adapters/cache/memory/index.ts";
 import { createNullCache } from "../adapters/cache/null/index.ts";
 import { createFixedClock } from "../adapters/clock/fixed/index.ts";
@@ -32,6 +35,7 @@ import type { Database } from "../ports/database.ts";
 import type { IdGenerator } from "../ports/ids.ts";
 import type { RateLimiter } from "../ports/limiter.ts";
 import type { Logger } from "../ports/logger.ts";
+import type { Payments } from "../ports/payments.ts";
 import type { Metrics } from "../ports/metrics.ts";
 import type { ErrorReporter } from "../ports/reporter.ts";
 import type { ObjectStorage } from "../ports/storage.ts";
@@ -43,6 +47,8 @@ export type Settings = {
   logFormat: "json" | "pretty";
   databasePath: string;
   storagePath: string;
+  /** From PAYSTACK_SECRET_KEY. Empty when not set. Only the paystack adapter reads it. */
+  paystackSecret: string;
 };
 
 export type Entry<T, Deps> = {
@@ -62,6 +68,7 @@ export type Registry = {
   metrics: Record<string, Entry<Metrics, { logger: Logger }>>;
   auth: Record<string, Entry<Auth, { database: Database; clock: Clock; ids: IdGenerator }>>;
   limiter: Record<string, Entry<RateLimiter, { database: Database; clock: Clock }>>;
+  payments: Record<string, Entry<Payments, { clock: Clock; ids: IdGenerator }>>;
 };
 
 const OFFLINE: readonly string[] = [];
@@ -120,5 +127,10 @@ export const registry: Registry = {
   limiter: {
     memory: { hosts: OFFLINE, create: (_s, d) => createMemoryLimiter({ clock: d.clock }) },
     database: { hosts: OFFLINE, create: (_s, d) => createDatabaseLimiter({ database: d.database, clock: d.clock }) },
+  },
+  payments: {
+    fake: { hosts: OFFLINE, create: (_s, d) => createFakePayments({ clock: d.clock, ids: d.ids }) },
+    paystack: { hosts: ["api.paystack.co"], create: (s, d) => createPaystackPayments({ secretKey: s.paystackSecret, ids: d.ids }) },
+    none: { hosts: OFFLINE, create: () => createNonePayments() },
   },
 };

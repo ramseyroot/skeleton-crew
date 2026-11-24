@@ -1,0 +1,1 @@
+{"event":"invoice.payment_failed","data":{"id":98765,"reference":"ps_ref-2","amount":500000,"currency":"NGN","metadata":{"accountId":"a1","planId":"pro"}}}

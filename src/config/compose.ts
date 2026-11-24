@@ -104,6 +104,7 @@ export function compose(options: ComposeOptions): ComposeResult {
     logFormat: profile.logFormat,
     databasePath: databasePath ?? "",
     storagePath: storagePath ?? "",
+    paystackSecret: options.env.PAYSTACK_SECRET_KEY ?? "",
   };
   try {
     const clock = reg.clock[profile.adapters.clock]!.create(settings, {});

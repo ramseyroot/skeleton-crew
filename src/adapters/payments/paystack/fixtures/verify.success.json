@@ -1,0 +1,5 @@
+{
+  "status": true,
+  "message": "Verification successful",
+  "data": { "status": "success", "reference": "__REFERENCE__", "amount": 500000, "currency": "NGN" }
+}

@@ -1,0 +1,5 @@
+{
+  "status": true,
+  "message": "Authorization URL created",
+  "data": { "authorization_url": "https://checkout.paystack.com/abc123", "access_code": "abc123", "reference": "__REFERENCE__" }
+}

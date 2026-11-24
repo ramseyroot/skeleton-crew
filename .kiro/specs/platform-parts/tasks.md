@@ -25,7 +25,7 @@ If time runs short, cut in the order the builder confirmed (A13): the pages beyo
   - Port, `AUTH_COLLECTIONS`, the password policy helper, two adapters, contract suite (timing-similar failures, sessions, expiry), `errors.ts`.
   - _Requirements: 2.1 to 2.7_
 
-- [ ] 4. Payments port with fake, paystack and none adapters
+- [x] 4. Payments port with fake, paystack and none adapters
   - Mode: sequential
   - Writes: src/ports/payments.ts, src/adapters/payments/**
   - Port, three adapters, contract suite, recorded Paystack request and response fixtures and a signed-webhook fixture, signature tests (good, bad, tampered, replay), `errors.ts`.

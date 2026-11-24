@@ -1,6 +1,6 @@
 ---
 created: 2026-11-23
-updated: 2026-11-23
+updated: 2026-11-24
 ---
 
 # Kiroween Submission: Criteria and Evidence
@@ -20,9 +20,9 @@ The submission must show both what was built and how it was built with Kiro. Thi
 | Criterion | What shows it | Status |
 |---|---|---|
 | Impact | The problem, in the builder's words: agents skip requirements after a few functions, errors pass as output, steps get shaped to one provider, parallel agents overwrite shared code, dev and prod data mix. The audience: developers building paid APIs and apps with AI agents. `docs/README.md` section 6 maps each problem to its fix | Written |
-| Kiro use | Specs (requirements, design, change plan, tasks), steering loaded by file pattern, a Stop hook that sends the agent back until checks pass, a PreToolUse hook that blocks unplanned edits, worktrees per parallel sub-agent | Built and in use: specs, checker (41 rules), check command (runs all tests), worktree command (two sub-agents built two ports in parallel worktrees), hooks on, steering written. Live tested, including blocked edits and a sub-agent |
+| Kiro use | Specs (requirements, design, change plan, tasks), steering loaded by file pattern, a Stop hook that sends the agent back until checks pass, a PreToolUse hook that blocks unplanned edits, worktrees per parallel sub-agent | Built and in use: specs, checker (45 rules), check command (runs all tests), worktree command (two sub-agents built two ports in parallel worktrees), hooks on, steering written. Live tested, including blocked edits and a sub-agent |
 | AI development strategy | Requirements are enforced by checks, not remembered. Every default is shown before it is applied. Change plans with impact lists, approval by commit, shared code changed one task at a time, parallel agents limited to new files. A progress log lets any agent resume | Designed and documented. Partly enforced |
-| Design (polish) | A working template: core library, ports with two adapters each, one example strip end to end, Storybook stories, offline local mode, two apps started from the template | Skeleton core built: eight ports with adapters and contract suites, one example feature on both databases with the cache on and off, Storybook stories, a Next.js page that runs offline. Apps not started |
+| Design (polish) | A working template: core library, ports with two adapters each, one example strip end to end, Storybook stories, offline local mode, two apps started from the template | Skeleton core built: eleven ports with adapters and contract suites, five features (the example plus accounts, api-keys, billing, usage) with pages and Storybook stories, an API pipeline with rate limits and metering, end-to-end tests on both databases, a Next.js app that runs offline, and every feature can be switched off. Apps not started |
 | Innovation | The enforcement layer itself: an agent's own guardrails that read the project's manifests, catalog, plans, and git history, and stop it from finishing or editing out of plan | Built. The agent also reported its own rough edges (test fixtures flagged by the checker, parallel tasks tripping the progress rule) instead of hiding them |
 | Presentation | A video that shows: the problem, a requirement being skipped and caught, the agent sent back by the Stop hook, a blocked unplanned edit, the catalog, and two apps from one template | Not started |
 

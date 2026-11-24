@@ -1,6 +1,6 @@
 ---
 created: 2026-11-23
-updated: 2026-11-23
+updated: 2026-11-24
 ---
 
 # Skeleton Crew: Docs Index and Status
@@ -34,7 +34,7 @@ Core ideas (how those goals are met):
 | Design documents (below) | Written, draft |
 | Enforcement setup (`.kiro/specs/enforcement-setup/`) | Done: 27 requirements, 41 rules at the time (45 now), 23 tasks, 138 tests passing offline |
 | Conformance checker (`scripts/conformance/`) | Built. `pnpm conformance` |
-| Check command | Built. `pnpm check` (conformance, typecheck, all tests, affected strip tests), about 25 s here because it runs the tests |
+| Check command | Built. `pnpm check` (conformance, typecheck, all tests, affected strip tests), about 75 s here because it runs all the tests |
 | Worktree command | Built. `pnpm worktree create/verify/merge/remove/list <task>` |
 | Hooks (`.kiro/hooks/enforcement.json`) | On: Stop (runs the check), prompt submit (resets attempts), and protection for writes and shell commands. Tested live, including a sub-agent |
 | Steering (`.kiro/steering/`) | Written: `core-rules.md` always loaded, the rest by folder |
@@ -42,6 +42,7 @@ Core ideas (how those goals are met):
 | Feature layout (`.kiro/specs/feature-layout/`) | Built: `src/features/<name>/` folders, `src/shared/`, rules R42 (features do not import each other), R43 (step used by no strip), R44 (registry and feature list match folders, no half-enabled feature), R45 (valid manifests), and `pnpm feature list/show/disable/enable/prune` with a `feature.json` manifest per feature. Tried once on a copy: disable, prune and the checks after each |
 | Skeleton core (`.kiro/specs/skeleton-core/`) | Built: `Result`, `defineStep`, `defineStrip`, eight ports (Logger, Clock, IdGenerator, Database, Cache, ObjectStorage, Reporter, Metrics) with two or three adapters each and contract suites, profiles with startup guards, the `dev` flag, one example feature (`profile.save`, `profile.view`) tested on both databases with the cache on and off, Storybook stories, and a Next.js page that runs offline |
 | Illustrated summary of the build | `docs/today/index.html` (open it in a browser). Regenerate with `node docs/today/build.mjs` |
+| Platform parts (`.kiro/specs/platform-parts/`) | Built: Auth, Payments and RateLimiter ports with adapters (auth local and memory, payments fake, paystack and none, limiter memory and database), the API pipeline (`src/lib/http.ts`), and the features `accounts`, `api-keys`, `billing`, `usage` with pages and stories. Each can be switched off with `pnpm feature disable`. Not verified: the Paystack adapter against a live account (its fixtures come from documented shapes), clicking the pages in a real browser |
 | Real adapters (PocketBase, Supabase, Workers KV, R2, hosted error tracking and metrics) | Planned, per app. None is built |
 | Not verified | Clicking Save in a real browser (the Server Action is tested in Node). Cloudflare deployment (OpenNext) is not part of the first spec |
 | Apps | Not started. Separate repositories, after the core |
@@ -118,7 +119,7 @@ Raised on 2026-11-23, not decided:
 - **Feature layout: done 2026-11-23** (`.kiro/specs/feature-layout/`). Features live in `src/features/<name>/`, with `pnpm feature list|show|disable|enable|prune`. Open follow-ups: pulling a feature from the upstream template at a chosen version (`pnpm feature add <name> --from <repo@tag>`, planned, not built), (planned, not built).
 - **R40 and moved or deleted files: fixed 2026-11-23.** R40 no longer checks that files named in old progress rows still exist.
 - **Observability still missing** from the checklist (items 20 to 26): passing the strip reference on outgoing HTTP calls, a health endpoint, an audit log, alerting, a status page, and hosted adapters for error tracking and metrics.
-- **Paid-API parts the apps need** (auth, API keys, plans, rate limits, payments). Decided 2026-11-23: both apps share all of them, so all belong in the skeleton, as a separate spec (`platform-parts`) after the feature layout.
+- **Paid-API parts the apps need** (auth, API keys, plans, rate limits, payments): built in `platform-parts` on 2026-11-24. Still open: password reset and email verification (need a mailer), the audit log, and an atomic counter in the real database adapters (the usage counters are serialized inside one process only).
 
 Decide when building the part concerned:
 

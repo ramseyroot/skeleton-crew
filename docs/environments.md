@@ -1,6 +1,6 @@
 ---
 created: 2026-11-23
-updated: 2026-11-23
+updated: 2026-11-24
 ---
 
 # Environments and Data Separation (Draft v0.1)
@@ -131,3 +131,7 @@ Startup refuses to run (and lists every problem at once) when: `APP_ENV` is miss
 - Local emulation of Cloudflare bindings, and what it does not cover.
 - Running the chosen database locally, and how its migrations work.
 - Local development options for a hosted platform database, if one is chosen.
+
+## Platform parts: auth, payments and the limiter by profile
+
+Shipped values: `local` and `dev` use auth `local`, payments `fake`, limiter `memory`. `prod` uses auth `local`, payments `paystack`, limiter `database`. The profile schema refuses `memory` auth or limiter and `fake` payments in prod, and refuses `paystack` in `local` and `dev`, so test money and live money cannot mix by accident. `prod` needs `PAYSTACK_SECRET_KEY` and the host `api.paystack.co` in its allowed hosts, and the name is listed in `prodSecretNames` so rule R26 keeps it out of other profiles. Paystack has a test key and a live key. Today only the live key slot exists (prod). Using the test key against Paystack's test mode from `dev` would need the gating relaxed for `dev`, a decision for the builder, not made here.

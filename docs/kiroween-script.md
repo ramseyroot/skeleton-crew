@@ -1,6 +1,6 @@
 ---
 created: 2026-11-23
-updated: 2026-11-23
+updated: 2026-11-24
 ---
 
 # Kiroween: Write-up and Video Script
@@ -23,7 +23,7 @@ Writing better instructions did not fix this, because instructions are something
 
 ### What it does
 
-Skeleton Crew is a template for building apps as "strips": a feature is a chain of small steps, and every step returns a Result, so a failure can never be mistaken for a value. Each step declares what it takes, what it returns, and what it is allowed to touch. Each strip declares a permission budget. Databases, caches, storage, and payments sit behind ports with swappable adapters.
+Skeleton Crew is a template for building apps as "strips": a feature is a chain of small steps, and every step returns a Result, so a failure can never be mistaken for a value. Each step declares what it takes, what it returns, and what it is allowed to touch. Each strip declares a permission budget. Databases, caches, storage, auth, payments and rate limits sit behind ports with swappable adapters. A paid-API starter is included: accounts and sessions, API keys (shown once, stored as a hash), plans, a Paystack payment adapter with an offline fake, usage metering, and an API pipeline that answers 429 with Retry-After headers. Each part is a feature folder that can be switched off.
 
 On top of that is an enforcement layer built on Kiro:
 
@@ -133,3 +133,6 @@ Append at each checkpoint. Each entry: what happened, why it matters, and where 
 | 2026-11-23 20:55 | The plan commit gate in action: the builder set the plan to active but had not committed it, and the agent refused to start the dependent tasks, asking for the commit instead of making it | The agent leaves approvals to the builder | `progress.md` task 14 and 12 rows |
 | 2026-11-23 23:14 | The builder asked what happens after deleting a feature and wanting it back. The honest answer was: only git can bring it back. The design changed the same hour: features are disabled, enabled and pruned, each with a manifest, every command prints a plan first, and git can undo each one. A trial on a clone showed a disabled feature still passes all 468 tests, enabling it again gives a byte-identical tree, and pruning removes it cleanly | A real design question from the builder changing the product; the trial found three problems the unit tests had not | `.kiro/specs/feature-layout/progress.md`, `scripts/conformance/feature.ts` |
 | 2026-11-23 23:14 | The first removal trial failed the checker twice: a rule reading old progress rows that name deleted files, and a rule that flagged a deliberately disabled feature. Both are the enforcement layer being stricter than the new feature, and both are listed as open changes that need the builder's unlock | The process finding its own rough edges, and asking for the unlock instead of editing the rule | `docs/README.md` section 5 |
+| 2026-11-24 01:00 | Platform parts built in 12 tasks: three ports, an API pipeline, and four features, each with pages and Storybook stories. The agent reported its own wrong test (a key leak check that counted a legitimate log line) and fixed the test, and proved the leak check works by removing the `sensitive` flag and watching it fail | The process catching its own mistakes; a test shown to fail when it should | `.kiro/specs/platform-parts/progress.md` rows 8 and 9 |
+| 2026-11-24 01:30 | The hook blocked the agent from editing its own earlier file because the plan did not list it. The agent added the row to the plan in its own commit instead of working around the hook | Protection that holds against the agent that wrote the code | commit 7166268 |
+| 2026-11-24 01:40 | `pnpm feature disable` tried for each of five features and for all together: `pnpm check` stays green. Deleting a folder (`prune`) is refused by R37 until a plan lists it | Lego claim tested, not asserted | `progress.md` task 11 checkpoint row |

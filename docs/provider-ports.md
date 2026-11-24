@@ -1,6 +1,6 @@
 ---
 created: 2026-11-23
-updated: 2026-11-23
+updated: 2026-11-24
 ---
 
 # Provider Ports (Draft v0.1)
@@ -160,7 +160,7 @@ If step 5 needs a step change, the port is leaking a provider detail. Fix the po
 - **Add:** create `src/adapters/<port>/<provider>/` with `index.ts`, `errors.ts` and a test that runs the port's `contract.test.ts`. Add its import and entry to `src/config/registry.ts`. Name it in a profile (`src/config/profiles.ts`). Rule R44 fails if the folder and the registry disagree, and R25 fails if a profile names a missing adapter.
 - **Remove:** delete the folder, its registry lines, and any profile setting that names it. Steps and strips do not change, because they only know the port.
 
-## 9. Built in the skeleton core
+## 9. Built in the skeleton core and the platform parts
 
 Each port below has two or more adapters and one contract suite run against all of them. Planned adapters are not built and are never claimed as built.
 
@@ -174,6 +174,9 @@ Each port below has two or more adapters and one contract suite run against all 
 | ObjectStorage | memory, fs | R2 |
 | Reporter | none, memory, log | hosted error tracking |
 | Metrics | none, memory, log | hosted metrics |
+| Auth | local (scrypt and database sessions), memory | PocketBase auth, Supabase auth (per app) |
+| Payments | fake (offline, signs its own webhooks), paystack (fetch, tested on recorded shapes), none | Stripe |
+| RateLimiter | memory, database (counts through the Database port) | Durable Objects |
 
 Notes from building them:
 

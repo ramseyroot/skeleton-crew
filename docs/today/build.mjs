@@ -176,7 +176,7 @@ code{background:#eef2ff;border-radius:4px;padding:1px 5px;font-size:.92em}footer
 <defs><marker id="ar" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 z" fill="#475569"/></marker></defs>
 <rect x="20" y="85" width="170" height="80" rx="12" fill="#ede9fe" stroke="#7c3aed"/><text x="105" y="120" text-anchor="middle" font-weight="700">AI agent</text><text x="105" y="142" text-anchor="middle" font-size="13" fill="#475569">writes code</text>
 <line x1="190" y1="125" x2="270" y2="125" stroke="#475569" stroke-width="2" marker-end="url(#ar)"/>
-<rect x="272" y="60" width="210" height="130" rx="12" fill="#e0f2fe" stroke="#0ea5e9"/><text x="377" y="95" text-anchor="middle" font-weight="700">pnpm check</text><text x="377" y="118" text-anchor="middle" font-size="13" fill="#475569">41 rules, typecheck, tests</text><text x="377" y="140" text-anchor="middle" font-size="13" fill="#475569">lists every violation</text><text x="377" y="162" text-anchor="middle" font-size="13" fill="#475569">not only the first</text>
+<rect x="272" y="60" width="210" height="130" rx="12" fill="#e0f2fe" stroke="#0ea5e9"/><text x="377" y="95" text-anchor="middle" font-weight="700">pnpm check</text><text x="377" y="118" text-anchor="middle" font-size="13" fill="#475569">45 rules, typecheck, tests</text><text x="377" y="140" text-anchor="middle" font-size="13" fill="#475569">lists every violation</text><text x="377" y="162" text-anchor="middle" font-size="13" fill="#475569">not only the first</text>
 <line x1="482" y1="125" x2="560" y2="125" stroke="#475569" stroke-width="2" marker-end="url(#ar)"/>
 <rect x="562" y="60" width="200" height="130" rx="12" fill="#fef3c7" stroke="#d97706"/><text x="662" y="95" text-anchor="middle" font-weight="700">Stop hook</text><text x="662" y="118" text-anchor="middle" font-size="13" fill="#475569">fails: back to work</text><text x="662" y="140" text-anchor="middle" font-size="13" fill="#475569">with the list</text><text x="662" y="162" text-anchor="middle" font-size="13" fill="#475569">3 tries, then ask</text>
 <line x1="762" y1="125" x2="840" y2="125" stroke="#475569" stroke-width="2" marker-end="url(#ar)"/>
@@ -307,7 +307,7 @@ ${bar("Guardrail tests", n.scriptTestLines, maxLines, "#7dd3fc")}
 <tr><td>Test command inside <code>pnpm check</code>, Stop-hook message fix</td><td><span class="tag done">done</span></td></tr>
 <tr><td>Real adapters: PocketBase, Supabase, Workers KV, R2, hosted error and metrics services</td><td><span class="tag plan">planned</span></td></tr>
 <tr><td>Feature layout: one folder per feature, disable, enable and prune, rules R42 to R45</td><td><span class="tag done">built</span></td></tr>
-<tr><td>Auth, API keys, plans, metering, rate limits, payments (shared by both apps)</td><td><span class="tag plan">next spec, not started</span></td></tr>
+<tr><td>Auth, API keys, plans, metering, rate limits, payments: three ports and four features, all switchable</td><td><span class="tag done">built</span> (Paystack adapter not run against a live account)</td></tr>
 <tr><td>Zidolia and MiniCargo apps</td><td><span class="tag plan">not started</span></td></tr>
 <tr><td>Clicking Save in a real browser</td><td><span class="tag todo">not verified</span> (the action is tested in Node)</td></tr>
 </tbody></table></section>

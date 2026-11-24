@@ -1,6 +1,6 @@
 ---
 created: 2026-11-23
-updated: 2026-11-23
+updated: 2026-11-24
 ---
 
 # Function and Strip Plan (Draft v0.2)
@@ -347,3 +347,7 @@ Still open (decide when building the part concerned):
 - Two adapters per port means writing and maintaining both, plus the contract tests.
 - Per-step logging has overhead, so payload logging is dev-only.
 - Class boundaries and near-duplicate names are partly judgement calls, and the checks catch only the mechanical part.
+
+## Platform parts (built 2026-11-24)
+
+Auth, Payments and RateLimiter are ports like the others. Four features use them: `accounts`, `api-keys`, `billing` and `usage`. A feature module may carry optional `api` parts that `src/app/api.ts` reads from the feature list, so the app imports no feature and any of them can be switched off. A strip or step that handles a secret sets `sensitive`, and then its payload and error text are never logged or reported. Authorization checks are plain helpers in `src/lib/authz.ts`, not steps. See `.kiro/specs/platform-parts/design.md`.

@@ -73,7 +73,7 @@ If time runs short, cut in the order the builder confirmed (A13): the pages beyo
   - `src/app/api.ts` builds the pipeline dependencies from the four features. Routes and route stubs (listed in each manifest). End-to-end tests through `Request` and `Response` for every case in design section 8. `pnpm feature disable` for each new feature leaves `pnpm check` green, tried on a clone.
   - _Requirements: 1.3, 6.4, 6.6, 7.2, 9.2, 10.6, 12.1_
 
-- [ ] 12. Docs, gates, the secret name and push
+- [x] 12. Docs, gates, the secret name and push
   - Mode: sequential
   - Writes: conformance.config.json, README.md, docs/README.md, docs/provider-ports.md, docs/function-strips-plan.md, docs/environments.md, docs/app-parts-checklist.md, docs/kiroween-script.md, docs/kiroween-submission.md, docs/today/build.mjs, docs/today/index.html, docs/generated/catalog.md, docs/generated/catalog.json
   - Needs the user's unlock for `prodSecretNames`. Regenerate the catalog and the page. Run `pnpm check`, the checker tests, the skeleton tests with the network blocked, and `next build`. Record the prune trials. Push.

@@ -22,7 +22,7 @@
     "paystack*"
   ],
   "nearDuplicateVerbs": ["get", "fetch", "load", "read", "find", "retrieve", "lookup", "query"],
-  "prodSecretNames": [],
+  "prodSecretNames": ["PAYSTACK_SECRET_KEY"],
   "destructiveScripts": {
     "globs": ["scripts/db/seed*", "scripts/db/reset*", "scripts/db/migrate-down*"],
     "guardCall": "assertNotProd"

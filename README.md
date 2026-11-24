@@ -20,8 +20,8 @@ Built with Kiro for the Kiroween 2026 hackathon (Skeleton Crew category). It is 
 | Promise | Built | Not built yet |
 |---|---|---|
 | Lego | Feature folders (one folder per feature), `pnpm feature disable/enable/prune`, ports with two or three adapters each, the catalog, permission budgets, profiles that pick adapters, rules that keep features independent and flag unused steps | Adding an adapter still means one line in the adapter registry. Pulling a feature from a newer version of the template is not built |
-| Good code | Result type, manifests, contract suites, the checker, hooks, about 450 tests | |
-| Parts prototypes skip | Logger with redaction, error reporter and metrics ports, step and strip timings, profile gating, startup guards, offline mode | Hosted error-tracking and metrics adapters, passing the strip reference on outgoing HTTP calls, health check endpoint, audit log, alerting. Auth, API keys, plans, rate limits and payments are not built |
+| Good code | Result type, manifests, contract suites, the checker, hooks, about 760 tests (all offline) | |
+| Parts prototypes skip | Logger with redaction, error reporter and metrics ports, step and strip timings, profile gating, startup guards, offline mode | Hosted error-tracking and metrics adapters, passing the strip reference on outgoing HTTP calls, health check endpoint, audit log, alerting. Hosted error-tracking adapters stay planned. The Paystack adapter is built from documented request shapes and has not been run against a live account |
 
 **Lego, concretely.** A feature is one folder, `src/features/<name>/`, holding its steps, strips, domain, UI, actions, page and tests, plus a small `feature.json`. `pnpm feature disable <name> --yes` switches it off (its route stub and its line in `src/app/features.ts` go, the folder stays and stays tested), `enable` switches it back on, and `prune` deletes a disabled one for good. Every command prints a plan first and refuses to run with uncommitted changes, so git can always undo it. Features cannot import each other (rule R42).
 
@@ -33,22 +33,22 @@ Needs Node 24 or newer and pnpm 11.
 
 ```
 pnpm install
-pnpm check            # conformance rules, typecheck, all tests (about 25 s)
+pnpm check            # conformance rules, typecheck, all tests (about 75 s)
 pnpm test             # tests only, all offline
 pnpm dev              # the example page, APP_ENV=local, http://localhost:3000
 pnpm storybook        # component stories, http://localhost:6006
 ```
 
-`pnpm dev` creates its local database and files under `.data/local/` (ignored by git) and adds two demo users. No network is needed.
+`pnpm dev` creates its local database and files under `.data/local/` (ignored by git) and adds two demo users and a demo account (`demo@example.com`, local data only). No network is needed.
 
 ## Where things are
 
 | Folder | Contents |
 |---|---|
 | `src/lib/` | `Result`, `defineStep`, `defineStrip`, the cache envelope |
-| `src/ports/`, `src/adapters/` | The eight ports and their adapters, with contract tests |
+| `src/ports/`, `src/adapters/` | Eleven ports (the original eight, plus Auth, Payments and RateLimiter) and their adapters, with contract tests |
 | `src/config/` | Profiles, the adapter registry, startup checks |
-| `src/features/` | One folder per feature (the example is `profile`) |
+| `src/features/` | One folder per feature: `profile` (the example), `accounts`, `api-keys`, `billing`, `usage` |
 | `src/shared/` | Steps and UI used by more than one feature |
 | `src/app/` | Layout, route stubs, the feature list, the runtime |
 | `scripts/conformance/` | The checker, hooks and worktree command |

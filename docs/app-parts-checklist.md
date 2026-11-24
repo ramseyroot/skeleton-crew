@@ -1,6 +1,6 @@
 ---
 created: 2026-11-23
-updated: 2026-11-23
+updated: 2026-11-24
 ---
 
 # App Parts Checklist (Draft v0.2)
@@ -144,3 +144,7 @@ Still open:
 1. Which auth library.
 2. Mailer, notifier, and LLM providers.
 3. Per app: where PocketBase is hosted and how the web and API reach it.
+
+## Status in this template (2026-11-24)
+
+Built in the skeleton: items 1 to 9 and 48 to 50 (earlier specs), and in `platform-parts`: 6 auth (local email and password, sessions), 7 authorization (helpers, ownership, roles), 10 payments (port, fake and Paystack adapters, webhook with signature check and idempotency), 11 plans and entitlements (as data), 12 metering, 13 rate limits and quotas, 17 API keys portal. Not built: password reset and email verification, the audit log (25), a hosted rate limiter that works across instances, and any item not named here.

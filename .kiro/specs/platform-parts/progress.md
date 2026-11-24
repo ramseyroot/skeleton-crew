@@ -10,3 +10,4 @@ Append-only. Format and resume procedure: `docs/change-process.md`, section 7.
 | When (UTC) | Task | State | Commit | Files | Next |
 |---|---|---|---|---|---|
 | 2026-11-23 23:55 | plan | done | this | requirements.md, design.md, change-plan.md, tasks.md | User reviews design G1 to G10, the plan and the tasks. Then the agent activates the plan and starts task 1 |
+| 2026-11-24 00:02 | plan | checkpoint | | design.md, change-plan.md, requirements.md | The user confirmed the design (G1 to G10) and asked to proceed. Plan activated by the agent under the delegation. Requirement 4.1 reworded for G10 |

@@ -200,13 +200,13 @@ None. `node:crypto` (scrypt, HMAC, SHA-256, `timingSafeEqual`, random bytes) and
 
 | # | Proposal | Alternative | State |
 |---|---|---|---|
-| G1 | Sessions are 32 random bytes in base64url, stored as SHA-256, valid 7 days, set in an `HttpOnly` `SameSite=Lax` cookie (`Secure` outside local) | Longer or sliding sessions | proposed |
-| G2 | The Paystack request and webhook details above come from search results about the docs and are re-checked with a test key | Wait for the docs | proposed |
-| G3 | The monthly quota reads the metering counters, and the limiter only does per-minute and per-IP windows | Two sets of counters | proposed |
-| G4 | The error kind to HTTP status table of requirement 10.2 | Another mapping | proposed |
-| G5 | The `free` and `pro` plans are seeded in the billing feature by its `seed` | A migration file | proposed |
-| G6 | Profile gating: prod may not use `memory` for auth or limiter, nor `fake` payments. Local and dev may not use `paystack` | Looser gating | proposed |
-| G7 | A `none` payments adapter exists, so an app without billing runs in prod | Require Paystack in prod | proposed |
-| G8 | A `sensitive` flag on steps and strips suppresses all payload logging for them | Redact by field name | proposed |
-| G9 | Collections use `accounts` and `sessions`, not `users`, so the example `profile` feature stays as it is | Rename the example's collection | proposed |
-| G10 | Authorization checks are plain helper functions in `src/lib/authz.ts`, not steps (requirement 4.1 reworded) | Pass-through steps | proposed |
+| G1 | Sessions are 32 random bytes in base64url, stored as SHA-256, valid 7 days, set in an `HttpOnly` `SameSite=Lax` cookie (`Secure` outside local) | Longer or sliding sessions | confirmed (user, 2026-11-23) |
+| G2 | The Paystack request and webhook details above come from search results about the docs and are re-checked with a test key | Wait for the docs | confirmed (user, 2026-11-23) |
+| G3 | The monthly quota reads the metering counters, and the limiter only does per-minute and per-IP windows | Two sets of counters | confirmed (user, 2026-11-23) |
+| G4 | The error kind to HTTP status table of requirement 10.2 | Another mapping | confirmed (user, 2026-11-23) |
+| G5 | The `free` and `pro` plans are seeded in the billing feature by its `seed` | A migration file | confirmed (user, 2026-11-23) |
+| G6 | Profile gating: prod may not use `memory` for auth or limiter, nor `fake` payments. Local and dev may not use `paystack` | Looser gating | confirmed (user, 2026-11-23) |
+| G7 | A `none` payments adapter exists, so an app without billing runs in prod | Require Paystack in prod | confirmed (user, 2026-11-23) |
+| G8 | A `sensitive` flag on steps and strips suppresses all payload logging for them | Redact by field name | confirmed (user, 2026-11-23) |
+| G9 | Collections use `accounts` and `sessions`, not `users`, so the example `profile` feature stays as it is | Rename the example's collection | confirmed (user, 2026-11-23) |
+| G10 | Authorization checks are plain helper functions in `src/lib/authz.ts`, not steps (requirement 4.1 reworded) | Pass-through steps | confirmed (user, 2026-11-23) |

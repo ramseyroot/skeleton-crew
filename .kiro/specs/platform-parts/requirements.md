@@ -73,7 +73,7 @@ Values marked **(proposed)** are shown for review. They become decisions only wh
 
 #### Acceptance Criteria
 
-1. THE template SHALL provide steps for: does this principal own this record, does it have this role, and is it signed in at all. Each SHALL return `forbidden` or `unauthorized` as appropriate, and SHALL be a `pure` step with no I/O.
+1. THE template SHALL provide helper functions (`src/lib/authz.ts`) for: does this principal own this record, does it have this role, and is it signed in at all. Each SHALL return `forbidden` or `unauthorized` as appropriate and SHALL do no I/O. (Reworded from "steps" to "helper functions" by design decision G10, confirmed 2026-11-23: a step has exact input and output types and cannot be a pass-through check.)
 2. ROLES SHALL be stored on the user (`user`, `admin`) **(proposed)** and SHALL be separate from plan entitlements.
 3. A strip that reads or writes a user's record SHALL use the ownership step. The example endpoints SHALL show it.
 

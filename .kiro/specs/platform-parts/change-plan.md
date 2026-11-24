@@ -1,5 +1,5 @@
 ---
-status: draft
+status: active
 created: 2026-11-23
 updated: 2026-11-23
 ---
@@ -95,6 +95,6 @@ No existing strip or step changes contract. Tasks 1 and 5 edit library code that
 
 | ID | Topic | Decision | Status | Reason |
 |---|---|---|---|---|
-| CP1 | Execution | Tasks 2 and 3 in parallel worktrees, the rest sequential | proposed | Disjoint new files are safe in parallel and the worktree command has already been proven |
-| CP2 | Unlock | One unlock, in task 12, for the one-line `prodSecretNames` change | proposed | Nothing else here is protected |
-| CP3 | Commits | One commit per task | proposed | As in the earlier specs |
+| CP1 | Execution | Tasks 2 and 3 in parallel worktrees, the rest sequential | confirmed (user, 2026-11-23) | Disjoint new files are safe in parallel and the worktree command has already been proven |
+| CP2 | Unlock | One unlock, in task 12, for the one-line `prodSecretNames` change | confirmed (user, 2026-11-23) | Nothing else here is protected |
+| CP3 | Commits | One commit per task | confirmed (user, 2026-11-23) | As in the earlier specs |

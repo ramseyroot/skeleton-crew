@@ -2,6 +2,9 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { z } from "zod";
 import { createFixedClock } from "../../src/adapters/clock/fixed/index.ts";
+import { createMemoryAuth } from "../../src/adapters/auth/memory/index.ts";
+import { createMemoryLimiter } from "../../src/adapters/limiter/memory/index.ts";
+import { createFakePayments } from "../../src/adapters/payments/fake/index.ts";
 import { createMemoryCache } from "../../src/adapters/cache/memory/index.ts";
 import { createMemoryDatabase } from "../../src/adapters/database/memory/index.ts";
 import { createSequenceIds } from "../../src/adapters/ids/sequence/index.ts";
@@ -23,7 +26,7 @@ async function makePorts() {
   const cache = createMemoryCache({ app: "t", env: "local", schemaVersion: 1, clock, logger });
   const reporter = createMemoryReporter();
   const metrics = createMemoryMetrics();
-  const ports: Ports = { env: "local", database, cache, storage: createMemoryStorage(), clock, ids: createSequenceIds("strip"), logger, reporter, metrics };
+  const ports: Ports = { env: "local", database, cache, storage: createMemoryStorage(), clock, ids: createSequenceIds("strip"), logger, reporter, metrics, auth: createMemoryAuth({ clock, ids: createSequenceIds("acct") }), payments: createFakePayments({ clock, ids: createSequenceIds("pay") }), limiter: createMemoryLimiter({ clock }) };
   return { ports, logger, cache, database, reporter, metrics };
 }
 

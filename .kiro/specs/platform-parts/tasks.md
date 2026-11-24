@@ -31,13 +31,13 @@ If time runs short, cut in the order the builder confirmed (A13): the pages beyo
   - Port, three adapters, contract suite, recorded Paystack request and response fixtures and a signed-webhook fixture, signature tests (good, bad, tampered, replay), `errors.ts`.
   - _Requirements: 8.1 to 8.7_
 
-- [ ] 5. Wire the ports: Ports, profiles, registry, compose, test helpers
+- [x] 5. Wire the ports: Ports, profiles, registry, compose, test helpers
   - Mode: sequential
   - Writes: src/lib/step.ts, tests/lib/step.test.ts, src/config/profiles.ts, src/config/registry.ts, src/config/compose.ts, src/config/profiles.test.ts, src/config/compose.test.ts, src/test-utils/ports.ts
   - `Ports` and `PortName` extended, the three new profile keys with gating, the Paystack key and host, test helpers with the new memory adapters.
   - _Requirements: 1.4, 8.8_
 
-- [ ] 6. Checkpoint review of the foundation
+- [x] 6. Checkpoint review of the foundation
   - Mode: sequential
   - Writes: .kiro/specs/platform-parts/progress.md
   - Run `pnpm check`, the offline test run and the build. Report to the builder. No code.

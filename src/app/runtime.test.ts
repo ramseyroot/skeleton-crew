@@ -50,7 +50,7 @@ test("APP_SEED=1 runs each feature's seed once, however often the runtime starts
 });
 
 test("prod never seeds, even when asked", async () => {
-  const rt = await createRuntime({ APP_ENV: "prod", APP_SEED: "1", DATABASE_PATH: join(tmp, "prod.db"), STORAGE_PATH: join(tmp, "prod-files") }, [notes]);
+  const rt = await createRuntime({ APP_ENV: "prod", APP_SEED: "1", DATABASE_PATH: join(tmp, "prod.db"), STORAGE_PATH: join(tmp, "prod-files"), PAYSTACK_SECRET_KEY: "sk_test_x" }, [notes]);
   assert.equal(await count(rt), 0);
 });
 

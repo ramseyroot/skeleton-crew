@@ -27,6 +27,9 @@ export const profileSchema = z
         storage: z.enum(["memory", "fs"]),
         reporter: z.enum(["none", "memory", "log"]),
         metrics: z.enum(["none", "memory", "log"]),
+        auth: z.enum(["local", "memory"]),
+        payments: z.enum(["fake", "paystack", "none"]),
+        limiter: z.enum(["memory", "database"]),
       })
       .strict(),
     /** Hosts this profile may reach. Every adapter declares the hosts it reaches, and each must be in this list. */
@@ -60,6 +63,20 @@ export const profileSchema = z
         ctx.addIssue({ code: "custom", path: ["adapters", port], message: `${profile.env} must not send ${port} to tracking: use "none" or "memory"` });
       }
     }
+    // Platform parts: prod keeps no accounts or counters in memory and takes no fake payments. Outside prod there is no
+    // live provider (Paystack uses one host for test and live, so dev may not share it with prod).
+    if (profile.env === "prod") {
+      for (const port of ["auth", "limiter"] as const) {
+        if (profile.adapters[port] === "memory") {
+          ctx.addIssue({ code: "custom", path: ["adapters", port], message: `prod must not keep ${port === "auth" ? "accounts and sessions" : "rate limit counters"} in memory` });
+        }
+      }
+      if (profile.adapters.payments === "fake") {
+        ctx.addIssue({ code: "custom", path: ["adapters", "payments"], message: "prod must not use the fake payment provider: use paystack, or none if the app has no billing" });
+      }
+    } else if (profile.adapters.payments === "paystack") {
+      ctx.addIssue({ code: "custom", path: ["adapters", "payments"], message: `${profile.env} must not use paystack: use fake` });
+    }
     if (profile.env === "prod") {
       for (const port of ["database", "storage"] as const) {
         if (profile.adapters[port] === "memory") {
@@ -75,22 +92,22 @@ export type ProfileName = (typeof ENVS)[number];
 export const profiles = {
   local: {
     env: "local",
-    adapters: { logger: "console", clock: "system", ids: "uuid", database: "sqlite", cache: "memory", storage: "fs", reporter: "none", metrics: "none" },
+    adapters: { logger: "console", clock: "system", ids: "uuid", database: "sqlite", cache: "memory", storage: "fs", reporter: "none", metrics: "none", auth: "local", payments: "fake", limiter: "memory" },
     allowedHosts: ["localhost", "127.0.0.1"],
     paths: { database: ".data/local/app.db", storage: ".data/local/files" },
     logFormat: "pretty",
   },
   dev: {
     env: "dev",
-    adapters: { logger: "console", clock: "system", ids: "uuid", database: "sqlite", cache: "memory", storage: "fs", reporter: "none", metrics: "none" },
+    adapters: { logger: "console", clock: "system", ids: "uuid", database: "sqlite", cache: "memory", storage: "fs", reporter: "none", metrics: "none", auth: "local", payments: "fake", limiter: "memory" },
     allowedHosts: [],
     paths: {},
     logFormat: "json",
   },
   prod: {
     env: "prod",
-    adapters: { logger: "console", clock: "system", ids: "uuid", database: "sqlite", cache: "null", storage: "fs", reporter: "log", metrics: "log" },
-    allowedHosts: [],
+    adapters: { logger: "console", clock: "system", ids: "uuid", database: "sqlite", cache: "null", storage: "fs", reporter: "log", metrics: "log", auth: "local", payments: "paystack", limiter: "database" },
+    allowedHosts: ["api.paystack.co"],
     paths: {},
     logFormat: "json",
   },

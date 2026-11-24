@@ -2,6 +2,9 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { z } from "zod";
 import { createFixedClock } from "../../src/adapters/clock/fixed/index.ts";
+import { createMemoryAuth } from "../../src/adapters/auth/memory/index.ts";
+import { createMemoryLimiter } from "../../src/adapters/limiter/memory/index.ts";
+import { createFakePayments } from "../../src/adapters/payments/fake/index.ts";
 import { createMemoryCache } from "../../src/adapters/cache/memory/index.ts";
 import { createMemoryDatabase } from "../../src/adapters/database/memory/index.ts";
 import { createSequenceIds } from "../../src/adapters/ids/sequence/index.ts";
@@ -29,6 +32,9 @@ async function makePorts(env = "local") {
     env,
     reporter,
     metrics,
+    auth: createMemoryAuth({ clock, ids: createSequenceIds("acct") }),
+    payments: createFakePayments({ clock, ids: createSequenceIds("pay") }),
+    limiter: createMemoryLimiter({ clock }),
     database,
     cache: createMemoryCache({ app: "t", env, schemaVersion: 1, clock, logger }),
     storage: createMemoryStorage(),
@@ -480,4 +486,36 @@ test("a sensitive step logs no input, no output and no error text, in any enviro
 test("a step is not sensitive unless it says so", () => {
   const step = defineStep({ name: "pure.name.plain", class: "pure", input: Name, output: Len, permissions: NONE, errors: [], run: (i) => ({ length: i.name.length }) });
   assert.equal(step.manifest.sensitive, false);
+});
+
+test("a step gets the auth and payments ports only when it names them, and never the limiter", async () => {
+  const { ports } = await makePorts();
+  const step = defineStep({
+    name: "pure.ctx.platform",
+    class: "pure",
+    input: Name,
+    output: z.object({ keys: z.string(), auth: z.string(), payments: z.string() }),
+    permissions: NONE,
+    errors: [],
+    uses: ["auth", "payments"],
+    run: (_input, ctx) => {
+      // @ts-expect-error the rate limiter belongs to the API pipeline, not to steps
+      assert.equal(ctx.limiter, undefined);
+      return { keys: Object.keys(ctx).sort().join(","), auth: ctx.auth.name, payments: ctx.payments.name };
+    },
+  });
+  assert.deepEqual(await step.execute({ name: "x" }, run(ports)), ok({ keys: "auth,log,payments,stripId", auth: "memory", payments: "fake" }));
+  const plain = defineStep({
+    name: "pure.ctx.plain",
+    class: "pure",
+    input: Name,
+    output: z.object({ has: z.boolean() }),
+    permissions: NONE,
+    errors: [],
+    run: (_input, ctx) => {
+      // @ts-expect-error auth was not requested
+      return { has: ctx.auth !== undefined };
+    },
+  });
+  assert.deepEqual(await plain.execute({ name: "x" }, run(ports)), ok({ has: false }));
 });

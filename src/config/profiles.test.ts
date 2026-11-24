@@ -87,3 +87,28 @@ test("the shipped profiles: nothing is reported or measured outside prod, and pr
   assert.deepEqual([profiles.dev.adapters.reporter, profiles.dev.adapters.metrics], ["none", "none"]);
   assert.deepEqual([profiles.prod.adapters.reporter, profiles.prod.adapters.metrics], ["log", "log"]);
 });
+
+test("platform gating: prod keeps nothing in memory and takes no fake payments, and other profiles never use paystack", () => {
+  const prod = { ...profiles.prod, adapters: { ...profiles.prod.adapters, auth: "memory", limiter: "memory", payments: "fake" } };
+  const r = profileSchema.safeParse(prod);
+  assert.equal(r.success, false);
+  if (!r.success) {
+    const text = r.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join("\n");
+    assert.match(text, /adapters\.auth: prod must not keep accounts and sessions in memory/);
+    assert.match(text, /adapters\.limiter: prod must not keep rate limit counters in memory/);
+    assert.match(text, /adapters\.payments: prod must not use the fake payment provider/);
+  }
+  assert.equal(profileSchema.safeParse({ ...profiles.prod, adapters: { ...profiles.prod.adapters, payments: "none" } }).success, true);
+  for (const name of ["local", "dev"] as const) {
+    const bad = { ...profiles[name], adapters: { ...profiles[name].adapters, payments: "paystack" } };
+    assert.equal(profileSchema.safeParse(bad).success, false, name);
+    assert.equal(profileSchema.safeParse({ ...profiles[name], adapters: { ...profiles[name].adapters, auth: "memory", limiter: "database", payments: "none" } }).success, true, name);
+  }
+});
+
+test("the shipped profiles: paystack and the database limiter in prod only, and prod allows only the Paystack host", () => {
+  assert.deepEqual([profiles.local.adapters.payments, profiles.dev.adapters.payments, profiles.prod.adapters.payments], ["fake", "fake", "paystack"]);
+  assert.deepEqual([profiles.local.adapters.limiter, profiles.dev.adapters.limiter, profiles.prod.adapters.limiter], ["memory", "memory", "database"]);
+  assert.deepEqual(profiles.prod.allowedHosts, ["api.paystack.co"]);
+  assert.deepEqual(crossProfileProblems({ local: parsed("local"), dev: parsed("dev"), prod: parsed("prod") }), []);
+});

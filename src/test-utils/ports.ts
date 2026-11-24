@@ -4,6 +4,9 @@
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { createMemoryAuth } from "../adapters/auth/memory/index.ts";
+import { createMemoryLimiter } from "../adapters/limiter/memory/index.ts";
+import { createFakePayments } from "../adapters/payments/fake/index.ts";
 import { createMemoryCache } from "../adapters/cache/memory/index.ts";
 import { createNullCache } from "../adapters/cache/null/index.ts";
 import { createFixedClock } from "../adapters/clock/fixed/index.ts";
@@ -49,7 +52,22 @@ export async function makeTestPorts(
   const cache = options.cache === "null" ? createNullCache(cacheOptions) : createMemoryCache(cacheOptions);
   const reporter = createMemoryReporter();
   const metrics = createMemoryMetrics();
-  const ports: Ports = { env, database, cache, storage: createMemoryStorage(), clock, ids: createSequenceIds("strip"), logger, reporter, metrics };
+  const payments = createFakePayments({ clock, ids: createSequenceIds("pay") });
+  const ports: Ports = {
+    env,
+    database,
+    cache,
+    storage: createMemoryStorage(),
+    clock,
+    ids: createSequenceIds("strip"),
+    logger,
+    reporter,
+    metrics,
+    // Separate id generators, so the strip references in tests stay strip-1, strip-2, ...
+    auth: createMemoryAuth({ clock, ids: createSequenceIds("acct") }),
+    payments,
+    limiter: createMemoryLimiter({ clock }),
+  };
   for (const feature of features) {
     const seeded = await feature.seed?.(ports);
     if (seeded && !seeded.ok) throw new Error(`test database could not seed ${feature.name}: ${seeded.error.message}`);
@@ -60,6 +78,8 @@ export async function makeTestPorts(
     clock,
     reporter,
     metrics,
+    /** The fake provider, with `signedEvent` to simulate the customer paying. */
+    payments,
     cleanup(): void {
       if (database.name === "sqlite") (database as ReturnType<typeof createSqliteDatabase>).close();
       if (dir) rmSync(dir, { recursive: true, force: true });

@@ -30,7 +30,7 @@ export type Composed = {
 };
 export type ComposeResult = { ok: true; value: Composed } | { ok: false; problems: string[] };
 
-const PORT_ORDER = ["clock", "logger", "ids", "database", "cache", "storage", "reporter", "metrics"] as const;
+const PORT_ORDER = ["clock", "logger", "ids", "database", "cache", "storage", "reporter", "metrics", "auth", "payments", "limiter"] as const;
 
 export function compose(options: ComposeOptions): ComposeResult {
   const problems: string[] = [];
@@ -89,6 +89,9 @@ export function compose(options: ComposeOptions): ComposeResult {
   if (profile.adapters.storage === "fs" && !storagePath) {
     problems.push(`profile ${selected} uses fs storage, so STORAGE_PATH must be set`);
   }
+  if (profile.adapters.payments === "paystack" && !options.env.PAYSTACK_SECRET_KEY) {
+    problems.push(`profile ${selected} uses paystack, so PAYSTACK_SECRET_KEY must be set`);
+  }
   if (selected !== "local") {
     const local = all.local as { paths?: { database?: string; storage?: string } } | undefined;
     if (databasePath && databasePath === local?.paths?.database) problems.push(`profile ${selected} must not use the local database path ${databasePath}`);
@@ -115,8 +118,11 @@ export function compose(options: ComposeOptions): ComposeResult {
     const storage = reg.storage[profile.adapters.storage]!.create(settings, {});
     const reporter = reg.reporter[profile.adapters.reporter]!.create(settings, { logger });
     const metrics = reg.metrics[profile.adapters.metrics]!.create(settings, { logger });
+    const auth = reg.auth[profile.adapters.auth]!.create(settings, { database, clock, ids });
+    const payments = reg.payments[profile.adapters.payments]!.create(settings, { clock, ids });
+    const limiter = reg.limiter[profile.adapters.limiter]!.create(settings, { database, clock });
     const dev = profile.env !== "prod";
-    return { ok: true, value: { profile, app, dev, ports: { env: profile.env, database, cache, storage, clock, ids, logger, reporter, metrics } } };
+    return { ok: true, value: { profile, app, dev, ports: { env: profile.env, database, cache, storage, clock, ids, logger, reporter, metrics, auth, payments, limiter } } };
   } catch (thrown) {
     return { ok: false, problems: [`could not build the adapters for profile ${selected}: ${thrown instanceof Error ? thrown.message : String(thrown)}`] };
   }

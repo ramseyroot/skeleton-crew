@@ -16,20 +16,23 @@
 //   - storage prefixes:      "avatars/" in `storage` (read and write)
 
 import type { z, ZodType } from "zod";
+import type { Auth } from "../ports/auth.ts";
 import type { Cache } from "../ports/cache.ts";
 import type { Clock } from "../ports/clock.ts";
 import type { BatchOp, Database, DbReader, DbWriter, Scalar } from "../ports/database.ts";
 import type { IdGenerator } from "../ports/ids.ts";
+import type { RateLimiter } from "../ports/limiter.ts";
 import type { Logger } from "../ports/logger.ts";
 import type { Metrics } from "../ports/metrics.ts";
 import type { ErrorReporter } from "../ports/reporter.ts";
+import type { Payments } from "../ports/payments.ts";
 import type { ObjectStorage } from "../ports/storage.ts";
 import { isPortError } from "./port-error.ts";
 import { err, fromThrown, makeError, ok } from "./result.ts";
 import type { ErrorKind, Result, StepError } from "./result.ts";
 
 export type StepClass = "pure" | "api" | "db" | "cache" | "storage" | "ui" | "scrape";
-export type PortName = "database" | "cache" | "storage" | "clock" | "ids";
+export type PortName = "database" | "cache" | "storage" | "clock" | "ids" | "auth" | "payments";
 
 export type Permissions = {
   reads: readonly string[];
@@ -50,6 +53,12 @@ export type Ports = {
   /** Used by the step wrapper and the strip runner only. Steps never receive it. */
   reporter: ErrorReporter;
   metrics: Metrics;
+  /** Accounts and sessions. Steps name it in `uses`. */
+  auth: Auth;
+  /** The payment provider. Steps name it in `uses`. */
+  payments: Payments;
+  /** Used by the API pipeline only. Steps never receive it. */
+  limiter: RateLimiter;
 };
 
 /** What the strip runner (or a test) gives a step each time it runs. */
@@ -91,7 +100,9 @@ export type StepCtx<U extends readonly PortName[], P extends Permissions> = {
   ("cache" extends U[number] ? { cache: CacheCtx<P> } : Empty) &
   ("storage" extends U[number] ? { storage: StorageCtx<P> } : Empty) &
   ("clock" extends U[number] ? { clock: Clock } : Empty) &
-  ("ids" extends U[number] ? { ids: IdGenerator } : Empty);
+  ("ids" extends U[number] ? { ids: IdGenerator } : Empty) &
+  ("auth" extends U[number] ? { auth: Auth } : Empty) &
+  ("payments" extends U[number] ? { payments: Payments } : Empty);
 
 // ---------------------------------------------------------------------------
 // Manifest and step object
@@ -379,5 +390,7 @@ function buildContext(
 
   if (uses.has("clock")) ctx.clock = ports.clock;
   if (uses.has("ids")) ctx.ids = ports.ids;
+  if (uses.has("auth")) ctx.auth = ports.auth;
+  if (uses.has("payments")) ctx.payments = ports.payments;
   return ctx;
 }

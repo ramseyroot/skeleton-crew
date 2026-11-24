@@ -104,22 +104,28 @@ test("composeOrThrow reports all problems in one error", () => {
 });
 
 test("dev is true for local and dev, false for prod, and comes only from the profile", () => {
-  const paths = (name: string) => ({ DATABASE_PATH: join(tmp, `${name}.db`), STORAGE_PATH: join(tmp, `${name}-files`) });
+  const paths = (name: string) => ({ DATABASE_PATH: join(tmp, `${name}.db`), STORAGE_PATH: join(tmp, `${name}-files`), PAYSTACK_SECRET_KEY: "sk_test_x" });
   const local = compose({ env: { APP_ENV: "local" }, profiles: set });
   const dev = compose({ env: { APP_ENV: "dev", ...paths("flag-dev") } });
   const prod = compose({ env: { APP_ENV: "prod", ...paths("flag-prod") } });
+  assert.equal(local.ok, true);
+  assert.equal(dev.ok, true);
+  assert.equal(prod.ok, true, JSON.stringify(prod));
   assert.equal(local.ok && local.value.dev, true);
   assert.equal(dev.ok && dev.value.dev, true);
   assert.equal(prod.ok && prod.value.dev, false);
   // No environment variable named DEV, APP_DEV or similar changes the answer.
   const forced = compose({ env: { APP_ENV: "prod", DEV: "true", APP_DEV: "1", NODE_ENV: "development", ...paths("flag-forced") } });
+  assert.equal(forced.ok, true);
   assert.equal(forced.ok && forced.value.dev, false);
 });
 
 test("dev builds the none adapters, prod builds the log adapters, and the ports carry the environment name", () => {
-  const paths = (name: string) => ({ DATABASE_PATH: join(tmp, `${name}.db`), STORAGE_PATH: join(tmp, `${name}-files`) });
+  const paths = (name: string) => ({ DATABASE_PATH: join(tmp, `${name}.db`), STORAGE_PATH: join(tmp, `${name}-files`), PAYSTACK_SECRET_KEY: "sk_test_x" });
   const dev = compose({ env: { APP_ENV: "dev", ...paths("tel-dev") } });
   const prod = compose({ env: { APP_ENV: "prod", ...paths("tel-prod") } });
+  assert.equal(dev.ok, true);
+  assert.equal(prod.ok, true);
   assert.equal(dev.ok && dev.value.ports.env, "dev");
   assert.equal(prod.ok && prod.value.ports.env, "prod");
   // The none adapters have no memory of what they were given.
@@ -131,4 +137,31 @@ test("a prod profile with reporting switched off does not start", () => {
   const prod = { ...profiles.prod, adapters: { ...profiles.prod.adapters, reporter: "none" } };
   const problems = problemsOf(compose({ env: { APP_ENV: "prod", DATABASE_PATH: join(tmp, "p.db"), STORAGE_PATH: join(tmp, "p-files") }, profiles: { ...set, prod } }));
   assert.match(problems.join(), /adapters\.reporter: prod must report/);
+});
+
+test("the platform ports are built from the profile: local auth, fake payments and a memory limiter outside prod", () => {
+  const dev = compose({ env: { APP_ENV: "dev", DATABASE_PATH: join(tmp, "plat-dev.db"), STORAGE_PATH: join(tmp, "plat-dev-files") } });
+  assert.equal(dev.ok, true, JSON.stringify(dev));
+  if (!dev.ok) return;
+  assert.equal(dev.value.ports.auth.name, "local");
+  assert.equal(dev.value.ports.payments.name, "fake");
+  assert.equal(dev.value.ports.limiter.name, "memory");
+});
+
+test("prod uses paystack and the database limiter, and needs PAYSTACK_SECRET_KEY", () => {
+  const env = { APP_ENV: "prod", DATABASE_PATH: join(tmp, "plat-prod.db"), STORAGE_PATH: join(tmp, "plat-prod-files") };
+  const missing = problemsOf(compose({ env }));
+  assert.match(missing.join(), /uses paystack, so PAYSTACK_SECRET_KEY must be set/);
+  const ok = compose({ env: { ...env, PAYSTACK_SECRET_KEY: "sk_test_x" } });
+  assert.equal(ok.ok, true, JSON.stringify(ok));
+  if (ok.ok) {
+    assert.equal(ok.value.ports.payments.name, "paystack");
+    assert.equal(ok.value.ports.limiter.name, "database");
+  }
+});
+
+test("paystack reaches api.paystack.co, so a profile that does not allow that host does not start", () => {
+  const prod = { ...profiles.prod, allowedHosts: [] };
+  const problems = problemsOf(compose({ env: { APP_ENV: "prod", DATABASE_PATH: join(tmp, "h.db"), STORAGE_PATH: join(tmp, "h-files"), PAYSTACK_SECRET_KEY: "k" }, profiles: { ...set, prod } }));
+  assert.match(problems.join(), /payments adapter "paystack" reaches api\.paystack\.co, which profile prod does not allow/);
 });
